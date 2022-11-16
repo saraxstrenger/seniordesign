@@ -1,0 +1,29 @@
+{
+  "name": "seniordesign",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "engines": {
+    "node": "v18.12.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saraxstrenger/seniordesign.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saraxstrenger/seniordesign/issues"
+  },
+  "homepage": "https://github.com/saraxstrenger/seniordesign#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20"
+  }
+}
