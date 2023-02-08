@@ -1,4 +1,3 @@
-#pip install sentence_transformers
 import numpy as np
 import heapq
 from sentence_transformers import SentenceTransformer
