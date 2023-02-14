@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import NavBar from "./Navigation";
 
 export default function LandingLoginForm({setLoggedIn}) {
   const [username, setUsername] = useState("");
@@ -7,6 +8,7 @@ export default function LandingLoginForm({setLoggedIn}) {
   const [errorMsg, setErrorMsg] = useState("");
   const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const tryLogin = async function ( setLoggedIn) {
     // todo: some inflight display/loading
     let res = await fetch("/login", {
@@ -23,8 +25,8 @@ export default function LandingLoginForm({setLoggedIn}) {
     let resJson = await res.json();
     if (resJson.success === true) {
       setLoggedIn(true);
-      let path = `/home/`;
-      navigate(path);
+      // let path = `/home/`;
+      // navigate(path);
     } else {
       setShowError(true);
       setErrorMsg(
@@ -35,6 +37,7 @@ export default function LandingLoginForm({setLoggedIn}) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
+      {window.location.pathname === "/" ? null : <NavBar />}
       <input
         type="text"
         name="username"
