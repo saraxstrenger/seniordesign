@@ -21,9 +21,9 @@ class CollabFilterRecommender():
       interest_dict['rating'].append(interest)
     
     diff_dict['user'] = users
-    interest_dict['user'] = users[:]
+    interest_dict['user'] = users
     diff_dict['item'] = items
-    interest_dict['item'] = items[:]
+    interest_dict['item'] = items
     
     diff_df = pd.DataFrame(diff_dict)
     interest_df = pd.DataFrame(interest_dict)
