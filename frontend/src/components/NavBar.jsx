@@ -1,8 +1,8 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import "./Navigation.css";
+import "./css/NavBar.css";
 
-function Navigation() {
+export default function NavBar() {
   return (
     <div className="navigation">
       <nav className="navbar navbar-expand navbar-dark bg-dark">
@@ -17,13 +17,13 @@ function Navigation() {
                   Home
                 </NavLink>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <NavLink className="nav-link" to="/">
                   Courses
                 </NavLink>
-              </li>
+              </li> */}
               <li className="nav-item">
-                <NavLink className="nav-link" to="/blog">
+                <NavLink className="nav-link" to="/courses">
                   My Courses
                 </NavLink>
               </li>
@@ -35,4 +35,4 @@ function Navigation() {
   );
 }
 
-export default Navigation;
+

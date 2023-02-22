@@ -2,22 +2,10 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
-import {
-  Navigate,
-  BrowserRouter as Router,
-  Route,
-  Routes,
-} from "react-router-dom";
-import {
-  Navigation,
-  Footer,
-  Contact,
-  Blog,
-  Posts,
-  Post,
-  Home,
-} from "./components";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Footer, Courses, Post, Home, Posts } from "./components";
 import Landing from "./components/Landing";
+import { Navigate } from "react-router-dom";
 
 // only allows logged in users to pass
 const ProtectedRoute = ({ user, children }) => {
@@ -39,26 +27,33 @@ function App() {
     });
   }, [loggedIn]);
   return (
+    <div style={{ display: "flex", flexDirection: "column" }}>
     <Router>
-      <Navigation />
-      <Routes>
-        <Route path="/" element={<Landing setLoggedIn={setLoggedIn} />} />
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute user={loggedIn}>
-              <Home setLoggedIn={setLoggedIn} />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/blog" element={<Blog />}>
-          <Route path="" element={<Posts />} />
+        <Routes>
+          <Route path="/" element={<Landing setLoggedIn={setLoggedIn} />} />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute user={loggedIn}>
+                <Home setLoggedIn={setLoggedIn} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/courses"
+            element={
+              <ProtectedRoute user={loggedIn}>
+                <Courses />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="" element={<Posts />} />
+          </Route>
           <Route path=":postSlug" element={<Post />} />
-        </Route>
-      </Routes>
-      <Footer />
-    </Router>
+        </Routes>
+        <Footer />
+      </Router>
+    </div>
   );
 }
 

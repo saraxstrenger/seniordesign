@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import NavBar from "./Navigation";
+import { useNavigate } from "react-router-dom";
 
-export default function LandingLoginForm({setLoggedIn}) {
+export default function LandingLoginForm({ setLoggedIn }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-  const tryLogin = async function ( setLoggedIn) {
+  const tryLogin = async function (setLoggedIn) {
     // todo: some inflight display/loading
     let res = await fetch("/login", {
       method: "POST",
@@ -25,8 +23,8 @@ export default function LandingLoginForm({setLoggedIn}) {
     let resJson = await res.json();
     if (resJson.success === true) {
       setLoggedIn(true);
-      // let path = `/home/`;
-      // navigate(path);
+      let path = `/home/`;
+      navigate(path);
     } else {
       setShowError(true);
       setErrorMsg(
@@ -37,7 +35,6 @@ export default function LandingLoginForm({setLoggedIn}) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      {window.location.pathname === "/" ? null : <NavBar />}
       <input
         type="text"
         name="username"
@@ -53,7 +50,7 @@ export default function LandingLoginForm({setLoggedIn}) {
       <div style={{ color: "red", fontSize: "small" }}>
         {showError ? errorMsg : null}
       </div>
-      <button value="Submit" onClick={()=>tryLogin(setLoggedIn)}>
+      <button value="Submit" onClick={() => tryLogin(setLoggedIn)}>
         Submit
       </button>
     </div>
