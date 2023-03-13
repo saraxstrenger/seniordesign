@@ -7,7 +7,7 @@ export default function LandingLoginForm({ setLoggedIn }) {
   const [errorMsg, setErrorMsg] = useState("");
   const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
-  const tryLogin = async function (setLoggedIn) {
+  const tryLogin = async function(setLoggedIn) {
     // todo: some inflight display/loading
     let res = await fetch("/login", {
       method: "POST",
