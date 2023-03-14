@@ -2,6 +2,7 @@ import numpy as np
 import heapq
 from sentence_transformers import SentenceTransformer
 import pandas as pd
+import argparse 
 """
 EmbeddingRecommender class can reccomend classes based on natural language interests and course names
 Constructor takes in some iterable of course names (strings) in natural langauge 
@@ -14,6 +15,7 @@ class EmbeddingRecommender():
         # stored as (course_name, course_embedding) pairs
         self.courses = []
         seen = set()
+        # eventually we'll want to load the data from the database
         courses_df = pd.read_csv('../data/test_courses.csv')
         for row in courses_df.itertuples():
             full_course_name = row[1]
@@ -78,9 +80,6 @@ def main():
                             'Architecture 101: Building Buidlings', 'How to Make Bridges', 'Mechanics', 'Electromagnetism',
                             'Intro to Product Design', 'User Experience Research', 'Woodworking 101',
                             'How to make things']
-    """
-    rec = EmbeddingRecommender()
-    
     rec.print_rec('Software Engineer')
     rec.print_rec('Painter')
     rec.print_rec('Animator')
@@ -92,6 +91,19 @@ def main():
     rec.print_rec('Machine Learning Engineer')
     rec.print_rec('Natural Language Processing')
     rec.print_rec('Computer Vision')
+    """
+    
+    rec = EmbeddingRecommender()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--interest', type=str)
+    parser.add_argument('-n', '--num_recs', type=int)
+    args = parser.parse_args()
+    interest = args.interest
+    num_recs = args.num_recs
+    
+    res = rec.k_nearest_neighbors(interest, num_recs)
+    print(res)
+    return res
     
 if __name__ == '__main__':
     main()
