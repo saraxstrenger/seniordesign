@@ -1,7 +1,7 @@
 # Rec System
 Before using this, make sure you run 
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 This is the "brain" of the reccomendations. Here you'll find two scipts for creating reccomendations:
 1. EmbeddingRecommender.py
