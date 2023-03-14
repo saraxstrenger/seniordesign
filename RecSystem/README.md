@@ -37,7 +37,11 @@ pythonProcess.stderr.on('data', (data) => {
 });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ```
 =======
 ```
 >>>>>>> made rec system more friendly for use from node
+=======
+```
+>>>>>>> Update README.md
