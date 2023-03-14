@@ -66,15 +66,22 @@ input:checked + .slider:before {
 /* end toggle switch */
 
 .page {
-  background-color: #e9edde;
+  background-color: #F7F5F3;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  /* justify-content: center; */
   font-size: calc(10px+2vmin);
-  color: #8f754f;
+  color: #2B4162;
+}
+
+.cardColor{
+  background-color: #F7F5F3;
+}
+.pageBody {
+  padding: 0px, 20px, 0px, 20px;
+  align-items: center;
+  width: 100%;
+  
 }
 
 .column {
@@ -102,4 +109,8 @@ input:checked + .slider:before {
 .error {
   color: "red";
   font-size: "small";
+}
+
+.inputWrapping {
+  margin: 8px;
 }

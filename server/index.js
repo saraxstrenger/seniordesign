@@ -45,6 +45,7 @@ const usernames = ["sara", "janavi", "suvas", "kat", "saurabh"];
 // middleware to test if authenticated
 // source: https://www.npmjs.com/package/express-session
 function isAuthenticated(req, res, next) {
+  console.log(req.session)
   if (req.session.userid) {
     next();
   } else {

@@ -1,5 +1,5 @@
 import { DynamoDBDocumentClient} from "@aws-sdk/lib-dynamodb";
-import {ddbClient} from "./ddbClient.js";
+import {ddb} from "./ddbClient.js";
 
 const marshallOptions = {
     // Whether to automatically convert empty strings, blobs, and sets to `null`.
@@ -18,6 +18,6 @@ const unmarshallOptions = {
 const translateConfig = { marshallOptions, unmarshallOptions };
 
 // Create the DynamoDB Document client.
-const ddbDocClient = DynamoDBDocumentClient.from(ddbClient, translateConfig);
+const ddbDocClient = new ddb.DocumentClient(translateConfig);
 
 export { ddbDocClient };

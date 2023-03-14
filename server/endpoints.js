@@ -34,36 +34,42 @@ export function logout(req, res, next) {
   });
 }
 
-export function login(req, res) {
-  user = req.body.username;
-  pass = req.body.password;
-  console.log("Login request received");
-
-  if (usernames.includes(user) && pass == "pass") {
-    session = req.session;
-    session.userid = user;
-    res.json({ success: true });
-  } else {
-    res.json({ success: false, error: "Incorrect username or password" });
-  }
+export async function login(req, res) {
+  const user = req.body.username;
+  const pass = req.body.password;
+  const password = await db.getPassword(user, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, error: "Incorrect username or password" });
+    } else {
+      const password = data.Item.password;
+      if (password !== null && password === pass) {
+        const session = req.session;
+        session.userid = user;
+        res.json({ success: true });
+      } else {
+        res.json({ success: false, error: "Incorrect username or password" });
+      }
+    }
+  });
 }
 
-function nonEmptyStr(str){
-    return str && str.length >0;
+function nonEmptyStr(str) {
+  return str && str.length > 0;
 }
 
-function isEmail(email){
-    //TODO
-    return true;
+function isEmail(email) {
+  //TODO
+  return true;
 }
 
-function isYear(yearStr){
-    return !isNaN(num);
+function isYear(yearStr) {
+  return !isNaN(num);
 }
 
 export function signup(req, res) {
   const params = req.body;
-  params.year=parseInt(params.year, 10);
+  params.year = parseInt(params.year, 10);
   if (
     nonEmptyStr(params.first) ||
     nonEmptyStr(params.last) ||
@@ -77,8 +83,18 @@ export function signup(req, res) {
   }
 
   // try to create db entry
-  db.createUser(params);
-
+  db.createUser(params, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, error: "Username already exists" });
+    } else {
+      res.json({ success: true });
+    }
+  });
 }
+
+// export function addClass(req, res) {
+//   // TODO
+// }
 
 // module.exports = { auth, logout, login, signup };

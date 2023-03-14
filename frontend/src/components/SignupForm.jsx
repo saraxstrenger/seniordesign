@@ -21,7 +21,7 @@ export default function SignupForm(props) {
   const FormElement = function(props) {
     return (
       <div style={{ padding: 8 }}>
-        <label style={{ paddingRight: 8 }} hidden={props.labelHidden === true}>
+        <label  for={props.id} style={{ paddingRight: 8 }} hidden={props.labelHidden === true}>
           {props.label}
         </label>
         {props.type === "select" ? (
@@ -41,7 +41,10 @@ export default function SignupForm(props) {
     );
   };
 
-  const trySignup = async function() {
+  const trySignup = async function(e) {
+    console.log(e);
+    e.preventDefault();
+
     // todo: some inflight display/loading
     // todo: FORM VALIDATION!!!
     let res = await fetch("/signup", {
@@ -62,11 +65,11 @@ export default function SignupForm(props) {
 
     let resJson = await res.json();
     if (resJson.success === true) {
-        alert("true");
-        return;
+      alert("true");
       setErrorMsg("");
       setLoggedIn(true);
     } else {
+        // todo: display meaningful error message (probably from backend)
       setErrorMsg(
         resJson?.errorMsg ?? "Unable to complete login at this time."
       );
@@ -90,6 +93,7 @@ export default function SignupForm(props) {
                 label: "first:",
                 type: "text",
                 name: "first",
+                id: "first",
                 placeholder: "first name",
                 required: true,
                 onChange: (e) => setFirst(e.target.value),
@@ -102,6 +106,7 @@ export default function SignupForm(props) {
                 label: "last:",
                 type: "text",
                 name: "last",
+                id: "last",
                 required: true,
                 placeholder: "last name",
                 onChange: (e) => setLast(e.target.value),
@@ -114,6 +119,7 @@ export default function SignupForm(props) {
             label: "email:",
             type: "text",
             name: "email",
+            id: "email",
             required: true,
             placeholder: "email",
             onChange: (e) => setEmail(e.target.value),
@@ -124,7 +130,8 @@ export default function SignupForm(props) {
             label: "username:",
             type: "text",
             name: "username",
-            required:true,
+            id: "username",
+            required: true,
             placeholder: "username",
             onChange: (e) => setUsername(e.target.value),
             value: username,
@@ -134,7 +141,8 @@ export default function SignupForm(props) {
             label: "password:",
             type: "password",
             name: "password",
-            required:true,
+            id: "password",
+            required: true,
             placeholder: "password",
             onChange: (e) => setPassword(e.target.value),
             value: password,
@@ -144,7 +152,8 @@ export default function SignupForm(props) {
             label: "major:",
             type: "text",
             name: "major",
-            required:true,
+            id: "major",
+            required: true,
             placeholder: "major",
             onChange: (e) => setMajor(e.target.value),
             value: major,
@@ -154,7 +163,7 @@ export default function SignupForm(props) {
             label: "entrance year:",
             name: "entranceYear",
             id: "entranceYear",
-            required:true,
+            required: true,
             type: "select",
             options: range(25, currentYear - 25),
             onChange: (e) => setEntranceYear(e.target.value),
@@ -174,10 +183,10 @@ export default function SignupForm(props) {
           ) : null}
           {FormElement({
             label: "submit",
+            id: "submit",
             labelHidden: true,
             type: "submit",
             value: "Sign up!",
-            // onSubmit: { trySignup },
           })}
         </div>
       </form>

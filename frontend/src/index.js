@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Footer, Courses, Post, Home, Posts } from "./components";
+import { Footer, Courses, Home } from "./components";
 import Landing from "./components/Landing";
 import { Navigate } from "react-router-dom";
 
@@ -46,11 +46,8 @@ function App() {
                 <Courses />
               </ProtectedRoute>
             }
-          >
-            <Route path="" element={<Posts />} />
-          </Route>
-          <Route path=":postSlug" element={<Post />} />
-        </Routes>
+          />
+          </Routes>
         <Footer />
       </Router>
     </div>
