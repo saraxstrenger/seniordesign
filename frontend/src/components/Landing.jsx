@@ -6,7 +6,7 @@ import SignupForm from "./SignupForm";
 import classnames from "classnames";
 
 const col = { display: "flex", justifyContent: "center", flexDirection: "column" };
-const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
+// const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
 function Landing(props) {
   const [isLogin, setIsLogin] = useState(true);

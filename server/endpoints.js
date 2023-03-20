@@ -24,6 +24,7 @@ export function logout(req, res, next) {
 
     // regenerate the session, which is good practice to help
     // guard against forms of session fixation
+    req.session.destroy();
     req.session.regenerate(function (err) {
       if (err) {
         res.sendStatus(500);
@@ -37,6 +38,7 @@ export function logout(req, res, next) {
 export async function login(req, res) {
   const user = req.body.username;
   const pass = req.body.password;
+  console.log("user: " + user + " pass: " + pass);
   const password = await db.getPassword(user, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
@@ -44,6 +46,25 @@ export async function login(req, res) {
     } else {
       const password = data.Item.password;
       if (password !== null && password === pass) {
+        // req.session.regenerate(function (err) {
+        //   if (err) {
+        //     console.log("error during cookie generation");
+        //     next(err);
+        //   }
+        //   // store user information in session, typically a user id
+        //   req.session.user = req.body.user;
+
+        //   // save the session before redirection to ensure page
+        //   // load does not happen before session is saved
+        //   req.session.save(function (err) {
+        //     console.log("session saved");
+        //     if (err) {
+        //       console.log("error saving session");
+        //       return next(err);
+        //     }
+        //     res.json({ success: true });
+        //   });
+        // });
         const session = req.session;
         session.userid = user;
         res.json({ success: true });
@@ -93,8 +114,20 @@ export function signup(req, res) {
   });
 }
 
-// export function addClass(req, res) {
-//   // TODO
-// }
-
-// module.exports = { auth, logout, login, signup };
+export function addClass(req, res) {
+  console.log("add class request received");
+  const params = req.body;
+  const session = req.session;
+  if (session?.userid) {
+    db.addClass(userid, params, (err, data) => {
+      if (err) {
+        console.log("Error", err.stack);
+        res.json({ success: false, error: "Class already exists" });
+      } else {
+        res.json({ success: true });
+      }
+    });
+  } else {
+    res.sendStatus(401); // Unauthorized
+  }
+}

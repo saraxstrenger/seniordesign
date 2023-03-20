@@ -45,7 +45,7 @@ const usernames = ["sara", "janavi", "suvas", "kat", "saurabh"];
 // middleware to test if authenticated
 // source: https://www.npmjs.com/package/express-session
 function isAuthenticated(req, res, next) {
-  console.log(req.session)
+  console.log(req.session);
   if (req.session.userid) {
     next();
   } else {
@@ -74,10 +74,10 @@ app.get("*", (req, res) => {
 
 // POST REQUESTS
 app.post("/logout", isAuthenticated, routes.logout);
-
 app.post("/login", express.urlencoded({ extended: false }), routes.login);
-
 app.post("/signup", routes.signup);
+app.post("/addCourse", isAuthenticated, routes.addClass);
+
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });

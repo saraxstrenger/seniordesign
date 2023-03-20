@@ -2,8 +2,8 @@ import { ddbDocClient } from "./ddbDocClient.js";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 
 const USER_TABLE = "users";
-const COURSE_TABLE = "Course_Table";
-const EVAL_TABLE = "Evaluation_Table";
+const COURSE_TABLE = "Course_Table"; // not updated
+const EVAL_TABLE = "evaluations";
 
 export async function createUser(
   { username, password, first, last, email, entranceYear, major },
@@ -35,4 +35,27 @@ export function getPassword(username, callback) {
   };
 
   ddbDocClient.get(params, callback);
+}
+
+export async function addCourse(
+  user,
+  { courseDept, courseCode, year, semester, difficulty, interest },
+  callback
+) {
+  // Set the parameters.
+  const params = {
+    TableName: EVAL_TABLE,
+    Item: {
+      id: user + courseDept + courseCode + year + semester,
+      user,
+      courseDept,
+      courseCode,
+      year,
+      semester,
+      difficulty,
+      interest,
+    },
+    ConditionExpression: "attribute_not_exists(id)",
+  };
+  ddbDocClient.put(params, callback);
 }

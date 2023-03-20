@@ -15,10 +15,10 @@ export default function CoursesAddCoursesForm(props) {
   const [yearTaken, setYearTaken] = useState("");
   const [difficulty, setDifficulty] = useState(-1);
   const [interest, setInterest] = useState(-1);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const tryAddCourses = function (e) {
+  const tryAddCourses = async function (e) {
     e.preventDefault();
-    console.log("tryAddCourses");
     console.log(department);
     console.log(courseNumber);
     console.log(semesterTaken);
@@ -26,11 +26,36 @@ export default function CoursesAddCoursesForm(props) {
     console.log(difficulty);
     console.log(interest);
 
+    let res = await fetch("/addCourse", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        // use cookie to get user
+        department,
+        courseNumber,
+        semesterTaken,
+        yearTaken,
+        difficulty,
+        interest,
+      }),
+    });
+    let resJson = await res.json();
+    console.log("resjson: ", resJson);
+    if (resJson.success === true) {
+    } else {
+      setErrorMsg(
+        resJson?.errorMsg ?? "Unable to complete login at this time."
+      );
+    }
     props.afterFormSubmit();
   };
+
   return (
     <div style={{ minWidth: "75%" }}>
       <h2 style={{ margin: 0 }}>New Course:</h2>
+
       <form style={col} onSubmit={tryAddCourses}>
         <div style={row}>
           <input
@@ -123,10 +148,15 @@ export default function CoursesAddCoursesForm(props) {
             </select>
           </div>
         </div>
+        {errorMsg !== "" ? (
+          <center>
+            <div style={{ color: "red", fontSize: "small" }}>{errorMsg}</div>
+          </center>
+        ) : null}
         <div style={{ ...row, justifyContent: "center" }}>
           {/* <button className={styles.inputWrapping} type="button">
           Add Another Course
-        </button> */}
+          </button> */}
           <input
             className={styles.inputWrapping}
             type="submit"

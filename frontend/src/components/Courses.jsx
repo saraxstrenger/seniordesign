@@ -52,7 +52,7 @@ function CourseEvalCard({ course }) {
         minWidth: "70%",
         padding: 12,
         margin: 12,
-        filter: "drop-shadow(1px 1px 2px black)",
+        filter: "drop-shadow(1px 1px 2px #2B4162)",
         borderRadius: 4,
         ...col,
       }}
@@ -61,7 +61,7 @@ function CourseEvalCard({ course }) {
         <div>{course}</div>
         <div>
           <button onClick={() => setExpand(!expand)}>
-            {expand ? "Unexpand" : "Expand"}
+            {expand ? "Collapse" : "Expand"}
           </button>
         </div>
       </div>

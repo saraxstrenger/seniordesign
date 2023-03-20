@@ -107,7 +107,7 @@ input:checked + .slider:before {
 }
 
 .error {
-  color: "red";
+  accent-color: "red";
   font-size: "small";
 }
 

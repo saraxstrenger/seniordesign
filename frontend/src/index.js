@@ -7,20 +7,19 @@ import { Footer, Courses, Home } from "./components";
 import Landing from "./components/Landing";
 import { Navigate } from "react-router-dom";
 
-// only allows logged in users to pass
-const ProtectedRoute = ({ user, children }) => {
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
-  return children;
-};
-
 const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(<App />);
 
 function App() {
   const [loggedIn, setLoggedIn] = React.useState(false);
+  // only allows logged in users to pass
+  const ProtectedRoute = ({ user, children }) => {
+    if (user.length <= 0) {
+      return <Landing setLoggedIn={setLoggedIn} />;
+    }
+    return children;
+  };
   React.useEffect(() => {
     fetch("/auth").then((res) => {
       setLoggedIn(res.status === 200);
@@ -28,9 +27,32 @@ function App() {
   }, [loggedIn]);
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-    <Router>
+      <Router>
         <Routes>
-          <Route path="/" element={<Landing setLoggedIn={setLoggedIn} />} />
+          <Route
+            path="/"
+            element={
+              // isLoggedIn ? (
+              <ProtectedRoute user={loggedIn}>
+                <Home setLoggedIn={setLoggedIn} />
+              </ProtectedRoute>
+              // ) : (
+              //   <Landing setLoggedIn={setLoggedIn} />
+              // )
+            }
+          />
+          <Route
+            path="/"
+            element={
+              // isLoggedIn ? (
+              <ProtectedRoute user={loggedIn}>
+                <Home setLoggedIn={setLoggedIn} />
+              </ProtectedRoute>
+              // ) : (
+              //   <Landing setLoggedIn={setLoggedIn} />
+              // )
+            }
+          />
           <Route
             path="/home"
             element={
@@ -47,7 +69,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          </Routes>
+        </Routes>
         <Footer />
       </Router>
     </div>
