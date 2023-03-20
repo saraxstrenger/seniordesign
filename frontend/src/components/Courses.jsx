@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "./NavBar";
 import style from "./css/utils.module.css";
 import CoursesAddCoursesForm from "./CoursesAddCoursesForm";
+
+// const USER = 1;
+const DEPT = 1;
+const NUM = 2;
+const YEAR = 3;
+const SEM = 4;
 
 const col = {
   display: "flex",
@@ -10,36 +16,85 @@ const col = {
 };
 const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
-function Courses() {
-  const [showAddCourse, setShowAddCourse] = useState(false);
-  const courses = ["CIS 1600", "CIS 1601", "CIS 1602"];
+function Courses(props) {
+  const [errorMsg, setErrorMsg] = useState("");
+  const [evaluations, setEvaluations] = useState([]);
+
+  useEffect(() => {
+    fetch("/auth", {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+      },
+    }).then((res) => {
+      props.setLoggedIn(res.status === 200);
+    });
+  });
+
+  useEffect(() => {
+    fetch("/evaluations", {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+      },
+    }).then(async (res) => {
+      console.log("evals");
+      console.log(res);
+
+      if (res.status === 401) {
+        // unauthorized
+        props.setLoggedIn(false);
+      } else if (res.status !== 200) {
+        setErrorMsg("Unable to get evaluations at this time.");
+      } else {
+        const data = await res.json();
+        console.log(data);
+ 
+        const evals = data.courses.map((evaluation) => {
+          console.log(evaluation);
+          const attributes = evaluation.split("_");
+          console.log(attributes);
+          return {
+            department: attributes[DEPT],
+            number: attributes[NUM],
+            semester: attributes[SEM],
+            year: attributes[YEAR],
+            id: evaluation,
+          };
+        });
+        setEvaluations(evals);
+      }
+    });
+  }, [props]);
+
   return (
     <div className={style.page}>
       <NavBar />
       <div className={style.pageBody} style={{ ...col }}>
         <h1>Courses</h1>
-        <button hidden={showAddCourse} onClick={() => setShowAddCourse(true)}>
-          Add Courses
-        </button>
-        {showAddCourse ? (
-          <CoursesAddCoursesForm
-            afterFormSubmit={() => setShowAddCourse(false)}
-          />
-        ) : null}
+
+        <CoursesAddCoursesForm evaluations={evaluations} setEvaluations={setEvaluations} />
+
         {/* <div style={col}> */}
-        <div style={{minWidth:"75%", marginLeft: 20, justifyContent: "left"}}>
+        <div
+          style={{ minWidth: "75%", marginLeft: 20, justifyContent: "left" }}
+        >
           <h2>Your Courses:</h2>
         </div>
-        {courses.map((course) => {
-          return <CourseEvalCard id={course} course={course} />;
-        })}
-        {/* </div> */}
+
+        {errorMsg ? (
+          <div>{errorMsg}</div>
+        ) : (
+          evaluations.map((evaluation) => {
+            return <CourseEvalCard {...evaluation} />;
+          })
+        )}
       </div>
     </div>
   );
 }
 
-function CourseEvalCard({ course }) {
+function CourseEvalCard({ department, number, semester, year, id }) {
   const [expand, setExpand] = useState(false);
 
   return (
@@ -58,20 +113,22 @@ function CourseEvalCard({ course }) {
       }}
     >
       <div style={{ ...row, justifyContent: "space-between" }}>
-        <div>{course}</div>
+        <div>{department + " " + number}</div>
+        <div>{semester + " " + year}</div>
+
         <div>
           <button onClick={() => setExpand(!expand)}>
             {expand ? "Collapse" : "Expand"}
           </button>
         </div>
       </div>
-      {expand ? <CourseEvalCardInfo course /> : null}
+      {expand ? <CourseEvalCardInfo courseId={id} /> : null}
     </div>
     // </div>
   );
 }
 
-function CourseEvalCardInfo({ course }) {
+function CourseEvalCardInfo({ courseId }) {
   //TODO: add info
   return (
     <div>

@@ -1,5 +1,5 @@
 import * as db from "./database.js";
-
+import AWS from "aws-sdk";
 export function auth(req, res) {
   if (req.session?.userid) {
     res.sendStatus(200); // OK - user is logged in
@@ -24,7 +24,7 @@ export function logout(req, res, next) {
 
     // regenerate the session, which is good practice to help
     // guard against forms of session fixation
-    req.session.destroy();
+    // req.session.destroy();
     req.session.regenerate(function (err) {
       if (err) {
         res.sendStatus(500);
@@ -39,7 +39,7 @@ export async function login(req, res) {
   const user = req.body.username;
   const pass = req.body.password;
   console.log("user: " + user + " pass: " + pass);
-  const password = await db.getPassword(user, (err, data) => {
+  const password = await db.getUser(user, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
       res.json({ success: false, error: "Incorrect username or password" });
@@ -114,12 +114,14 @@ export function signup(req, res) {
   });
 }
 
-export function addClass(req, res) {
+export function addCourse(req, res) {
   console.log("add class request received");
   const params = req.body;
   const session = req.session;
+  console.log("add course");
+  console.log(session.userid);
   if (session?.userid) {
-    db.addClass(userid, params, (err, data) => {
+    db.addCourse(session.userid, params, (err, data) => {
       if (err) {
         console.log("Error", err.stack);
         res.json({ success: false, error: "Class already exists" });
@@ -130,4 +132,36 @@ export function addClass(req, res) {
   } else {
     res.sendStatus(401); // Unauthorized
   }
+}
+
+export function getEvaluations(req, res) {
+  db.getUser(req.session.userid, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, error: "unable to perform operation" });
+    } else {
+      const user = data.Item;
+      res.json({ success: true, courses: user.courses });
+    }
+  });
+}
+
+export function getEvaluation(req, res) {
+  const session = req.session;
+  const evalId = req.params.id;
+  const evalInfo = evalId.split("_");
+  const evalOwner=evalInfo[0];
+  // only the owner of the eval should be able to access it
+  if (session?.userid && evalOwner == session.userid) {
+    db.getEval(id, (err, data) => {
+      if (err) {
+        console.log("Error", err.stack);
+        res.json({ success: false, error: "unable to perform operation" });
+      } else {
+        res.json({ success: true, data: data });
+      }
+    });
+    return;
+  }
+  res.sendStatus(401); // Unauthorized
 }

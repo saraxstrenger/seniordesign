@@ -5,13 +5,25 @@ function Home(props) {
   const [data, setData] = React.useState(null);
   const [dataDidLoad, setDataDidLoad] = React.useState(false);
   React.useEffect(() => {
-    fetch("/home")
-      .then((res) => res.json())
+    fetch("/home", {
+      method: "GET",
+      headers: {
+        "Content-type": "application/json",
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          return res.json();
+        } else {
+          props.isLoggedIn(false);
+        }
+      })
       .then((data) => {
         setDataDidLoad(true);
         setData(data.message);
       });
-  }, []);
+  }, [props]);
   return (
     <>
       <NavBar />

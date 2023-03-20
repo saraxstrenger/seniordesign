@@ -1,4 +1,4 @@
-import * as routes from "./endpoints.js"
+import * as routes from "./endpoints.js";
 const PORT = 3001;
 
 // import path from "path" ;
@@ -6,10 +6,10 @@ import express from "express";
 
 // const express = require("express");
 // const cookieParser = require("cookie-parser");
-import cookieParser from "cookie-parser"
+import cookieParser from "cookie-parser";
 
 // const bodyParser = require("body-parser");
-import  bodyParser from "body-parser";
+import bodyParser from "body-parser";
 
 import session from "express-session";
 
@@ -35,7 +35,7 @@ app.use(
   })
 );
 app.use(cookieParser());
-var httpServer =http.createServer(app);
+var httpServer = http.createServer(app);
 
 // TODO: connect to dynamo
 const usernames = ["sara", "janavi", "suvas", "kat", "saurabh"];
@@ -66,17 +66,22 @@ app.get("/home", isAuthenticated, (req, res) => {
 
 app.get("/auth", routes.auth);
 
+app.get("/evaluations/:id", isAuthenticated, (req, res) => {
+  console.log("evaluations request received");
+  routes.getEvaluations(req, res);
+});
+app.get("/evaluations", isAuthenticated, routes.getEvaluations);
+
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {
   res.redirect("/");
 });
 
-
 // POST REQUESTS
 app.post("/logout", isAuthenticated, routes.logout);
 app.post("/login", express.urlencoded({ extended: false }), routes.login);
 app.post("/signup", routes.signup);
-app.post("/addCourse", isAuthenticated, routes.addClass);
+app.post("/addCourse", isAuthenticated, routes.addCourse);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

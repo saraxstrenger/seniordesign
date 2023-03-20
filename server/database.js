@@ -20,13 +20,14 @@ export async function createUser(
       email,
       entranceYear,
       major,
+      courses : [],
     },
     ConditionExpression: "attribute_not_exists(username)",
   };
   ddbDocClient.put(params, callback);
 }
 
-export function getPassword(username, callback) {
+export function getUser(username, callback) {
   const params = {
     TableName: USER_TABLE,
     Key: {
@@ -39,17 +40,33 @@ export function getPassword(username, callback) {
 
 export async function addCourse(
   user,
-  { courseDept, courseCode, year, semester, difficulty, interest },
+  { department, number, year, semester, difficulty, interest },
   callback
 ) {
-  // Set the parameters.
-  const params = {
+  const evaluationId= [user, department, number, year, semester].join("_");
+  // Add course to user profile
+  const userUpdateParams = {
+    TableName: USER_TABLE,
+    Key: {
+      username: user,
+    },
+    UpdateExpression: "ADD #courses :item",
+    ExpressionAttributeNames: {
+      "#courses": "courses",
+    },
+    ExpressionAttributeValues: {
+      ":item": ddbDocClient.createSet([evaluationId]),
+    },
+  };
+
+  // create course evaluation
+  const courseCreationParams = {
     TableName: EVAL_TABLE,
     Item: {
-      id: user + courseDept + courseCode + year + semester,
+      id: evaluationId,
       user,
-      courseDept,
-      courseCode,
+      department,
+      number,
       year,
       semester,
       difficulty,
@@ -57,5 +74,13 @@ export async function addCourse(
     },
     ConditionExpression: "attribute_not_exists(id)",
   };
-  ddbDocClient.put(params, callback);
+
+  const transactionParams = {
+    TransactItems: [
+      {Update:userUpdateParams},
+      {Put:courseCreationParams}]};
+
+  // ddbDocClient.put(courseCreationParams, callback);
+
+  ddbDocClient.transactWrite(transactionParams, callback);
 }
