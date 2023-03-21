@@ -1,8 +1,10 @@
 import pandas as pd
 from surprise import Reader, Dataset, KNNWithMeans
+import argparse
 class CollabFilterRecommender():
   # fit the models. Consider functionizing if we add more columns
   def __init__(self):
+    #eventually we'll want to load the data from the database
     eval_fn = '../data/test_evaluations.csv'
     eval_df = pd.read_csv(eval_fn)
     diff_dict = {'user': [], 'item': [], 'rating': []}
@@ -62,7 +64,28 @@ class CollabFilterRecommender():
 
 def main():
   rec = CollabFilterRecommender()
-  print(rec.predict_difficulty('s10', 'CIS 2400'))
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-s', '--student', type=str)
+  parser.add_argument('-c', '--course', type=str)
+  parser.add_argument('-p', '--predict', type=str)
+
+  args = parser.parse_args()
+  student = args.student
+  course = args.course
+  predict = args.predict
+  
+  if predict == 'difficulty':
+    res = rec.predict_difficulty(student, course)
+  elif predict == 'interest':
+    res = rec.predict_interest(student, course)
+  else:
+    res = 'predict arg needs to be "difficulty" or "interest"'
+    
+  if res is None:
+    return 'Error in getting prediction'
+  
+  print(res)
+  return res
 
 if __name__ == '__main__':
   main()
