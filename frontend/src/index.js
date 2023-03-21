@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Profile from "./components/Profile";
 import { Footer, Courses, Home } from "./components";
 import Landing from "./components/Landing";
 // import { Navigate } from "react-router-dom";
@@ -70,6 +71,15 @@ function App() {
               </AuthRedirect>
             }
           />
+          <Route
+            path="/profile"
+            element={
+              <AuthRedirect>
+                <Profile setLoggedIn={setLoggedIn} />
+              </AuthRedirect>
+            }
+          />
+
         </Routes>
         <Footer />
       </Router>

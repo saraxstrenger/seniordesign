@@ -1,6 +1,8 @@
 import React from "react";
 import Logout from "./Logout";
 import NavBar from "./NavBar";
+import styles from "./css/utils.module.css";
+
 function Home(props) {
   const [data, setData] = React.useState(null);
   const [dataDidLoad, setDataDidLoad] = React.useState(false);
@@ -27,10 +29,7 @@ function Home(props) {
   return (
     <>
       <NavBar />
-      <div
-        className="home"
-        style={{ backgroundColor: "lightpink", padding: 20, height: 500 }}
-      >
+      <div className={styles.page} style={{ padding: 20, height: 500 }}>
         <div className="container">
           <div className="row align-items-center my-5">
             <div className="col-lg-5">

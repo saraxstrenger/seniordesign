@@ -39,11 +39,16 @@ export async function login(req, res) {
   const user = req.body.username;
   const pass = req.body.password;
   console.log("user: " + user + " pass: " + pass);
+  const errorMsg = { success: false, error: "Incorrect username or password" };
   const password = await db.getUser(user, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
-      res.json({ success: false, error: "Incorrect username or password" });
+      res.json(errorMsg);
     } else {
+      if(data.Item === undefined) {
+        res.json(errorMsg);
+        return;
+      }
       const password = data.Item.password;
       if (password !== null && password === pass) {
         // req.session.regenerate(function (err) {

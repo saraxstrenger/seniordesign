@@ -19,6 +19,16 @@ export default function CoursesAddCoursesForm(props) {
   const [errorMsg, setErrorMsg] = useState("");
 
   const [addCourse, setAddCourse] = useState(false);
+
+  const resetForm = function () {
+    setDepartment("");
+    setNumber("");
+    setSemester("");
+    setYear("");
+    setDifficulty(-1);
+    setInterest(-1);
+    setErrorMsg("");
+  };
   const tryAddCourses = async function (e) {
     e.preventDefault();
     let res = await fetch("/addCourse", {
@@ -44,9 +54,11 @@ export default function CoursesAddCoursesForm(props) {
       ]);
       setEvaluations(updated);
       setAddCourse(false);
+      resetForm();
     } else {
       setErrorMsg(
-        resJson?.errorMsg ?? "Unable to add course. Please try again and verify that the course is not already in your list."
+        resJson?.errorMsg ??
+          "Unable to add course. Please try again and verify that the course is not already in your list."
       );
     }
   };
@@ -54,7 +66,7 @@ export default function CoursesAddCoursesForm(props) {
   return (
     <div style={{ minWidth: "75%" }}>
       {!addCourse ? (
-        <div style={{ width: "100%", ...row}}>
+        <div style={{ width: "100%", ...row }}>
           <center>
             <button onClick={() => setAddCourse("true")}>Add Course</button>
           </center>
@@ -172,7 +184,10 @@ export default function CoursesAddCoursesForm(props) {
               />
               <button
                 className={styles.inputWrapping}
-                onClick={() => setAddCourse(false)}
+                onClick={() => {
+                  setAddCourse(false);
+                  resetForm();
+                }}
               >
                 Cancel
               </button>
