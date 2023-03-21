@@ -67,7 +67,7 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('-s', '--student', type=str)
   parser.add_argument('-c', '--course', type=str)
-  parser.add_argument('-p', '--predict', type=str)
+  parser.add_argument('-p', '--prediction_type', type=str)
 
   args = parser.parse_args()
   student = args.student
@@ -79,7 +79,7 @@ def main():
   elif predict == 'interest':
     res = rec.predict_interest(student, course)
   else:
-    res = 'predict arg needs to be "difficulty" or "interest"'
+    res = 'prediction arg needs to be "difficulty" or "interest"'
     
   if res is None:
     return 'Error in getting prediction'
