@@ -1,9 +1,29 @@
 import AWS  from "aws-sdk";
 import {fromIni} from "@aws-sdk/credential-providers";
+import fs from "fs";
 
 const credentials = await import('./config.json', {
     assert: { type: 'json' }
 });
+
+// var fs = require("fs");
+
+// const credentials = await fs.promises.readFile("./server/config.txt",  "utf-8", function(err, obj) {
+//     // print your json file to the screen
+//     if (err) { 
+//     console.log(err);
+//     return {err} 
+//     }
+//     else {
+//     // parse the obj string and convert it to an actual object
+//     console.log(obj);
+//     const parsed = JSON.parse(obj); 
+//     console.log("parsed"+parsed);
+//     return parsed;
+//     } 
+// })
+// console.log("creds:")
+// console.log(credentials);
 
 // credentials.region="us-east-1";
 // credentials.endpoint="http://dynamodb.us-east-1.amazonaws.com";
