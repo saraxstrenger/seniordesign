@@ -90,8 +90,8 @@ export async function login(req, res) {
   });
 }
 
-function nonEmptyStr(str) {
-  return str && str.length > 0;
+function isEmptyStr(str) {
+  return !str || str.length == 0;
 }
 
 function isEmail(email) {
@@ -99,7 +99,7 @@ function isEmail(email) {
   return true;
 }
 
-function isYear(yearStr) {
+function isNumber(num) {
   return !isNaN(num);
 }
 
@@ -107,13 +107,13 @@ export function signup(req, res) {
   const params = req.body;
   params.year = parseInt(params.year, 10);
   if (
-    nonEmptyStr(params.first) ||
-    nonEmptyStr(params.last) ||
-    nonEmptyStr(params.username) ||
-    nonEmptyStr(params.password) || // todo: password validation? letters, numbers etc
+    isEmptyStr(params.first) ||
+    isEmptyStr(params.last) ||
+    isEmptyStr(params.username) ||
+    isEmptyStr(params.password) || // todo: password validation? letters, numbers etc
     isEmail(params.email) ||
-    isYear(params.entranceYear) ||
-    nonEmptyStr(params.major)
+    isNumber(params.entranceYear) ||
+    isEmptyStr(params.major)
   ) {
     // send error code
   }
@@ -247,7 +247,33 @@ export function getProfile(req, res) {
 }
 
 export function updateProfile(req, res) {
-  // TODO
+  if (!req.session?.userid) {
+    res.sendStatus(401); // Unauthorized
+    return;
+  }
+  const params = req.body;
+  params.year = parseInt(params.year, 10);
+  if (
+    isEmptyStr(params.first) ||
+    isEmptyStr(params.last) ||
+    !isEmail(params.email) ||
+    !isNumber(params.entranceYear) ||
+    isEmptyStr(params.major)
+  ) {
+    res.json({
+      success: false,
+      errorMsg: "Please make sure all fields are completed with valid values.",
+    });
+    return;
+  }
+  db.updateUser(req.session.userid, params, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, errorMsg: "unable to perform operation" });
+    } else {
+      res.json({ success: true });
+    }
+  });
 }
 
 export function getCourseInfo(req, res) {

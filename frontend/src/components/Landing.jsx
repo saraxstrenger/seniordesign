@@ -2,7 +2,7 @@ import "../App.css";
 import React, { useState } from "react";
 import LandingLoginForm from "./LandingLoginForm.react";
 import styles from "./css/utils.module.css";
-import SignupForm from "./SignupForm";
+import LandingSignupForm from "./LandingSignupForm";
 import classnames from "classnames";
 
 const col = { display: "flex", justifyContent: "center", flexDirection: "column" };
@@ -39,7 +39,7 @@ function Landing(props) {
           {isLogin ? (
             <LandingLoginForm {...props} />
           ) : (
-            <SignupForm {...props} />
+            <LandingSignupForm {...props} />
           )}
         </div>
       </div>

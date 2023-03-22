@@ -10,6 +10,7 @@
     "ajv-errors": "^3.0.0",
     "body-parser": "^1.20.1",
     "classnames": "^2.3.2",
+    "framer-motion": "^10.8.5",
     "react": "^18.2.0",
     "react-card-flip": "^1.2.0",
     "react-dom": "^18.2.0",

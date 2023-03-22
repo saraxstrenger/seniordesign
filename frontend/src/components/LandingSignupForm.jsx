@@ -6,8 +6,7 @@ function range(size, startAt = 0) {
   return [...Array(size).keys()].map((i) => i + startAt);
 }
 
-// export default class SignupForm extends React.Component {
-export default function SignupForm(props) {
+export default function LandingSignupForm(props) {
   const { setLoggedIn } = props;
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");

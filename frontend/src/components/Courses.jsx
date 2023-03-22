@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "./NavBar";
 import style from "./css/utils.module.css";
-import CoursesAddCoursesForm from "./CoursesAddCoursesForm"; 
-import { AiFillCaretDown , AiFillCaretRight  } from "react-icons/ai";
-
+import CoursesAddCoursesForm from "./CoursesAddCoursesForm";
+import { AiFillCaretDown } from "react-icons/ai";
 
 // const USER = 1;
 const DEPT = 1;
@@ -16,7 +15,7 @@ const col = {
   // justifyContent: "center",
   flexDirection: "column",
 };
-const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
+// const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
 function Courses(props) {
   const [errorMsg, setErrorMsg] = useState("");
@@ -97,7 +96,7 @@ function Courses(props) {
             }}
           >
             {evaluations.map((evaluation) => {
-              return <CourseCard {...evaluation} key={evaluation.id} />;
+              return <CourseEvalCard {...evaluation} key={evaluation.id} />;
             })}
           </div>
         )}
@@ -106,7 +105,7 @@ function Courses(props) {
   );
 }
 
-function CourseCard({ department, number, semester, year, id }) {
+function CourseEvalCard({ department, number, semester, year, id }) {
   const [expand, setExpand] = useState(false);
 
   const handleClick = () => {
@@ -118,6 +117,7 @@ function CourseCard({ department, number, semester, year, id }) {
       className={style.cardColor}
       style={{
         width: "350px",
+        height: "fit-content",
         margin: "10px",
         filter: "drop-shadow(1px 1px 2px #2B4162)",
         borderRadius: "12px",
@@ -143,7 +143,7 @@ function CourseCard({ department, number, semester, year, id }) {
         <div style={{ marginBottom: "8px" }}>
           <AiFillCaretDown
             style={{
-              transform: `rotate(${expand ? "270deg" : "0deg"})`,
+              transform: `rotate(${expand ? "-90deg" : "0deg"})`,
               transition: "transform 0.3s ease",
             }}
           />
@@ -151,41 +151,6 @@ function CourseCard({ department, number, semester, year, id }) {
         {expand && <CourseEvalCardInfo courseId={id} />}
       </div>
     </div>
-  );
-}
-
-
-function CourseEvalCard({ department, number, semester, year, id }) {
-  const [expand, setExpand] = useState(false);
-
-  return (
-    // <div className={style.padded}>
-    <div
-      className={style.cardColor}
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        minWidth: "70%",
-        padding: 12,
-        margin: 12,
-        filter: "drop-shadow(1px 1px 2px #2B4162)",
-        borderRadius: 4,
-        ...col,
-      }}
-    >
-      <div style={{ ...row, justifyContent: "space-between" }}>
-        <div>{department + " " + number}</div>
-        <div>{semester + " " + year}</div>
-
-        <div>
-          <button onClick={() => setExpand(!expand)}>
-            {expand ? "Collapse" : "Expand"}
-          </button>
-        </div>
-      </div>
-      {expand ? <CourseEvalCardInfo courseId={id} /> : null}
-    </div>
-    // </div>
   );
 }
 

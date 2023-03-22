@@ -1,5 +1,6 @@
 import { ddbDocClient } from "./ddbDocClient.js";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { ddb } from "./ddbClient.js";
 
 const USER_TABLE = "users";
 const COURSE_TABLE = "Course_Table"; // not updated
@@ -39,17 +40,40 @@ export function getUser(username, callback) {
 }
 
 export function updateUser(
+  username,
   { first, last, email, entranceYear, major },
   callback
 ) {
-  // TODO: implement
+  const params = {
+    TableName: USER_TABLE,
+    Key: {
+      username,
+    },
+    UpdateExpression:
+      "SET #first = :first, #last = :last, #email = :email, #entranceYear = :entranceYear, #major = :major",
+    ExpressionAttributeNames: {
+      "#first": "first",
+      "#last": "last",
+      "#email": "email",
+      "#entranceYear": "entranceYear",
+      "#major": "major",
+    },
+    ExpressionAttributeValues: {
+      ":first": first,
+      ":last": last,
+      ":email": email,
+      ":entranceYear": entranceYear,
+      ":major": major,
+    },
+  };
+  ddbDocClient.update(params, callback);
 }
 
 /**
  * updates _user_'s interest list to _interests_ (set of strings)
- * @param {*} user 
- * @param {*} interests 
- * @param {*} callback 
+ * @param {*} user
+ * @param {*} interests
+ * @param {*} callback
  */
 export function updateInterests(user, interests, callback) {
   // TODO: implement

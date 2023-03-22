@@ -35,6 +35,7 @@ var httpServer = http.createServer(app);
 function isAuthenticated(req, res, next) {
   console.log(req.session);
   if (req.session.userid) {
+    console.log("request body"+JSON.stringify(req.body ?? {body: "no body"}));
     next();
   } else {
     console.log("user not logged in");
