@@ -22,5 +22,5 @@ export default function Logout({ setLoggedIn }) {
       }
     });
   };
-  return <button onClick={handleLogout}>Logout</button>;
+  return <div style={{padding:12}}><button onClick={handleLogout}>Logout</button></div>;
 }
