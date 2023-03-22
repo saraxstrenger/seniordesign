@@ -33,6 +33,7 @@
     "json": "^11.0.0",
     "promise": "^8.3.0",
     "react-card-flip": "^1.2.0",
+    "react-icons": "^4.8.0",
     "react-slick": "^0.29.0",
     "slick-carousel": "^1.8.1"
   }

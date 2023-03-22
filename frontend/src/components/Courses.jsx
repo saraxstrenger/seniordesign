@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "./NavBar";
 import style from "./css/utils.module.css";
-import CoursesAddCoursesForm from "./CoursesAddCoursesForm";
+import CoursesAddCoursesForm from "./CoursesAddCoursesForm"; 
+import { AiFillCaretDown , AiFillCaretRight  } from "react-icons/ai";
+
 
 // const USER = 1;
 const DEPT = 1;
@@ -49,7 +51,7 @@ function Courses(props) {
       } else {
         const data = await res.json();
         console.log(data);
- 
+
         const evals = data.courses.map((evaluation) => {
           console.log(evaluation);
           const attributes = evaluation.split("_");
@@ -73,9 +75,11 @@ function Courses(props) {
       <div className={style.pageBody} style={{ ...col }}>
         <h1>Courses</h1>
 
-        <CoursesAddCoursesForm evaluations={evaluations} setEvaluations={setEvaluations} />
+        <CoursesAddCoursesForm
+          evaluations={evaluations}
+          setEvaluations={setEvaluations}
+        />
 
-        {/* <div style={col}> */}
         <div
           style={{ minWidth: "75%", marginLeft: 20, justifyContent: "left" }}
         >
@@ -85,14 +89,71 @@ function Courses(props) {
         {errorMsg ? (
           <div>{errorMsg}</div>
         ) : (
-          evaluations.map((evaluation) => {
-            return <CourseEvalCard {...evaluation} />;
-          })
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+          >
+            {evaluations.map((evaluation) => {
+              return <CourseCard {...evaluation} key={evaluation.id} />;
+            })}
+          </div>
         )}
       </div>
     </div>
   );
 }
+
+function CourseCard({ department, number, semester, year, id }) {
+  const [expand, setExpand] = useState(false);
+
+  const handleClick = () => {
+    setExpand(!expand);
+  };
+
+  return (
+    <div
+      className={style.cardColor}
+      style={{
+        width: "350px",
+        margin: "10px",
+        filter: "drop-shadow(1px 1px 2px #2B4162)",
+        borderRadius: "12px",
+        overflow: "hidden",
+      }}
+      onClick={handleClick}
+    >
+      <div style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+            {department + " " + number}
+          </div>
+          <div>{semester + " " + year}</div>
+        </div>
+      </div>
+      <div style={{ padding: "12px" }}>
+        <div style={{ marginBottom: "8px" }}>
+          <AiFillCaretDown
+            style={{
+              transform: `rotate(${expand ? "270deg" : "0deg"})`,
+              transition: "transform 0.3s ease",
+            }}
+          />
+        </div>
+        {expand && <CourseEvalCardInfo courseId={id} />}
+      </div>
+    </div>
+  );
+}
+
 
 function CourseEvalCard({ department, number, semester, year, id }) {
   const [expand, setExpand] = useState(false);
