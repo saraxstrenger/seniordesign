@@ -16,7 +16,7 @@ class EmbeddingRecommender():
         self.courses = []
         seen = set()
         # eventually we'll want to load the data from the database
-        courses_df = pd.read_csv('../data/test_courses.csv')
+        courses_df = pd.read_csv('data/test_courses.csv')
         for row in courses_df.itertuples():
             full_course_name = row[1]
             course_name= full_course_name[9:]
@@ -93,17 +93,19 @@ def main():
     rec.print_rec('Computer Vision')
     """
     
-    rec = EmbeddingRecommender()
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--interest', type=str)
     parser.add_argument('-n', '--num_recs', type=int)
     args = parser.parse_args()
     interest = args.interest
     num_recs = args.num_recs
+
+    rec = EmbeddingRecommender()
     
     res = rec.k_nearest_neighbors(interest, num_recs)
-    print(res)
-    return res
+    resStr = "\n".join(res)
+    print(resStr)
+    return resStr
     
 if __name__ == '__main__':
     main()

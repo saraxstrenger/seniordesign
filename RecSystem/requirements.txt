@@ -1,6 +1,5 @@
-numpy=1.23.5
+numpy==1.23.5
 sentence_transformers
 pandas
 surprise
 argparse
-heapq
