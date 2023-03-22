@@ -7,7 +7,8 @@ export default function LandingLoginForm({ setLoggedIn }) {
   const [errorMsg, setErrorMsg] = useState("");
   const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
-  const tryLogin = async function(setLoggedIn) {
+  const tryLogin = async function (e, setLoggedIn) {
+    e.preventDefault();
     // todo: some inflight display/loading
     let res = await fetch("/login", {
       method: "POST",
@@ -34,25 +35,28 @@ export default function LandingLoginForm({ setLoggedIn }) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      <input
-        type="text"
-        name="username"
-        placeholder="username"
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <div style={{ color: "red", fontSize: "small" }}>
-        {showError ? errorMsg : null}
-      </div>
-      <button value="Submit" onClick={() => tryLogin(setLoggedIn)}>
-        Submit
-      </button>
+    <div>
+      <form
+        onSubmit={(e) => tryLogin(e, setLoggedIn)}
+        style={{ display: "flex", flexDirection: "column" }}
+      >
+        <input
+          type="text"
+          name="username"
+          placeholder="username"
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <div style={{ color: "red", fontSize: "small" }}>
+          {showError ? errorMsg : null}
+        </div>
+        <input type="submit" value="Submit" />
+      </form>
     </div>
   );
 }

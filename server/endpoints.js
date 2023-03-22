@@ -1,5 +1,9 @@
 import * as db from "./database.js";
-import AWS from "aws-sdk";
+import { spawn } from "child_process";
+
+const COLLAB_SCRIPT = "./RecSystem/CollabFilterRecommender.py";
+const EMBEDDING_SCRIPT = "./RecSystem/EmbeddingRecommender.py";
+
 export function auth(req, res) {
   if (req.session?.userid) {
     res.sendStatus(200); // OK - user is logged in
@@ -39,13 +43,16 @@ export async function login(req, res) {
   const user = req.body.username;
   const pass = req.body.password;
   console.log("user: " + user + " pass: " + pass);
-  const errorMsg = { success: false, error: "Incorrect username or password" };
+  const errorMsg = {
+    success: false,
+    errorMsg: "Incorrect username or password",
+  };
   const password = await db.getUser(user, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
       res.json(errorMsg);
     } else {
-      if(data.Item === undefined) {
+      if (data.Item === undefined) {
         res.json(errorMsg);
         return;
       }
@@ -74,7 +81,10 @@ export async function login(req, res) {
         session.userid = user;
         res.json({ success: true });
       } else {
-        res.json({ success: false, error: "Incorrect username or password" });
+        res.json({
+          success: false,
+          errorMsg: "Incorrect username or password",
+        });
       }
     }
   });
@@ -112,7 +122,7 @@ export function signup(req, res) {
   db.createUser(params, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
-      res.json({ success: false, error: "Username already exists" });
+      res.json({ success: false, errorMsg: "Username already exists" });
     } else {
       res.json({ success: true });
     }
@@ -129,7 +139,7 @@ export function addCourse(req, res) {
     db.addCourse(session.userid, params, (err, data) => {
       if (err) {
         console.log("Error", err.stack);
-        res.json({ success: false, error: "Class already exists" });
+        res.json({ success: false, errorMsg: "Class already exists" });
       } else {
         res.json({ success: true });
       }
@@ -143,7 +153,7 @@ export function getEvaluations(req, res) {
   db.getUser(req.session.userid, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
-      res.json({ success: false, error: "unable to perform operation" });
+      res.json({ success: false, errorMsg: "unable to perform operation" });
     } else {
       const user = data.Item;
       res.json({ success: true, courses: user.courses });
@@ -155,13 +165,13 @@ export function getEvaluation(req, res) {
   const session = req.session;
   const evalId = req.params.id;
   const evalInfo = evalId.split("_");
-  const evalOwner=evalInfo[0];
+  const evalOwner = evalInfo[0];
   // only the owner of the eval should be able to access it
   if (session?.userid && evalOwner == session.userid) {
     db.getEval(id, (err, data) => {
       if (err) {
         console.log("Error", err.stack);
-        res.json({ success: false, error: "unable to perform operation" });
+        res.json({ success: false, errorMsg: "unable to perform operation" });
       } else {
         res.json({ success: true, data: data });
       }
@@ -169,4 +179,84 @@ export function getEvaluation(req, res) {
     return;
   }
   res.sendStatus(401); // Unauthorized
+}
+
+export function getReccomendations(req, res) {
+  const session = req.session;
+  if (session?.userid) {
+    const searchTerm = req.body.searchTerm;
+    if (searchTerm == undefined) {
+      console.log("get Recommendations failed");
+      res.json({ success: false, errorMsg: "unable to perform operation" });
+      return;
+    }
+    console.log(searchTerm);
+    console.log("running script");
+    // res.json({success:true, searchTerm, data:[]});
+    // return;
+    const pythonProcess = spawn("python3", [
+      "-u",
+      EMBEDDING_SCRIPT,
+      "-i",
+      searchTerm,
+      "-n",
+      "3",
+    ]);
+    // const pythonProcess = spawn("python3", [
+    //   EMBEDDING_SCRIPT,
+    //   "-i",
+    //   searchTerm,
+    //   "-n",
+    //   "3",
+    // ]);
+    let response = "";
+    let err = "";
+    pythonProcess.on("connect", (code) => {
+      console.log(`child process connected `);
+    });
+    pythonProcess.stdout.setEncoding("utf8");
+    pythonProcess.stdout.on("data", (data) => {
+      // Do something with the data returned from python script
+      response += data.toString();
+      console.log(data.toString());
+    });
+
+    pythonProcess.stderr.on("data", (data) => {
+      // Do something with the data returned from python script
+      err += data.toString();
+      console.log(data.toString());
+    });
+
+    pythonProcess.on("close", (code) => {
+      console.log(`child process close all stdio with code ${code}`);
+      console.log("response: " + response);
+    });
+    pythonProcess.on("exit", (code) => {
+      console.log(`child process finished with code ${code}`);
+      console.log("response: " + response);
+      const data = response.split("\n");
+      res.json({ success: true, searchTerm, data: data });
+    });
+  } else {
+    res.sendStatus(401); // Unauthorized
+  }
+}
+
+export function getProfile(req, res) {
+  console.log("get profile request received");
+  const session = req.session;
+  if (!session?.userid) {
+    res.sendStatus(401); // Unauthorized
+    return;
+  }
+  db.getUser(session.userid, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, errorMsg: "unable to perform operation" });
+    } else {
+      const user = data.Item;
+      delete user.password;
+      res.json({ success: true, user });
+    }
+  });
 }

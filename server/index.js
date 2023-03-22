@@ -71,7 +71,7 @@ app.get("/evaluations/:id", isAuthenticated, (req, res) => {
   routes.getEvaluations(req, res);
 });
 app.get("/evaluations", isAuthenticated, routes.getEvaluations);
-
+app.get("/profile", isAuthenticated, routes.getProfile);
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {
   res.redirect("/");
@@ -82,6 +82,7 @@ app.post("/logout", isAuthenticated, routes.logout);
 app.post("/login", express.urlencoded({ extended: false }), routes.login);
 app.post("/signup", routes.signup);
 app.post("/addCourse", isAuthenticated, routes.addCourse);
+app.post("/search", isAuthenticated, routes.getReccomendations);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
