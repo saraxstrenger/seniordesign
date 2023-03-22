@@ -28,11 +28,11 @@ body {
 }
 
 .navbar {
-  background-color: #333;
+  background-color: #55868C;
   height: 70px;
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: left;
   padding: 0 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
 }
@@ -74,3 +74,24 @@ body {
   cursor: pointer;
 }
 
+.wrapper {
+  position: fixed;
+  height: 100%;
+  width: 200px;
+  background-color: #343a40;
+  padding-top: 60px;
+}
+
+ul {
+  list-style: none;
+  display: block;
+}
+
+li {
+  margin-top: 10px;
+}
+
+.nav-link {
+  color: white !important;
+  text-decoration: none !important;
+}

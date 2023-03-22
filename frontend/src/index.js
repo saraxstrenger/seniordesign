@@ -2,30 +2,11 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
-import {
-  Navigate,
-  BrowserRouter as Router,
-  Route,
-  Routes,
-} from "react-router-dom";
-import {
-  Navigation,
-  Footer,
-  Contact,
-  Blog,
-  Posts,
-  Post,
-  Home,
-} from "./components";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Profile from "./components/Profile";
+import { Footer, Courses, Home } from "./components";
 import Landing from "./components/Landing";
-
-// only allows logged in users to pass
-const ProtectedRoute = ({ user, children }) => {
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
-  return children;
-};
+// import { Navigate } from "react-router-dom";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -33,32 +14,76 @@ root.render(<App />);
 
 function App() {
   const [loggedIn, setLoggedIn] = React.useState(false);
+  // only allows logged in users to pass
+  const AuthRedirect = ({ children }) => {
+    if (loggedIn) {
+      return children;
+    }
+    return <Landing setLoggedIn={setLoggedIn} />;
+  };
   React.useEffect(() => {
     fetch("/auth").then((res) => {
+      console.log(res);
       setLoggedIn(res.status === 200);
     });
   }, [loggedIn]);
   return (
-    <Router>
-      <Navigation />
-      <Routes>
-        <Route path="/" element={<Landing setLoggedIn={setLoggedIn} />} />
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute user={loggedIn}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              loggedIn ? (
+                // <ProtectedRoute user={loggedIn}>
+                <Home setLoggedIn={setLoggedIn} />
+              ) : (
+                // </ProtectedRoute>
+                <Landing setLoggedIn={setLoggedIn} />
+              )
+            }
+          />
+          <Route
+            path="/"
+            element={
+              loggedIn ? (
+                // <ProtectedRoute user={loggedIn}>
+                <Home setLoggedIn={setLoggedIn} />
+              ) : (
+                // </ProtectedRoute>
+                <Landing setLoggedIn={setLoggedIn} />
+              )
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              // <ProtectedRoute user={loggedIn}>
               <Home setLoggedIn={setLoggedIn} />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/blog" element={<Blog />}>
-          <Route path="" element={<Posts />} />
-          <Route path=":postSlug" element={<Post />} />
-        </Route>
-      </Routes>
-      <Footer />
-    </Router>
+              // </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/courses"
+            element={
+              <AuthRedirect>
+                <Courses setLoggedIn={setLoggedIn} />
+              </AuthRedirect>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <AuthRedirect>
+                <Profile setLoggedIn={setLoggedIn} />
+              </AuthRedirect>
+            }
+          />
+
+        </Routes>
+        <Footer />
+      </Router>
+    </div>
   );
 }
 
