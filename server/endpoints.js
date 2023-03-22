@@ -42,7 +42,7 @@ export function logout(req, res, next) {
 export async function login(req, res) {
   const user = req.body.username;
   const pass = req.body.password;
-  console.log("user: " + user + " pass: " + pass);
+  // TODO: encrypt password
   const errorMsg = {
     success: false,
     errorMsg: "Incorrect username or password",
@@ -133,7 +133,6 @@ export function addCourse(req, res) {
   console.log("add class request received");
   const params = req.body;
   const session = req.session;
-  console.log("add course");
   console.log(session.userid);
   if (session?.userid) {
     db.addCourse(session.userid, params, (err, data) => {
@@ -190,10 +189,6 @@ export function getReccomendations(req, res) {
       res.json({ success: false, errorMsg: "unable to perform operation" });
       return;
     }
-    console.log(searchTerm);
-    console.log("running script");
-    // res.json({success:true, searchTerm, data:[]});
-    // return;
     const pythonProcess = spawn("python3", [
       "-u",
       EMBEDDING_SCRIPT,
@@ -202,13 +197,7 @@ export function getReccomendations(req, res) {
       "-n",
       "3",
     ]);
-    // const pythonProcess = spawn("python3", [
-    //   EMBEDDING_SCRIPT,
-    //   "-i",
-    //   searchTerm,
-    //   "-n",
-    //   "3",
-    // ]);
+
     let response = "";
     let err = "";
     pythonProcess.on("connect", (code) => {
@@ -227,10 +216,6 @@ export function getReccomendations(req, res) {
       console.log(data.toString());
     });
 
-    pythonProcess.on("close", (code) => {
-      console.log(`child process close all stdio with code ${code}`);
-      console.log("response: " + response);
-    });
     pythonProcess.on("exit", (code) => {
       console.log(`child process finished with code ${code}`);
       console.log("response: " + response);
@@ -259,4 +244,24 @@ export function getProfile(req, res) {
       res.json({ success: true, user });
     }
   });
+}
+
+export function updateProfile(req, res) {
+  // TODO
+}
+
+export function getCourseInfo(req, res) {
+  // TODO
+}
+
+export function changePassword(req, res) {
+  // TODO
+}
+
+export function updateInterests(req, res) {
+  // TODO
+}
+
+export function getInterests(req, res) {
+  // TODO
 }

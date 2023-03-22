@@ -1,21 +1,11 @@
 import * as routes from "./endpoints.js";
-const PORT = 3001;
-
-// import path from "path" ;
 import express from "express";
-
-// const express = require("express");
-// const cookieParser = require("cookie-parser");
 import cookieParser from "cookie-parser";
-
-// const bodyParser = require("body-parser");
 import bodyParser from "body-parser";
-
 import session from "express-session";
-
 import http from "http";
-// var sessions = require("express-session");
 
+const PORT = 3001;
 /* Session Setup */
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true })); // to support URL-encoded bodies
@@ -37,8 +27,6 @@ app.use(
 app.use(cookieParser());
 var httpServer = http.createServer(app);
 
-// TODO: connect to dynamo
-const usernames = ["sara", "janavi", "suvas", "kat", "saurabh"];
 
 // Session management setup
 
@@ -72,8 +60,10 @@ app.get("/evaluations/:id", isAuthenticated, (req, res) => {
 });
 app.get("/evaluations", isAuthenticated, routes.getEvaluations);
 app.get("/profile", isAuthenticated, routes.getProfile);
+app.get("/courseInfo", isAuthenticated, routes.getCourseInfo);
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {
+  // TODO: 404 page?
   res.redirect("/");
 });
 
@@ -83,6 +73,7 @@ app.post("/login", express.urlencoded({ extended: false }), routes.login);
 app.post("/signup", routes.signup);
 app.post("/addCourse", isAuthenticated, routes.addCourse);
 app.post("/search", isAuthenticated, routes.getReccomendations);
+app.post("/updateProfile", isAuthenticated, routes.updateProfile);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
