@@ -6,7 +6,7 @@ const EMBEDDING_SCRIPT = "./RecSystem/EmbeddingRecommender.py";
 
 export function auth(req, res) {
   if (req.session?.userid) {
-    res.next; // OK - user is logged in
+    res.send(200); // OK - user is logged in
   } else {
     res.sendStatus(401); // Unauthorized
   }

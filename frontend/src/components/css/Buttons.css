@@ -1,11 +1,15 @@
 .btn {
-  border: 2px solid #ffffff;
+  border: 2px solid #55868c;
   background-color: #55868c;
   color: #ffffff;
   padding: 14px 28px;
   font-size: 16px;
   cursor: pointer;
+  border-radius: 16px;
+  padding: 4px 12px;
+  margin: 4px;
 }
+
 
 .btn:hover {
   background: #ffffff;

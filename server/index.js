@@ -39,7 +39,7 @@ function isAuthenticated(req, res, next) {
     next();
   } else {
     console.log("user not logged in");
-    res.sendStatus(401); // Unauthorized
+    res.send("/"); // Unauthorized
   }
 }
 
