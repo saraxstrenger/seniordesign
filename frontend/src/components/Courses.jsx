@@ -80,7 +80,7 @@ function Courses(props) {
         />
 
         <div
-          style={{ minWidth: "75%", marginLeft: 20, justifyContent: "left" }}
+          style={{ minWidth: "75%" }}
         >
           <h2>Your Courses:</h2>
         </div>

@@ -39,7 +39,7 @@ function isAuthenticated(req, res, next) {
     next();
   } else {
     console.log("user not logged in");
-    res.redirect("/");
+    res.sendStatus(401); // Unauthorized
   }
 }
 
@@ -61,7 +61,7 @@ app.get("/evaluations/:id", isAuthenticated, (req, res) => {
 });
 app.get("/evaluations", isAuthenticated, routes.getEvaluations);
 app.get("/profile", isAuthenticated, routes.getProfile);
-app.get("/courseInfo", isAuthenticated, routes.getCourseInfo);
+app.get("/course/:id", isAuthenticated, routes.getCourseInfo);
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {
   // TODO: 404 page?

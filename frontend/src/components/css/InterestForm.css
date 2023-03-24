@@ -1,0 +1,27 @@
+.btn {
+  border: 2px solid #ffffff;
+  background-color: #55868c;
+  color: #ffffff;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #ffffff;
+  border-color: #55868c;
+  color: #55868c;
+}
+
+.bubble {
+  border-radius: 16px;
+  padding: 8px 16px;
+  margin: 4px;
+  background: #ff8811;
+  color: #FFFFFF;
+}
+
+.bubble:hover {
+  background: #ffa347;
+  color: #ffffff;
+}

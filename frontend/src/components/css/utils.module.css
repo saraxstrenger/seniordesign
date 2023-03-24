@@ -66,7 +66,7 @@ input:checked + .slider:before {
 /* end toggle switch */
 
 .page {
-  background-color: #F7F5F3;
+  background-color: #FFFFFF;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -75,13 +75,11 @@ input:checked + .slider:before {
 }
 
 .cardColor{
-  background-color: #F7F5F3;
+  background-color: #FFFFFF;
 }
 .pageBody {
-  padding: 0px, 20px, 0px, 20px;
+  margin: 0px, 20px, 0px, 20px;
   align-items: center;
-  width: 100%;
-  
 }
 
 .column {
@@ -116,7 +114,7 @@ input:checked + .slider:before {
 }
 
 .pageBody {
-  background-color: #f2f2f2;
+  background-color: #FFFFFF;
   padding: 30px;
 }
 

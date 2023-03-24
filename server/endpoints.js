@@ -6,7 +6,7 @@ const EMBEDDING_SCRIPT = "./RecSystem/EmbeddingRecommender.py";
 
 export function auth(req, res) {
   if (req.session?.userid) {
-    res.sendStatus(200); // OK - user is logged in
+    res.next; // OK - user is logged in
   } else {
     res.sendStatus(401); // Unauthorized
   }
@@ -230,7 +230,7 @@ export function getReccomendations(req, res) {
 export function getProfile(req, res) {
   console.log("get profile request received");
   const session = req.session;
-  if (!session?.userid) {
+  if (!session?.userid || !session?.username==="") {
     res.sendStatus(401); // Unauthorized
     return;
   }
@@ -277,7 +277,16 @@ export function updateProfile(req, res) {
 }
 
 export function getCourseInfo(req, res) {
-  // TODO
+  const courseId=req.params.id;
+  db.getCourseInfo(courseId, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, errorMsg: "unable to perform operation" });
+    } else {
+      res.json({ success: true, data: data.Item });
+    }
+  });
+
 }
 
 export function changePassword(req, res) {

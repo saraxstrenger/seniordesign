@@ -4,7 +4,9 @@ import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Profile from "./components/Profile";
-import { Footer, Courses, Home } from "./components";
+import Footer from "./components/Footer";
+import Courses from "./components/Courses";
+import Home from "./components/Home";
 import Landing from "./components/Landing";
 // import { Navigate } from "react-router-dom";
 
@@ -79,7 +81,6 @@ function App() {
               </AuthRedirect>
             }
           />
-
         </Routes>
         <Footer />
       </Router>

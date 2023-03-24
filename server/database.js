@@ -129,3 +129,17 @@ export async function addCourse(
 
   ddbDocClient.transactWrite(transactionParams, callback);
 }
+
+export async function getCourseInfo(
+  courseId, callback  
+) {
+  // TODO: update to new table
+  const params = {
+    TableName: COURSE_TABLE,
+    Key: {
+      Course_Code: courseId,
+    },
+  }; 
+
+  ddbDocClient.get(params, callback);
+}

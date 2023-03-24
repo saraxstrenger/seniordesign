@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ReactCardFlip from "react-card-flip";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import CourseInfoCard from "./CourseInfoCard";
 
 const responsive = {
   superLargeDesktop: {
@@ -24,9 +25,9 @@ const responsive = {
 };
 
 const sliderCardStyle = {
-  background: "#F7F5F3",
+  background: "#FFFFFF",
   padding: "10px",
-//   border: "2px solid black",
+  //   border: "2px solid black",
   margin: "8px",
   borderRadius: "10px",
   filter: "drop-shadow(1px 1px 2px #2B4162)",
@@ -44,7 +45,7 @@ export default function CourseSlider(props) {
     }
   };
   return (
-    <Carousel responsive={responsive} itemWidth={300} >
+    <Carousel responsive={responsive} itemWidth={300}>
       {courses.map((course, index) => (
         <div key={index}>
           <ReactCardFlip
@@ -68,7 +69,9 @@ export default function CourseSlider(props) {
               onClick={() => handleCardClick(index)}
               style={sliderCardStyle} // set background style on front of card
             >
-              <div style={{ marginTop: 10 }}>Card Back</div>
+              {flippedIndex === index ? (
+                <CourseInfoCard courseId={"CIS 1600"} />
+              ) : null}
             </div>
           </ReactCardFlip>
         </div>
