@@ -3,3 +3,4 @@ sentence_transformers
 pandas
 surprise
 argparse
+boto3
