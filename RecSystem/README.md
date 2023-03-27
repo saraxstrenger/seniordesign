@@ -36,12 +36,3 @@ pythonProcess.stderr.on('data', (data) => {
   console.error(`stderr: ${data}`);
 });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-```
-=======
-```
->>>>>>> made rec system more friendly for use from node
-=======
-```
->>>>>>> Update README.md
