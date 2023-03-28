@@ -75,7 +75,7 @@ app.post("/signup", routes.signup);
 app.post("/addCourse", isAuthenticated, routes.addCourse);
 app.post("/search", isAuthenticated, routes.getReccomendations);
 app.post("/updateProfile", isAuthenticated, routes.updateProfile);
-
+app.post("/updateInterests", isAuthenticated, routes.updateInterests);
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });

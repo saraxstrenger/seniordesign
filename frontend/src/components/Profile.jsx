@@ -55,19 +55,7 @@ export default function Profile(props) {
                   alignItems: "center",
                 }}
               >
-                <ProfileInterestsForm
-                  interests={[
-                    "interest 1",
-                    "interest 2",
-                    "interest 3",
-                    "A different, very long interest",
-                    "Math",
-                    "French and Francophone Studies",
-                    "Consulting",
-                    "Investment Banking",
-                    "Gender Studies",
-                  ]}
-                />
+                <ProfileInterestsForm interests={profileData.interests} />
               </div>
               <h3>Account Settings:</h3>
               <ProfileUpdateForm

@@ -58,27 +58,7 @@ export async function login(req, res) {
       }
       const password = data.Item.password;
       if (password !== null && password === pass) {
-        // req.session.regenerate(function (err) {
-        //   if (err) {
-        //     console.log("error during cookie generation");
-        //     next(err);
-        //   }
-        //   // store user information in session, typically a user id
-        //   req.session.user = req.body.user;
-
-        //   // save the session before redirection to ensure page
-        //   // load does not happen before session is saved
-        //   req.session.save(function (err) {
-        //     console.log("session saved");
-        //     if (err) {
-        //       console.log("error saving session");
-        //       return next(err);
-        //     }
-        //     res.json({ success: true });
-        //   });
-        // });
-        const session = req.session;
-        session.userid = user;
+        req.session = setCookie(req.session, user);
         res.json({ success: true });
       } else {
         res.json({
@@ -90,6 +70,10 @@ export async function login(req, res) {
   });
 }
 
+function setCookie(session, username) {
+  session.userid = username;
+  return session;
+}
 function isEmptyStr(str) {
   return !str || str.length == 0;
 }
@@ -124,6 +108,7 @@ export function signup(req, res) {
       console.log("Error", err.stack);
       res.json({ success: false, errorMsg: "Username already exists" });
     } else {
+      setCookie(req.session, params.username);
       res.json({ success: true });
     }
   });
@@ -230,7 +215,7 @@ export function getReccomendations(req, res) {
 export function getProfile(req, res) {
   console.log("get profile request received");
   const session = req.session;
-  if (!session?.userid || !session?.username==="") {
+  if (!session?.userid || !session?.username === "") {
     res.sendStatus(401); // Unauthorized
     return;
   }
@@ -277,7 +262,7 @@ export function updateProfile(req, res) {
 }
 
 export function getCourseInfo(req, res) {
-  const courseId=req.params.id;
+  const courseId = req.params.id;
   db.getCourseInfo(courseId, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
@@ -286,7 +271,6 @@ export function getCourseInfo(req, res) {
       res.json({ success: true, data: data.Item });
     }
   });
-
 }
 
 export function changePassword(req, res) {
@@ -294,7 +278,24 @@ export function changePassword(req, res) {
 }
 
 export function updateInterests(req, res) {
-  // TODO
+  if (!req.session?.userid) {
+    res.sendStatus(401); // Unauthorized
+    return;
+  }
+  const newInterests = req.body?.interests;
+
+  if (newInterests === undefined) {
+    res.json({ success: false, errorMsg: "unable to perform operation" });
+    return;
+  }
+  db.updateInterests(req.session.userid, newInterests, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, errorMsg: "unable to perform operation" });
+    } else {
+      res.json({ success: true });
+    }
+  });
 }
 
 export function getInterests(req, res) {

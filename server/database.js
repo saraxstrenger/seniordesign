@@ -22,6 +22,7 @@ export async function createUser(
       entranceYear,
       major,
       courses: [],
+      interests: ddbDocClient.createSet([""]),
     },
     ConditionExpression: "attribute_not_exists(username)",
   };
@@ -76,7 +77,20 @@ export function updateUser(
  * @param {*} callback
  */
 export function updateInterests(user, interests, callback) {
-  // TODO: implement
+  const params = {
+    TableName: USER_TABLE,
+    Key: {
+      username: user,
+    },
+    UpdateExpression: "SET #interests = :interests",
+    ExpressionAttributeNames: {
+      "#interests": "interests",
+    },
+    ExpressionAttributeValues: {
+      ":interests": interests,
+    },
+  };
+  ddbDocClient.update(params, callback);
 }
 
 export function updatePassword({ oldPassword, newPassword }, callback) {
@@ -130,16 +144,14 @@ export async function addCourse(
   ddbDocClient.transactWrite(transactionParams, callback);
 }
 
-export async function getCourseInfo(
-  courseId, callback  
-) {
+export async function getCourseInfo(courseId, callback) {
   // TODO: update to new table
   const params = {
     TableName: COURSE_TABLE,
     Key: {
       Course_Code: courseId,
     },
-  }; 
+  };
 
   ddbDocClient.get(params, callback);
 }

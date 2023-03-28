@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./css/Buttons.css";
 
 const row = {
@@ -9,13 +9,42 @@ const row = {
 
 export default function ProfileInterestsForm(props) {
   const { interests } = props;
-  const [interestsSet, setInterestsSet] = useState(new Set(interests));
+  const [interestsSet, setInterestsSet] = useState(new Set(interests ?? []));
   const [errorMsg, setErrorMsg] = useState("");
 
-  const removeInterest = (interest) => {
+  useEffect(() => {
+    setInterestsSet(new Set(interests ?? []));
+  }, [interests]);
+
+  const removeInterest = (removedInterest) => {
     const newInterests = new Set(interestsSet);
-    newInterests.delete(interest);
-    setInterestsSet(newInterests);
+    newInterests.delete(removedInterest);
+
+    fetch("/updateInterests", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        interests: Array.from(newInterests),
+      }),
+    })
+      .then((res) => {
+        if (res.status !== 200) {
+          setErrorMsg("Error updating interests");
+          return null;
+        } else {
+          return res.json();
+        }
+      })
+      .then((resJson) => {
+        if (resJson === null || resJson.success === false) {
+          setErrorMsg(resJson?.errorMsg ?? "Unable to removee interest.");
+        } else {
+          setErrorMsg("");
+          setInterestsSet(newInterests);
+        }
+      });
   };
 
   const addInterest = (e) => {
@@ -25,11 +54,37 @@ export default function ProfileInterestsForm(props) {
       setErrorMsg("Interest already exists!");
       return;
     }
+
     setErrorMsg("");
     const newInterests = new Set(interestsSet);
     newInterests.add(newInterest);
-    setInterestsSet(newInterests);
-    //TODO
+
+    fetch("/updateInterests", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        interests: Array.from(newInterests),
+      }),
+    })
+      .then((res) => {
+        if (res.status !== 200) {
+          setErrorMsg("Error updating interests");
+          return null;
+        } else {
+          return res.json();
+        }
+      })
+      .then((resJson) => {
+        if (resJson === null || resJson.success === false) {
+          setErrorMsg(resJson?.errorMsg ?? "Unable to add interest.");
+        } else {
+          setErrorMsg("");
+          setInterestsSet(newInterests);
+          e.target.newInterest.value = "";
+        }
+      });
   };
 
   return (
@@ -43,16 +98,24 @@ export default function ProfileInterestsForm(props) {
           padding: 12,
         }}
       >
-        {Array.from(interestsSet).map((interest, index) => {
-          return (
-            <div key={index}>
-              <InterestBubble
-                interest={interest}
-                removeInterest={removeInterest}
-              />
-            </div>
-          );
-        })}
+        {interestsSet.size > 0 ? (
+          Array.from(interestsSet).map((interest, index) => {
+            return (
+              <div key={index}>
+                <InterestBubble
+                  interest={interest}
+                  removeInterest={() => {
+                    removeInterest(interest);
+                  }}
+                />
+              </div>
+            );
+          })
+        ) : (
+          // <div style={{ padding: 12 }}>
+            <h4 style={{margin:8}}>No interests added yet!</h4>
+          // {/* // </div> */}
+        )}
       </div>
       <div style={{ dropShadow: "1px 1px 2px rgba(0, 0, 0, 0.25)" }}>
         <AddInterestForm addInterest={addInterest} />
@@ -76,7 +139,6 @@ function InterestBubble(props) {
           padding: "0px 0px 0px 16px",
         }}
         onClick={() => {
-          alert("Are you sure you want to remove this interest?");
           removeInterest(interest);
         }}
       >
