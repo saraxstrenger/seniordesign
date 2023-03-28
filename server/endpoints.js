@@ -137,7 +137,7 @@ export function getEvaluations(req, res) {
   db.getUser(req.session.userid, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
-      res.json({ success: false, errorMsg: "unable to perform operation" });
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
     } else {
       const user = data.Item;
       res.json({ success: true, courses: user.courses });
@@ -155,7 +155,7 @@ export function getEvaluation(req, res) {
     db.getEval(id, (err, data) => {
       if (err) {
         console.log("Error", err.stack);
-        res.json({ success: false, errorMsg: "unable to perform operation" });
+        res.json({ success: false, errorMsg: "Unable to perform operation." });
       } else {
         res.json({ success: true, data: data });
       }
@@ -171,7 +171,7 @@ export function getReccomendations(req, res) {
     const searchTerm = req.body.searchTerm;
     if (searchTerm == undefined) {
       console.log("get Recommendations failed");
-      res.json({ success: false, errorMsg: "unable to perform operation" });
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
       return;
     }
     const pythonProcess = spawn("python3", [
@@ -222,7 +222,7 @@ export function getProfile(req, res) {
   db.getUser(session.userid, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
-      res.json({ success: false, errorMsg: "unable to perform operation" });
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
     } else {
       const user = data.Item;
       delete user.password;
@@ -254,7 +254,7 @@ export function updateProfile(req, res) {
   db.updateUser(req.session.userid, params, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
-      res.json({ success: false, errorMsg: "unable to perform operation" });
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
     } else {
       res.json({ success: true });
     }
@@ -266,7 +266,7 @@ export function getCourseInfo(req, res) {
   db.getCourseInfo(courseId, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
-      res.json({ success: false, errorMsg: "unable to perform operation" });
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
     } else {
       res.json({ success: true, data: data.Item });
     }
@@ -285,19 +285,34 @@ export function updateInterests(req, res) {
   const newInterests = req.body?.interests;
 
   if (newInterests === undefined) {
-    res.json({ success: false, errorMsg: "unable to perform operation" });
+    res.json({ success: false, errorMsg: "Unable to perform operation." });
     return;
   }
   db.updateInterests(req.session.userid, newInterests, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
-      res.json({ success: false, errorMsg: "unable to perform operation" });
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
     } else {
       res.json({ success: true });
     }
   });
 }
 
-export function getInterests(req, res) {
-  // TODO
+export function getHome(req, res) {
+  const session = req.session;
+  if (!session?.userid) {
+    res.sendStatus(401); // Unauthorized
+    return;
+  }
+  db.getUser(session.userid, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
+    } else {
+      const interests = data.Item.interests ?? [];
+      const courses = data.Item.courses;
+      // Todo: add more info?
+      res.json({ success: true, interests, courses });
+    }
+  });
 }

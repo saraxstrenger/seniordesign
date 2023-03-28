@@ -41,7 +41,6 @@ export default function LandingSignupForm(props) {
   };
 
   const trySignup = async function(e) {
-    console.log(e);
     e.preventDefault();
 
     // todo: some inflight display/loading

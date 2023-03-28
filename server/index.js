@@ -44,14 +44,6 @@ function isAuthenticated(req, res, next) {
 }
 
 // GET REQUESTS
-app.get("/home", isAuthenticated, (req, res) => {
-  console.log("home request received");
-  if (req.session?.userid) {
-    res.json({ message: "You are logged in!" });
-  } else {
-    res.json({ message: "You are not logged in!" });
-  }
-});
 
 app.get("/auth", routes.auth);
 
@@ -62,6 +54,7 @@ app.get("/evaluations/:id", isAuthenticated, (req, res) => {
 app.get("/evaluations", isAuthenticated, routes.getEvaluations);
 app.get("/profile", isAuthenticated, routes.getProfile);
 app.get("/course/:id", isAuthenticated, routes.getCourseInfo);
+app.get("/home", isAuthenticated, routes.getHome);
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {
   // TODO: 404 page?

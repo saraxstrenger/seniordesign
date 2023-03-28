@@ -25,63 +25,70 @@ function App() {
   };
   React.useEffect(() => {
     fetch("/auth").then((res) => {
-      console.log(res);
       setLoggedIn(res.status === 200);
     });
   }, [loggedIn]);
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+      }}
+    >
       <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              loggedIn ? (
+        <div
+          style={{ flexGrow: "1", display: "flex", flexDirection: "column" }}
+        >
+          <Routes>
+            <Route
+              path="/"
+              element={
+                loggedIn ? (
+                  <Home setLoggedIn={setLoggedIn} />
+                ) : (
+                  <Landing setLoggedIn={setLoggedIn} />
+                )
+              }
+            />
+            <Route
+              path="/"
+              element={
+                loggedIn ? (
+                  // <ProtectedRoute user={loggedIn}>
+                  <Home setLoggedIn={setLoggedIn} />
+                ) : (
+                  // </ProtectedRoute>
+                  <Landing setLoggedIn={setLoggedIn} />
+                )
+              }
+            />
+            <Route
+              path="/home"
+              element={
                 // <ProtectedRoute user={loggedIn}>
                 <Home setLoggedIn={setLoggedIn} />
-              ) : (
                 // </ProtectedRoute>
-                <Landing setLoggedIn={setLoggedIn} />
-              )
-            }
-          />
-          <Route
-            path="/"
-            element={
-              loggedIn ? (
-                // <ProtectedRoute user={loggedIn}>
-                <Home setLoggedIn={setLoggedIn} />
-              ) : (
-                // </ProtectedRoute>
-                <Landing setLoggedIn={setLoggedIn} />
-              )
-            }
-          />
-          <Route
-            path="/home"
-            element={
-              // <ProtectedRoute user={loggedIn}>
-              <Home setLoggedIn={setLoggedIn} />
-              // </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/courses"
-            element={
-              <AuthRedirect>
-                <Courses setLoggedIn={setLoggedIn} />
-              </AuthRedirect>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <AuthRedirect>
-                <Profile setLoggedIn={setLoggedIn} />
-              </AuthRedirect>
-            }
-          />
-        </Routes>
+              }
+            />
+            <Route
+              path="/courses"
+              element={
+                <AuthRedirect>
+                  <Courses setLoggedIn={setLoggedIn} />
+                </AuthRedirect>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <AuthRedirect>
+                  <Profile setLoggedIn={setLoggedIn} />
+                </AuthRedirect>
+              }
+            />
+          </Routes>
+        </div>
         <Footer />
       </Router>
     </div>

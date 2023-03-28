@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import Logout from "./Logout";
 import NavBar from "./NavBar";
 import styles from "./css/utils.module.css";
-
-
+import { useNavigate } from "react-router-dom";
 import LoadingDots from "./LoadingDots";
 import CourseSlider from "./CourseSlider";
 
@@ -12,8 +11,13 @@ const row = {
   justifyContent: "center",
   flexDirection: "row",
 };
+const col = {
+  display: "flex",
+  justifyContent: "flex-start",
+  flexDirection: "column",
+  alignItems: "stretch",
+};
 const sliderTitleStyle = {
-  margin: "20px, 0px",
   fontWeight: "bold",
   fontSize: "1.5rem",
   marginBottom: "1rem",
@@ -21,16 +25,36 @@ const sliderTitleStyle = {
 
 function Home(props) {
   const [searchResult, setSearchResult] = useState({});
+  const [interests, setInterests] = useState([]);
+  const [errorMsg, setErrorMsg] = useState("");
   const [inFlight, setInFlight] = useState(false);
+  const navigate = useNavigate();
   React.useEffect(() => {
-    fetch("/auth", {
+    fetch("/home", {
       method: "GET",
       headers: {
         "Content-type": "application/json",
       },
-    }).then((res) => {
-      props.setLoggedIn(res.status === 200);
-    });
+    })
+      .then((res) => {
+        props.setLoggedIn(res.status !== 401);
+
+        if (res.status !== 200) {
+          return null;
+        }
+        return res.json();
+      })
+      .then((resJson) => {
+        console.log(resJson);
+        if (resJson === null || resJson.success === false) {
+          setErrorMsg(
+            resJson?.errorMsg ||
+              "Unable to load course recommendations at this time."
+          );
+        } else {
+          setInterests(resJson.interests);
+        }
+      });
   }, [props]);
 
   const trySearch = async function (e) {
@@ -73,13 +97,13 @@ function Home(props) {
       <NavBar />
       <div
         className={styles.page}
-        style={{  height: 500, overflow: "visible" }}
+        style={{ alignItems: "center", overflow: "visible" }}
       >
         <div style={{ ...row, alignItems: "center" }}>
           <h1 className="font-weight-light">Home page</h1>
           <Logout {...props} />
         </div>
-        <form style={row} onSubmit={trySearch}>
+        <form style={{ ...row, width: "100%" }} onSubmit={trySearch}>
           <input
             type="text"
             placeholder="Search"
@@ -91,14 +115,51 @@ function Home(props) {
         {inFlight ? <LoadingDots /> : null}
         {JSON.stringify(searchResult)}
 
-        <div style={{ overflow: "visible" }}>
-          <div style={sliderTitleStyle}>Recommended for you</div>
-          <CourseSlider courses={courses} />
-        </div>
-        <div style={{ overflow: "visible" }}>
-          <div style={sliderTitleStyle}>Fun Electives</div>
-          <CourseSlider courses={courses} />
-        </div>
+        {interests.length > 0 ? (
+          <div style={{width: "100%"}}>
+            {interests.map((interest) => {
+              return (
+                <div style={{ overflowX: "visible", padding: 24 }}>
+                  <h2 style={{margin: 0}}>{interest}</h2>
+                  <CourseSlider courses={courses} />
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              flexGrow: 1,
+              width: "70%",
+            }}
+          >
+            {errorMsg ? (
+              errorMsg
+            ) : (
+              <center>
+                <h3>
+                  No interests added! Visit the{" "}
+                  <a
+                    onClick={() => {
+                      navigate("/profile");
+                    }}
+                    style={{
+                      textDecoration: "underline",
+                      color: "#55868C",
+                      cursor: "pointer",
+                    }}
+                  >
+                    profile page
+                  </a>{" "}
+                  to add interests and get personalized recommendations.
+                </h3>
+              </center>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
