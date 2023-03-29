@@ -21,9 +21,9 @@ python3 CollabFilterRecommender.py -s s10 -c "CIS 2400" -p difficulty
 You can toggle -p interest to predict interest instead.
 
 ```
-python3 Database.py -u sara -i "Distributed Systems" -n 5
+python3 Database.py -u saurabh -i "Natural Language Processing" -n 5
 ```
-^This will upload to the DynamoDB users table. It will add 5 course recs for user sara for an interest Dsitributed Systems.
+^This will upload to the DynamoDB users table. It will add 5 course recs for user saurabh for an interest Natural Language Processing.
 
 You can run python scripts from the Node app as follows:
 ```javascript
