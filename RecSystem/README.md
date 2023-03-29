@@ -3,7 +3,7 @@ Before using this, make sure you run
 ```
 pip3 install -r requirements.txt
 ```
-This is the "brain" of the reccomendations. Here you'll find three scipts for creating reccomendations:
+This is the "brain" of the reccomendations. Here you'll find three scipts for creating recommendations:
 1. EmbeddingRecommender.py
 2. CollabFilterRecommender.py
 3. Database.py
