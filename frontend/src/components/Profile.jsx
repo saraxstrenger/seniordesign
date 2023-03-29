@@ -39,9 +39,19 @@ export default function Profile(props) {
   return (
     <div>
       <NavBar />
-      <div className={styles.page}>
-        <div style={{ ...col, margin: "0px 20px" }}>
-          <h1>Profile page</h1>
+      <div
+        className={styles.page}
+        style={{ alignItems: "center" }}
+      >
+        <div
+          style={{
+            ...col,
+            // background: "green",
+            margin: "0px 20px",
+            width: "75%",
+          }}
+        >
+          <h1>Profile</h1>
 
           {errorMsg ? (
             errorMsg

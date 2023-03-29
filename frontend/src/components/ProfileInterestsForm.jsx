@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./css/Buttons.css";
 
-const row = {
-  display: "flex",
-  justifyContent: "center",
-  flexDirection: "row",
-};
+// const row = {
+//   display: "flex",
+//   justifyContent: "center",
+//   flexDirection: "row",
+// };
 
 export default function ProfileInterestsForm(props) {
   const { interests } = props;
@@ -39,7 +39,7 @@ export default function ProfileInterestsForm(props) {
       })
       .then((resJson) => {
         if (resJson === null || resJson.success === false) {
-          setErrorMsg(resJson?.errorMsg ?? "Unable to removee interest.");
+          setErrorMsg(resJson?.errorMsg ?? "Unable to remove interest.");
         } else {
           setErrorMsg("");
           setInterestsSet(newInterests);
@@ -94,7 +94,6 @@ export default function ProfileInterestsForm(props) {
           display: "flex",
           justifyContent: "center",
           flexWrap: "wrap",
-          width: "75%",
           padding: 12,
         }}
       >
@@ -136,7 +135,8 @@ function InterestBubble(props) {
           background: "inherit",
           border: "none",
           color: "inherit",
-          padding: "0px 0px 0px 16px",
+          padding: "0px 0px 0px 8px",
+          cursor: "pointer",
         }}
         onClick={() => {
           removeInterest(interest);

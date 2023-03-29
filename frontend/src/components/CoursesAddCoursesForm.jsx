@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 import styles from "./css/utils.module.css";
+// import Highcharts from "highcharts";
+// import HighchartsReact from "highcharts-react-official";
+// import HC_more from "highcharts/highcharts-more"; //module
+import WorkloadChart from "./WorkloadChart";
+// HC_more(Highcharts); //init module
+
+// require("highcharts/modules/draggable-points")(Highcharts);
+// require("highcharts/modules/accessibility")(Highcharts);
 
 const col = {
   display: "flex",
@@ -10,47 +18,35 @@ const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
 export default function CoursesAddCoursesForm(props) {
   const { evaluations, setEvaluations } = props;
-  const [department, setDepartment] = useState("");
-  const [number, setNumber] = useState("");
-  const [semester, setSemester] = useState("");
-  const [year, setYear] = useState("");
-  const [difficulty, setDifficulty] = useState(-1);
-  const [interest, setInterest] = useState(-1);
   const [errorMsg, setErrorMsg] = useState("");
-
+  const [workloadData, setWorkloadData] = useState([2, 2, 2, 2]);
   const [addCourse, setAddCourse] = useState(false);
-
+  console.log(workloadData);
   const resetForm = function () {
-    setDepartment("");
-    setNumber("");
-    setSemester("");
-    setYear("");
-    setDifficulty(-1);
-    setInterest(-1);
+    setWorkloadData([2, 2, 2, 2]);
     setErrorMsg("");
   };
   const tryAddCourses = async function (e) {
     e.preventDefault();
+    const courseData = {
+      department: e.target.department.value,
+      number: e.target.number.value,
+      semester: e.target.semester.value,
+      year: e.target.year.value,
+      difficulty: parseInt(e.target.difficulty.value),
+      interest: parseInt(e.target.interest.value),
+    };
     let res = await fetch("/addCourse", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify({
-        // use cookie to get user
-        department,
-        number,
-        semester,
-        year,
-        difficulty,
-        interest,
-      }),
+      body: JSON.stringify(courseData),
     });
     let resJson = await res.json();
-    console.log("resjson: ", resJson);
     if (resJson.success === true) {
       const updated = evaluations.concat([
-        { department, number, semester, year, difficulty, interest },
+       courseData
       ]);
       setEvaluations(updated);
       setAddCourse(false);
@@ -81,8 +77,7 @@ export default function CoursesAddCoursesForm(props) {
                 name="department"
                 id="department"
                 type="text"
-                onChange={(e) => setDepartment(e.target.value)}
-                value={department}
+
                 placeholder={"Course Dept (e.g. CIS)"}
                 required
               />
@@ -92,8 +87,7 @@ export default function CoursesAddCoursesForm(props) {
                 name="number"
                 id="number"
                 type="number"
-                onChange={(e) => setNumber(e.target.value)}
-                value={number}
+
                 placeholder={"Course # (e.g. 1600)"}
                 min={1}
                 required
@@ -103,7 +97,6 @@ export default function CoursesAddCoursesForm(props) {
                 className={styles.inputWrapping}
                 name="semester"
                 id="semester"
-                onChange={(e) => setSemester(e.target.value)}
                 required
               >
                 <option label="-"></option>
@@ -120,52 +113,70 @@ export default function CoursesAddCoursesForm(props) {
                 step="1"
                 min={2015}
                 max={new Date().getFullYear()}
-                onChange={(e) => setYear(e.target.value)}
-                value={year}
+
                 placeholder={"Year Taken"}
                 required
               />
             </div>
             <div style={row}>
               <div>
-                <label className={styles.inputWrapping} for="interest">
+                <label className={styles.inputWrapping}>
                   Interest:
+                  <select
+                    className={styles.inputWrapping}
+                    name="interest"
+                    id="interest"
+                    type="number"
+                    required
+                  >
+                    <option label="-"></option>
+                    <option value={1} > 1</option>
+                    <option value={2}>2</option>
+                    <option value={3}>3</option>
+                    <option value={4}>4</option>
+                    <option value={5}>5</option>
+                  </select>
                 </label>
-
-                <select
-                  className={styles.inputWrapping}
-                  name="interest"
-                  id="interest"
-                  onChange={(e) => setInterest(e.target.value)}
-                  required
-                >
-                  <option label="-"></option>
-                  <option value={1}>1</option>
-                  <option value={2}>2</option>
-                  <option value={3}>3</option>
-                  <option value={4}>4</option>
-                  <option value={5}>5</option>
-                </select>
               </div>
               <div>
-                <label className={styles.inputWrapping} for="difficulty">
+                <label className={styles.inputWrapping}>
                   Difficulty:
+                  <select
+                    className={styles.inputWrapping}
+                    name="difficulty"
+                    type="number"
+                    required
+                  >
+                    <option label="-"></option>
+                    <option value={1}>1</option>
+                    <option value={2}>2</option>
+                    <option value={3}>3</option>
+                    <option value={4}>4</option>
+                    <option value={5}>5</option>
+                  </select>
                 </label>
-                <select
-                  className={styles.inputWrapping}
-                  name="difficulty"
-                  onChange={(e) => setDifficulty(e.target.value)}
-                  required
-                >
-                  <option unselectable label="-"></option>
-                  <option value={1}>1</option>
-                  <option value={2}>2</option>
-                  <option value={3}>3</option>
-                  <option value={4}>4</option>
-                  <option value={5}>5</option>
-                </select>
               </div>
             </div>
+            <div style={{ ...row, height: 350 }}>
+              <WorkloadChart
+                data={workloadData}
+                updateData={setWorkloadData}
+                onDrop={function (e) {
+                  // round to one decimal place
+                  const y = Math.round(e.target.options.y * 10) / 10;
+                  // update event to reflect new rounded y value
+                  e.target.options.y = y;
+                  const x = e.target.index;
+                  setWorkloadData((oldData) => {
+                    oldData[x] = y;
+                    return oldData;
+                  });
+                  // return data so chart updates
+                  return workloadData;
+                }}
+              />
+            </div>
+
             {errorMsg !== "" ? (
               <center>
                 <div style={{ color: "red", fontSize: "small" }}>
@@ -174,9 +185,6 @@ export default function CoursesAddCoursesForm(props) {
               </center>
             ) : null}
             <div style={{ ...row, justifyContent: "center" }}>
-              {/* <button className={styles.inputWrapping} type="button">
-          Add Another Course
-          </button> */}
               <input
                 className={styles.inputWrapping}
                 type="submit"
@@ -198,3 +206,23 @@ export default function CoursesAddCoursesForm(props) {
     </div>
   );
 }
+
+// function CoursesWorkloadChart(props) {
+//   const { data, updateData } = props;
+
+//   const afterRender = (chart) => {
+//     console.log("afterRender");
+//     console.log(chart.series[0].data);
+//   };
+//   return (
+//     <div id="container">
+//       <HighchartsReact
+//         highcharts={Highcharts}
+//         options={config}
+//         callback={afterRender}
+//         // updateArgs={[true]}
+//         allowChartUpdate={true}
+//       />
+//     </div>
+//   );
+// }

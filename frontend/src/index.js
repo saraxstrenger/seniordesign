@@ -55,10 +55,8 @@ function App() {
               path="/"
               element={
                 loggedIn ? (
-                  // <ProtectedRoute user={loggedIn}>
                   <Home setLoggedIn={setLoggedIn} />
                 ) : (
-                  // </ProtectedRoute>
                   <Landing setLoggedIn={setLoggedIn} />
                 )
               }
@@ -66,9 +64,7 @@ function App() {
             <Route
               path="/home"
               element={
-                // <ProtectedRoute user={loggedIn}>
                 <Home setLoggedIn={setLoggedIn} />
-                // </ProtectedRoute>
               }
             />
             <Route

@@ -21,8 +21,8 @@ export async function createUser(
       email,
       entranceYear,
       major,
-      courses: [],
-      interests: ddbDocClient.createSet([""]),
+      // courses: ddbDocClient.createSet([]),
+      // interests: ddbDocClient.createSet([]),
     },
     ConditionExpression: "attribute_not_exists(username)",
   };
