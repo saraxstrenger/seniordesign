@@ -117,7 +117,6 @@ function CourseEvalCard({ department, number, semester, year, id }) {
       className={style.cardColor}
       style={{
         width: "350px",
-        height: "fit-content",
         margin: "10px",
         filter: "drop-shadow(1px 1px 2px #2B4162)",
         borderRadius: "12px",
@@ -148,11 +147,14 @@ function CourseEvalCard({ department, number, semester, year, id }) {
             }}
           />
         </div>
-        {expand && <CourseEvalCardInfo courseId={id} />}
+        <div style={{ height: expand ? "auto" : "0", overflow: "hidden" }}>
+          <CourseEvalCardInfo courseId={id} />
+        </div>
       </div>
     </div>
   );
 }
+
 
 function CourseEvalCardInfo({ courseId }) {
   //TODO: add info
