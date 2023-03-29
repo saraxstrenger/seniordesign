@@ -12,14 +12,14 @@ class EmbeddingRecommender():
     def __init__(self):
         # Load the embedding model
         print('Initilaizing...')
-        self.model = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1')
+        self.model = SentenceTransformer('all-MiniLM-L6-v2')
         # stored as (course_name, course_embedding) pairs
         self.courses = []
         seen = set()
         print('Model loaded! Emebdding courses...')
         
         # eventually we'll want to load the data from the database
-        courses_df = pd.read_csv('data/test_courses.csv')
+        courses_df = pd.read_csv('../data/test_courses.csv')
         for row in courses_df.itertuples():
             full_course_name = row[1]
             course_name= full_course_name[9:]
@@ -80,27 +80,6 @@ class EmbeddingRecommender():
     
     
 def main():
-    """
-    play_course_names = [ 'Software Engineering', 'Introduction to Acting', 'Creative Writing: Extreme Noticing', 
-                            'Computer Architecture', 'Data Structures and Algorithms', 'Dynamic Systems',
-                            'Machine Learning', 'Deep Learning', 'Artificial Intelligence',
-                            'Introduction to Drawing', 'Advanced Drawing', 'US History 1950 to Present',
-                            'Programming and Problem Solving', 'Computer Graphics', 'Human Systems Engineering',
-                            'Architecture 101: Building Buidlings', 'How to Make Bridges', 'Mechanics', 'Electromagnetism',
-                            'Intro to Product Design', 'User Experience Research', 'Woodworking 101',
-                            'How to make things']
-    rec.print_rec('Software Engineer')
-    rec.print_rec('Painter')
-    rec.print_rec('Animator')
-    rec.print_rec('Front End Developer')
-    rec.print_rec('Back End Developer')
-    rec.print_rec('Data Scientist')
-    rec.print_rec('UX designer')
-    rec.print_rec('Product Manager')
-    rec.print_rec('Machine Learning Engineer')
-    rec.print_rec('Natural Language Processing')
-    rec.print_rec('Computer Vision')
-    """
     rec = EmbeddingRecommender()
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--interest', type=str)

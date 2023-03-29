@@ -3,9 +3,10 @@ Before using this, make sure you run
 ```
 pip3 install -r requirements.txt
 ```
-This is the "brain" of the reccomendations. Here you'll find two scipts for creating reccomendations:
+This is the "brain" of the reccomendations. Here you'll find three scipts for creating reccomendations:
 1. EmbeddingRecommender.py
 2. CollabFilterRecommender.py
+3. Database.py
 
 You can call them as so
 ```
@@ -19,6 +20,10 @@ python3 CollabFilterRecommender.py -s s10 -c "CIS 2400" -p difficulty
 ^This will return the predicted difficulty for student "s10" for the coures CIS 2400. 
 You can toggle -p interest to predict interest instead.
 
+```
+python3 Database.py -u sara -i "Distributed Systems" -n 5
+```
+^This will upload to the DynamoDB users table. It will add 5 course recs for user sara for an interest Dsitributed Systems.
 
 You can run python scripts from the Node app as follows:
 ```javascript
