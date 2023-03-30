@@ -11,12 +11,10 @@ For best results, don't include course codes (e.g. do "intro to computer archite
 class EmbeddingRecommender():
     def __init__(self):
         # Load the embedding model
-        print('Initilaizing...')
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
         # stored as (course_name, course_embedding) pairs
         self.courses = []
         seen = set()
-        print('Model loaded! Emebdding courses...')
         
         # eventually we'll want to load the data from the database
         courses_df = pd.read_csv('../data/test_courses.csv')
@@ -28,8 +26,6 @@ class EmbeddingRecommender():
             seen.add(course_name)
             course_description = row[-1]
             self.courses.append((full_course_name, self.embed_course(course_name, course_description)))
-        
-        print('Done emebdding courses!')
     
     def embed_course(self, course_name, course_description):
         course_name_embedding = self.embed(course_name)

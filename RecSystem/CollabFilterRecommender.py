@@ -38,8 +38,8 @@ class CollabFilterRecommender():
     
     sim_options = {'name': 'cosine', 'user_based': False}
     
-    diff_algo = KNNWithMeans(sim_options=sim_options)
-    interest_algo = KNNWithMeans(sim_options=sim_options)
+    diff_algo = KNNWithMeans(sim_options=sim_options, verbose=False)
+    interest_algo = KNNWithMeans(sim_options=sim_options, verbose=False)
     
     diff_algo.fit(diff_data.build_full_trainset())
     interest_algo.fit(interest_data.build_full_trainset())
@@ -79,10 +79,10 @@ def main():
   elif predict == 'interest':
     res = rec.predict_interest(student, course)
   else:
-    res = 'prediction arg needs to be "difficulty" or "interest"'
+    raise ValueError('prediction arg needs to be "difficulty" or "interest"')
     
   if res is None:
-    return 'Error in getting prediction'
+    raise ValueError('Error in getting prediction')
   
   print(res)
   return res
