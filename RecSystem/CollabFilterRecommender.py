@@ -72,7 +72,7 @@ def main():
   args = parser.parse_args()
   student = args.student
   course = args.course
-  predict = args.predict
+  predict = args.prediction_type
   
   if predict == 'difficulty':
     res = rec.predict_difficulty(student, course)
