@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import styles from "./css/utils.module.css";
-// import Highcharts from "highcharts";
-// import HighchartsReact from "highcharts-react-official";
-// import HC_more from "highcharts/highcharts-more"; //module
 import WorkloadChart from "./WorkloadChart";
-// HC_more(Highcharts); //init module
-
-// require("highcharts/modules/draggable-points")(Highcharts);
-// require("highcharts/modules/accessibility")(Highcharts);
+import "./css/Forms.css";
 
 const col = {
   display: "flex",
@@ -16,16 +10,39 @@ const col = {
 };
 const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
+const inputFormat = {
+  border: "1px solid black",
+  borderRadius: "10px",
+  padding: "12px 16px",
+  width: "40%",
+  marginRight: "10px",
+  fontSize: "16px",
+  backgroundColor: "#f6f6f6",
+  color: "#333333",
+};
+
+const buttonFormat = {
+  borderRadius: "6px",
+  border: "none",
+  padding: "12px 32px",
+  fontSize: "18px",
+  fontWeight: "bold",
+  backgroundColor: "#0077FF",
+  color: "white",
+  cursor: "pointer",
+};
+
 export default function CoursesAddCoursesForm(props) {
   const { evaluations, setEvaluations } = props;
   const [errorMsg, setErrorMsg] = useState("");
   const [workloadData, setWorkloadData] = useState([2, 2, 2, 2]);
   const [addCourse, setAddCourse] = useState(false);
-  console.log(workloadData);
+
   const resetForm = function () {
     setWorkloadData([2, 2, 2, 2]);
     setErrorMsg("");
   };
+
   const tryAddCourses = async function (e) {
     e.preventDefault();
     const courseData = {
@@ -45,9 +62,7 @@ export default function CoursesAddCoursesForm(props) {
     });
     let resJson = await res.json();
     if (resJson.success === true) {
-      const updated = evaluations.concat([
-       courseData
-      ]);
+      const updated = evaluations.concat([courseData]);
       setEvaluations(updated);
       setAddCourse(false);
       resetForm();
@@ -60,26 +75,31 @@ export default function CoursesAddCoursesForm(props) {
   };
 
   return (
-    <div style={{ minWidth: "75%" }}>
+    <div style={{ minWidth: "75%", padding: "30px" }}>
       {!addCourse ? (
         <div style={{ width: "100%", ...row }}>
           <center>
-            <button onClick={() => setAddCourse("true")}>Add Course</button>
+            <button
+              style={{ ...buttonFormat }}
+              onClick={() => setAddCourse(true)}
+            >
+              Add Course
+            </button>
           </center>
         </div>
       ) : (
         <>
-          <h2 style={{ margin: 0 }}>New Course:</h2>
+          <h2 style={{ margin: "20px 0" }}>New Course:</h2>
           <form style={col} onSubmit={tryAddCourses}>
-            <div style={row}>
+            <div style={{ marginBottom: "20px", ...row }}>
               <input
                 className={styles.inputWrapping}
                 name="department"
                 id="department"
                 type="text"
-
                 placeholder={"Course Dept (e.g. CIS)"}
                 required
+                style={inputFormat}
               />
 
               <input
@@ -87,10 +107,15 @@ export default function CoursesAddCoursesForm(props) {
                 name="number"
                 id="number"
                 type="number"
-
                 placeholder={"Course # (e.g. 1600)"}
                 min={1}
                 required
+                style={{
+                  ...inputFormat,
+                  appearance: "none",
+                  WebkitAppearance: "none",
+                  MozAppearance: "textfield",
+                }}
               />
 
               <select
@@ -98,8 +123,17 @@ export default function CoursesAddCoursesForm(props) {
                 name="semester"
                 id="semester"
                 required
+                style={inputFormat}
               >
-                <option label="-"></option>
+                <option
+                  value=""
+                  style={{ color: "gray" }}
+                  disabled
+                  selected
+                  hidden
+                >
+                  Semester
+                </option>
                 <option value="Fall">Fall</option>
                 <option value="Spring">Spring</option>
                 <option value="Summer">Summer</option>
@@ -113,14 +147,15 @@ export default function CoursesAddCoursesForm(props) {
                 step="1"
                 min={2015}
                 max={new Date().getFullYear()}
-
                 placeholder={"Year Taken"}
                 required
+                style={inputFormat}
               />
             </div>
+
             <div style={row}>
-              <div>
-                <label className={styles.inputWrapping}>
+              <div style={{ width: "30%" }}>
+              <label className={styles.inputWrapping}>
                   Interest:
                   <select
                     className={styles.inputWrapping}
@@ -128,17 +163,19 @@ export default function CoursesAddCoursesForm(props) {
                     id="interest"
                     type="number"
                     required
+                    style={inputFormat}
                   >
                     <option label="-"></option>
-                    <option value={1} > 1</option>
+                    <option value={1}>1</option>
                     <option value={2}>2</option>
                     <option value={3}>3</option>
                     <option value={4}>4</option>
                     <option value={5}>5</option>
                   </select>
-                </label>
+                  </label>
               </div>
-              <div>
+
+              <div style={{ width: "30%" }}>
                 <label className={styles.inputWrapping}>
                   Difficulty:
                   <select
@@ -146,6 +183,7 @@ export default function CoursesAddCoursesForm(props) {
                     name="difficulty"
                     type="number"
                     required
+                    style={inputFormat}
                   >
                     <option label="-"></option>
                     <option value={1}>1</option>
@@ -157,6 +195,7 @@ export default function CoursesAddCoursesForm(props) {
                 </label>
               </div>
             </div>
+
             <div style={{ ...row, height: 350 }}>
               <WorkloadChart
                 data={workloadData}
@@ -186,11 +225,13 @@ export default function CoursesAddCoursesForm(props) {
             ) : null}
             <div style={{ ...row, justifyContent: "center" }}>
               <input
+                style={{ ...buttonFormat }}
                 className={styles.inputWrapping}
                 type="submit"
                 value="Submit"
               />
               <button
+                style={{ ...buttonFormat }}
                 className={styles.inputWrapping}
                 onClick={() => {
                   setAddCourse(false);
@@ -206,23 +247,3 @@ export default function CoursesAddCoursesForm(props) {
     </div>
   );
 }
-
-// function CoursesWorkloadChart(props) {
-//   const { data, updateData } = props;
-
-//   const afterRender = (chart) => {
-//     console.log("afterRender");
-//     console.log(chart.series[0].data);
-//   };
-//   return (
-//     <div id="container">
-//       <HighchartsReact
-//         highcharts={Highcharts}
-//         options={config}
-//         callback={afterRender}
-//         // updateArgs={[true]}
-//         allowChartUpdate={true}
-//       />
-//     </div>
-//   );
-// }
