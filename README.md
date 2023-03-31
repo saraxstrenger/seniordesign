@@ -42,6 +42,10 @@ From the senior design folder run the following two lines :
 1 ) npm install
 2 ) npm start 
 
-In a seperate terminal navigate to frontend folder  and run the following two lines : 
+In a seperate terminal navigate to frontend folder and run the following two lines : 
 1 ) npm install
 2 ) npm start 
+
+In another terminal navigate to RecSystem file and run:
+1 ) make
+2 ) ./rec_server
