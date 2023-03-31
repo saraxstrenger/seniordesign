@@ -7,8 +7,8 @@ import aws from 'aws-sdk';
 aws.config.update({
   region: 'us-east-1',
   credentials: new aws.Credentials({
-    accessKeyId: 'AKIA3TXP5GDN6FR7HQVV',
-    secretAccessKey: '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'
+    accessKeyId: '',
+    secretAccessKey: ''
   })
 });
 
