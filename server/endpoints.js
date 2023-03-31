@@ -1,8 +1,10 @@
 import * as db from "./database.js";
 import { spawn } from "child_process";
+import dgram from "dgram";
 
 const COLLAB_SCRIPT = "./RecSystem/CollabFilterRecommender.py";
 const EMBEDDING_SCRIPT = "./RecSystem/EmbeddingRecommender.py";
+const REC_SERVER_PORT = 3030;
 
 export function auth(req, res) {
   if (req.session?.userid) {
@@ -295,6 +297,16 @@ export function updateInterests(req, res) {
     } else {
       res.json({ success: true });
     }
+  });
+
+  sendSocketMessage(req.session.userid);
+}
+
+export function sendSocketMessage(args) {
+  const client = dgram.createSocket("udp4");
+  const message = Buffer.from("recs " + args);
+  client.send(message, REC_SERVER_PORT, "localhost", (err) => {
+    client.close();
   });
 }
 

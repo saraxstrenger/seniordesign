@@ -93,9 +93,14 @@ export function updateInterests(user, interests, callback) {
   ddbDocClient.update(params, callback);
 }
 
-export function updatePassword({ oldPassword, newPassword }, callback) {
-  // TODO: implement
-}
+/**
+ *
+ * @param {*} user username
+ * @param {*} oldPassword
+ * @param {*} newPassword
+ * @param {*} callback see other examples, callback from endpoints.js
+ */
+export function updatePassword(user, { oldPassword, newPassword }, callback) {}
 
 export async function addCourse(
   user,
@@ -142,6 +147,72 @@ export async function addCourse(
   };
 
   ddbDocClient.transactWrite(transactionParams, callback);
+}
+
+/**
+ * gets course evaluation for a user.
+ */
+export async function getEvaluation(
+  user,
+  { department, number, year, semester },
+  callback
+) {
+
+  // key for evaluation:
+  const evaluationId = [user, department, number, year, semester].join("_");
+
+  // TODO: implement
+}
+
+/**
+ * updates course evaluation for a user. !!before executing!!, check if user has
+ * already evaluated course
+ * (can use getEvaluation for this and do update in callback, see endpoints.js
+ * for how to use callbacks).
+ */
+export async function updateEvaluation(
+  user,
+  { department, number, year, semester, difficulty, interest },
+  callback
+) {
+  // TODO: implement
+}
+
+/**
+ * Deletes course evaluation for a user. before executing, check if user has
+ * already evaluated course. Must be deleted from evaluations table and user's
+ * course list. Use transaction.
+ */
+export async function deleteEvaluation(
+  user,
+  { department, number, year, semester },
+  callback
+) {
+  // TODO: implement
+}
+
+/**
+ * adds courseId to "likedCourses" (string set, does not exist yet.
+ * see updateInterests for example).
+ */
+export async function addLikedCourse(user, { courseId }, callback) {
+  // TODO: implement
+}
+
+/**
+ * removes courseId from "likedCourses" (string set, does not exist yet.
+ * see updateInterests for example).
+ */
+export async function removeLikedCourse(user, { courseId }, callback) {
+  // TODO: implement
+}
+
+/**
+ * STRETCH GOAL! Delete user's profile and all evaluations associated with it.
+ * @param user
+ */
+export async function deleteAccount(user) {
+  // TODO: implement
 }
 
 export async function getCourseInfo(courseId, callback) {
