@@ -4,13 +4,12 @@ import fs from 'fs';
 import csv from 'csvtojson';
 import aws from 'aws-sdk';
 
-aws.config.update({
-  region: 'us-east-1',
-  credentials: new aws.Credentials({
-    accessKeyId: '',
-    secretAccessKey: ''
-  })
+// TODO make config.json ( its in README)
+const credentials = await import('./config.json', {
+  assert: { type: 'json' }
 });
+
+AWS.config.update(credentials.default);
 
 async function readCSVFile() {
   const tokenizer = new natural.WordTokenizer();
