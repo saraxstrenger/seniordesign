@@ -7,8 +7,8 @@ import aws from 'aws-sdk';
 aws.config.update({
   region: 'us-east-1',
   credentials: new aws.Credentials({
-    accessKeyId: '',
-    secretAccessKey: ''
+    accessKeyId: 'AKIA3TXP5GDN355XASFM',
+    secretAccessKey: '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'
   })
 });
 
@@ -30,19 +30,29 @@ async function readCSVFile() {
     delete course.id
     var requests = []
     tokens.forEach(token => {
+      // console.log(typeof token);
+      // console.log(typeof course.courseCode);
       const request = {
         PutRequest: {
+          // Item: {
+          //   'word': {S: token},
+          //   'courseCode': {S: course.courseCode},
+          //   'courseTitle': {S: course.courseTitle},
+          //   'courseDescription': {S: course.courseDescription},
+          //   'interest': {S: course.interest},
+          //   'difficulty': {S: course.difficulty}
+          // }
           Item: {
-            word: {S: token},
-            courseCode: {S: course.courseCode},
-            courseTitle: {S: course.courseTitle},
-            courseDescription: {S: course.courseDescription},
-            interest: {S: course.interest},
-            difficulty: {S: course.difficulty},
+            'word': token,
+            'courseCode': course.courseCode,
+            'courseTitle': course.courseTitle,
+            'courseDescription': course.courseDescription,
+            'interest': course.interest,
+            'difficulty': course.difficulty
           }
         }
       }
-
+      //console.log(request)
       requests.push(request)
   })
 
