@@ -4,26 +4,23 @@ import fs from 'fs';
 import csv from 'csvtojson';
 import aws from 'aws-sdk';
 
-// TODO make config.json ( its in README)
-const credentials = await import('./config.json', {
-  assert: { type: 'json' }
-});
+// make sure to add your aws credentials to a config.json file
+const config = JSON.parse(fs.readFileSync('config.json'));
 
-AWS.config.update(credentials.default);
+aws.config.update(config);
 
 async function readCSVFile() {
   const tokenizer = new natural.WordTokenizer();
   const courses = await csv().fromFile('course_catalog.csv');
   const dynamodb = new aws.DynamoDB.DocumentClient();
   console.log(courses[0]);
-  fs.writeFileSync('course_catalog.json', JSON.stringify(courses))
   courses.forEach(course => { 
     var titleTokens = tokenizer.tokenize(course['courseTitle'])
     titleTokens = stopword.removeStopwords(titleTokens)
 
     var codeTokes = tokenizer.tokenize(course['id'])
 
-    var tokens = titleTokens.concat(codeTokes)
+    var tokens = new Set(titleTokens.concat(codeTokes))
 
     course.courseCode = course.id
     delete course.id
@@ -32,12 +29,12 @@ async function readCSVFile() {
       const request = {
         PutRequest: {
           Item: {
-            word: {S: token},
-            courseCode: {S: course.courseCode},
-            courseTitle: {S: course.courseTitle},
-            courseDescription: {S: course.courseDescription},
-            interest: {S: course.interest},
-            difficulty: {S: course.difficulty},
+            'word': token,
+            'courseCode': course.courseCode,
+            'courseTitle': course.courseTitle,
+            'courseDescription': course.courseDescription,
+            'interest': course.interest,
+            'difficulty': course.difficulty
           }
         }
       }
