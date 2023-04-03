@@ -13,11 +13,12 @@ HC_more(Highcharts); //init module
 export default class WorkloadChart extends React.Component {
   constructor(props) {
     super(props);
-    this.allowChartUpdate = true;
+    this.allowChartUpdate = props?.editEabled ?? true;
     this.state = {
       updateData: props.updateData,
       data: props.data,
       onDrop: props.onDrop,
+      editEnabled: props?.editEnabled ?? true,
     };
   }
 
@@ -30,9 +31,11 @@ export default class WorkloadChart extends React.Component {
       chart: {
         animation: false,
       },
-      caption: {
-        text: "Adjust this chart to match the intensity of this course's workload from the beginning to the end of semester",
-      },
+      caption: this.state.editEabled
+        ? {
+            text: "Adjust this chart to match the intensity of this course's workload from the beginning to the end of semester",
+          }
+        : null,
       title: {
         text: "Workload",
       },
@@ -53,22 +56,26 @@ export default class WorkloadChart extends React.Component {
       },
       plotOptions: {
         series: {
-          dragDrop: {
-            draggableY: true,
-            dragMaxY: 5,
-            dragMinY: 0,
-          },
-          point: {
-            events: {
-              drop: (e) => {
-                const newData = this.state.onDrop(e);
-                this.setState({ data: newData });
-              },
+          dragDrop: this.state.editEnabled
+            ? {
+                draggableY: true,
+                dragMaxY: 5,
+                dragMinY: 0,
+              }
+            : null,
+            point:{
+              events:  {
+                    drop:  this.state.editEnabled
+                    ?(e) => {
+                      const newData = this.state.onDrop(e);
+                      this.setState({ data: newData });
+                    }:null,
+                  }
+                ,
             },
-          },
         },
-        line: {
-          cursor: "ns-resize",
+        line:  {
+          cursor:"ns-resize",
         },
       },
       tooltip: {
@@ -83,12 +90,12 @@ export default class WorkloadChart extends React.Component {
       ],
     };
     return (
-          <HighchartsReact
-            allowChartUpdate={this.allowChartUpdate}
-            // ref={"chartComponent"}
-            highcharts={Highcharts}
-            options={config}
-          />
+      <HighchartsReact
+        allowChartUpdate={this.allowChartUpdate}
+        // ref={"chartComponent"}
+        highcharts={Highcharts}
+        options={config}
+      />
     );
   }
 }

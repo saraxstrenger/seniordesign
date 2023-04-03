@@ -3,6 +3,7 @@ import NavBar from "./NavBar";
 import style from "./css/utils.module.css";
 import EvaluationsAddEvaluationForm from "./EvaluationsAddCoursesForm";
 import { AiFillCaretDown } from "react-icons/ai";
+import EvaluationsInfoCard from "./EvaluationsInfoCard";
 
 // const USER = 1;
 const DEPT = 1;
@@ -12,7 +13,6 @@ const SEM = 4;
 
 const col = {
   display: "flex",
-  // justifyContent: "center",
   flexDirection: "column",
 };
 // const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
@@ -72,16 +72,13 @@ function Courses(props) {
     <div className={style.page}>
       <NavBar />
       <div className={style.pageBody} style={{ ...col }}>
-
         <EvaluationsAddEvaluationForm
           evaluations={evaluations}
           setEvaluations={setEvaluations}
         />
 
-        <div
-          style={{ minWidth: "75%" }}
-        >
-          <h2 style={{margin:0}}>Your Evaluations:</h2>
+        <div style={{ minWidth: "75%" }}>
+          <h2 style={{ margin: 0 }}>Your Evaluations:</h2>
         </div>
 
         {errorMsg ? (
@@ -121,7 +118,6 @@ function CourseEvalCard({ department, number, semester, year, id }) {
         borderRadius: "12px",
         overflow: "hidden",
       }}
-      onClick={handleClick}
     >
       <div style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>
         <div
@@ -144,23 +140,11 @@ function CourseEvalCard({ department, number, semester, year, id }) {
               transform: `rotate(${expand ? "-90deg" : "0deg"})`,
               transition: "transform 0.3s ease",
             }}
+            onClick={handleClick}
           />
         </div>
-        <div style={{ height: expand ? "auto" : "0", overflow: "hidden" }}>
-          <CourseEvalCardInfo courseId={id} />
-        </div>
+        {expand && <EvaluationsInfoCard evaluationId={id} />}
       </div>
-    </div>
-  );
-}
-
-
-function CourseEvalCardInfo({ courseId }) {
-  //TODO: add info
-  return (
-    <div>
-      <hr></hr>
-      <div>Course Info</div>
     </div>
   );
 }

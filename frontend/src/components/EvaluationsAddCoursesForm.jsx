@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import styles from "./css/utils.module.css";
 import WorkloadChart from "./WorkloadChart";
 import "./css/Forms.css";
-
 const col = {
   display: "flex",
   justifyContent: "center",
@@ -10,33 +8,11 @@ const col = {
 };
 const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
-const inputFormat = {
-  border: "1px solid black",
-  borderRadius: "10px",
-  padding: "8px 16px",
-  width: "40%",
-  marginRight: "10px",
-  fontSize: "16px",
-  backgroundColor: "#f6f6f6",
-  color: "#333333",
-};
-
-const buttonFormat = {
-  borderRadius: "8px",
-  border: "none",
-  padding: "8px 16px",
-  fontSize: "18px",
-  fontWeight: "bold",
-  backgroundColor: "#0077FF",
-  color: "white",
-  cursor: "pointer",
-};
-
 export default function EvaluationsAddEvaluationForm(props) {
   const { evaluations, setEvaluations } = props;
   const [errorMsg, setErrorMsg] = useState("");
   const [workloadData, setWorkloadData] = useState([2, 2, 2, 2]);
-  const [addCourse, setAddCourse] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   const resetForm = function () {
     setWorkloadData([2, 2, 2, 2]);
@@ -52,8 +28,9 @@ export default function EvaluationsAddEvaluationForm(props) {
       year: e.target.year.value,
       difficulty: parseInt(e.target.difficulty.value),
       interest: parseInt(e.target.interest.value),
+      workload: workloadData,
     };
-    let res = await fetch("/addCourse", {
+    let res = await fetch("/addEvaluation", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -64,7 +41,7 @@ export default function EvaluationsAddEvaluationForm(props) {
     if (resJson.success === true) {
       const updated = evaluations.concat([courseData]);
       setEvaluations(updated);
-      setAddCourse(false);
+      setShowForm(false);
       resetForm();
     } else {
       setErrorMsg(
@@ -76,12 +53,12 @@ export default function EvaluationsAddEvaluationForm(props) {
 
   return (
     <div style={{ minWidth: "75%", padding: "8px" }}>
-      {!addCourse ? (
+      {!showForm ? (
         <div style={{ width: "100%", ...row }}>
           <center>
             <button
-              style={{ ...buttonFormat }}
-              onClick={() => setAddCourse(true)}
+              className={"form-button"}
+              onClick={() => setShowForm(true)}
             >
               Add Evaluation
             </button>
@@ -89,21 +66,20 @@ export default function EvaluationsAddEvaluationForm(props) {
         </div>
       ) : (
         <>
-          <h2 style={{ margin: "0" }}>New Evaluation:</h2>
+          <h2 >New Evaluation:</h2>
           <form style={col} onSubmit={tryAddCourses}>
             <div style={{ marginBottom: "20px", ...row }}>
               <input
-                className={styles.inputWrapping}
                 name="department"
                 id="department"
                 type="text"
                 placeholder={"Course Dept (e.g. CIS)"}
                 required
-                style={inputFormat}
+                className={"form-input"}
               />
 
               <input
-                className={styles.inputWrapping}
+                className={"form-input"}
                 name="number"
                 id="number"
                 type="number"
@@ -111,7 +87,6 @@ export default function EvaluationsAddEvaluationForm(props) {
                 min={1}
                 required
                 style={{
-                  ...inputFormat,
                   appearance: "none",
                   WebkitAppearance: "none",
                   MozAppearance: "textfield",
@@ -119,11 +94,10 @@ export default function EvaluationsAddEvaluationForm(props) {
               />
 
               <select
-                className={styles.inputWrapping}
                 name="semester"
                 id="semester"
                 required
-                style={inputFormat}
+                className={"form-input"}
               >
                 <option
                   value=""
@@ -140,7 +114,6 @@ export default function EvaluationsAddEvaluationForm(props) {
               </select>
 
               <input
-                className={styles.inputWrapping}
                 name="year"
                 id="year"
                 type="number"
@@ -149,54 +122,52 @@ export default function EvaluationsAddEvaluationForm(props) {
                 max={new Date().getFullYear()}
                 placeholder={"Year Taken"}
                 required
-                style={inputFormat}
+                className={"form-input"}
               />
             </div>
 
             <div style={row}>
-              <div style={{ width: "30%" }}>
-              <label className={styles.inputWrapping}>
+              <div style={{ width: "30%", ...row, alignItems: "center" }}>
+                <label for="interest" style={{ paddingRight: 8 }}>
                   Interest:
-                  <select
-                    className={styles.inputWrapping}
-                    name="interest"
-                    id="interest"
-                    type="number"
-                    required
-                    style={inputFormat}
-                  >
-                    <option label="-"></option>
-                    <option value={1}>1</option>
-                    <option value={2}>2</option>
-                    <option value={3}>3</option>
-                    <option value={4}>4</option>
-                    <option value={5}>5</option>
-                  </select>
-                  </label>
+                </label>
+                <select
+                  name="interest"
+                  id="interest"
+                  type="number"
+                  required
+                  className={"form-input"}
+                >
+                  <option label="-"></option>
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                  <option value={4}>4</option>
+                  <option value={5}>5</option>
+                </select>
               </div>
 
-              <div style={{ width: "30%" }}>
-                <label className={styles.inputWrapping}>
+              <div style={{ width: "30%", ...row, alignItems: "center" }}>
+                <label style={{ paddingRight: 8 }} for="difficulty">
                   Difficulty:
-                  <select
-                    className={styles.inputWrapping}
-                    name="difficulty"
-                    type="number"
-                    required
-                    style={inputFormat}
-                  >
-                    <option label="-"></option>
-                    <option value={1}>1</option>
-                    <option value={2}>2</option>
-                    <option value={3}>3</option>
-                    <option value={4}>4</option>
-                    <option value={5}>5</option>
-                  </select>
                 </label>
+                <select
+                  name="difficulty"
+                  type="number"
+                  required
+                  className={"form-input"}
+                >
+                  <option label="-"></option>
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                  <option value={4}>4</option>
+                  <option value={5}>5</option>
+                </select>
               </div>
             </div>
 
-            <div style={{ ...row, height: 350}}>
+            <div style={{ ...row, height: 350 }}>
               <WorkloadChart
                 data={workloadData}
                 updateData={setWorkloadData}
@@ -224,17 +195,11 @@ export default function EvaluationsAddEvaluationForm(props) {
               </center>
             ) : null}
             <div style={{ ...row, justifyContent: "center" }}>
-              <input
-                style={{ ...buttonFormat }}
-                className={styles.inputWrapping}
-                type="submit"
-                value="Submit"
-              />
+              <input className={"form-button"} type="submit" value="Submit" />
               <button
-                style={{ ...buttonFormat }}
-                className={styles.inputWrapping}
+                className={"form-button"}
                 onClick={() => {
-                  setAddCourse(false);
+                  setShowForm(false);
                   resetForm();
                 }}
               >

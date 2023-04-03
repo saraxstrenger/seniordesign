@@ -14,7 +14,7 @@ export default function LoadingDots() {
   return (
     <>
       <div
-        class="bouncingLoader"
+        className="bouncingLoader"
       >
         {/* This is a dumpster fire but can't get css stylesheets to work :( */}
          <div style={{...innerStyle,animationDelay: "0.0s"}}></div>

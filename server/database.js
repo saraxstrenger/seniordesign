@@ -98,9 +98,9 @@ export function updateInterests(user, interests, callback) {
  */
 export function updatePassword(user, { oldPassword, newPassword }, callback) {}
 
-export async function addCourse(
+export async function addEvaluation(
   user,
-  { department, number, year, semester, difficulty, interest },
+  { department, number, year, semester, difficulty, interest, workload},
   callback
 ) {
   const evaluationId = [user, department, number, year, semester].join("_");
@@ -131,6 +131,10 @@ export async function addCourse(
       semester,
       difficulty,
       interest,
+      workload1: workload[0],
+      workload2: workload[1],
+      workload3: workload[2],
+      workload4: workload[3],
     },
     ConditionExpression: "attribute_not_exists(id)",
   };
@@ -149,15 +153,17 @@ export async function addCourse(
  * gets course evaluation for a user.
  */
 export async function getEvaluation(
-  user,
-  { department, number, year, semester },
+  evaluationId,
   callback
 ) {
+  const params = {
+    TableName: EVAL_TABLE,
+    Key: {
+      id: evaluationId,
+    },
+  };
 
-  // key for evaluation:
-  const evaluationId = [user, department, number, year, semester].join("_");
-
-  // TODO: implement
+  ddbDocClient.get(params, callback);
 }
 
 /**

@@ -109,13 +109,9 @@ input:checked + .slider:before {
   font-size: "small";
 }
 
-.inputWrapping {
-  margin: 8px;
-}
-
 .pageBody {
   background-color: #FFFFFF;
-  padding: 30px;
+  padding: 0px 30px;
 }
 
 h1 {

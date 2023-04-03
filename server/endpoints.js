@@ -85,10 +85,6 @@ function isEmail(email) {
   return true;
 }
 
-function isNumber(num) {
-  return !isNaN(num);
-}
-
 export function signup(req, res) {
   const params = req.body;
   params.year = parseInt(params.year, 10);
@@ -98,10 +94,10 @@ export function signup(req, res) {
     isEmptyStr(params.username) ||
     isEmptyStr(params.password) || // todo: password validation? letters, numbers etc
     isEmail(params.email) ||
-    isNumber(params.entranceYear) ||
+    isNaN(params.entranceYear) ||
     isEmptyStr(params.major)
   ) {
-    // send error code
+    res.json({ success: false, errorMsg: "Invalid input" });
   }
 
   // try to create db entry
@@ -116,23 +112,71 @@ export function signup(req, res) {
   });
 }
 
-export function addCourse(req, res) {
+function isValidRating(rating) {
+  return Number.isInteger(rating) && rating >= 1 && rating <= 5;
+}
+
+function isValidWorkload(workload) {
+  if (
+    workload === undefined ||
+    !Array.isArray(workload) ||
+    workload.length != 4
+  ) {
+    return false;
+  }
+
+  for (let i = 0; i < workload.length; i++) {
+    if (isNaN(workload[i]) || workload[i] < 0 || workload[i] > 5) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function addEvaluation(req, res) {
   console.log("add class request received");
   const params = req.body;
   const session = req.session;
   console.log(session.userid);
-  if (session?.userid) {
-    db.addCourse(session.userid, params, (err, data) => {
-      if (err) {
-        console.log("Error", err.stack);
-        res.json({ success: false, errorMsg: "Class already exists" });
-      } else {
-        res.json({ success: true });
-      }
-    });
-  } else {
+  console.log(req.body);
+  if (!session.userid) {
     res.sendStatus(401); // Unauthorized
+    return;
   }
+
+  const interest = req.body?.interest;
+  const difficulty = req.body?.difficulty;
+  const workload = req.body?.workload;
+  const year = parseInt(req.body?.year, 10);
+  const semester = req.body?.semester;
+  const department = req.body?.department;
+  const number = parseInt(req.body?.number, 10);
+  const validSemesters = ["Fall", "Spring", "Summer"];
+  if (
+    !isValidRating(interest) ||
+    !isValidRating(difficulty) ||
+    !isValidWorkload(workload) ||
+    isNaN(year) ||
+    semester === undefined ||
+    !validSemesters.includes(semester) ||
+    !department ||
+    !department?.length ||
+    !department?.length > 0 ||
+    isNaN(number)
+  ) {
+    res.json({
+      success: false,
+      errorMsg: "Invalid parameters! Please ensure all form inputs are valid.",
+    });
+  }
+  db.addEvaluation(session.userid, params, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, errorMsg: "Class already exists" });
+    } else {
+      res.json({ success: true });
+    }
+  });
 }
 
 export function getEvaluations(req, res) {
@@ -149,17 +193,29 @@ export function getEvaluations(req, res) {
 
 export function getEvaluation(req, res) {
   const session = req.session;
-  const evalId = req.params.id;
-  const evalInfo = evalId.split("_");
+  const id = req.params.id;
+  const evalInfo = id.split("_");
   const evalOwner = evalInfo[0];
-  // only the owner of the eval should be able to access it
+  // only the owner of the evaluation should be able to access it
   if (session?.userid && evalOwner == session.userid) {
-    db.getEval(id, (err, data) => {
+    db.getEvaluation(id, (err, data) => {
       if (err) {
         console.log("Error", err.stack);
         res.json({ success: false, errorMsg: "Unable to perform operation." });
       } else {
-        res.json({ success: true, data: data });
+        const evaluation = data.Item;
+        const workload = [
+          evaluation?.workload1 ?? 2,
+          evaluation?.workload2 ?? 2,
+          evaluation?.workload3 ?? 2,
+          evaluation?.workload4 ?? 2,
+        ];
+        delete evaluation.workload1;
+        delete evaluation.workload2;
+        delete evaluation.workload3;
+        delete evaluation.workload4;
+        evaluation.workload = workload;
+        res.json({ success: true, data: evaluation });
       }
     });
     return;
@@ -244,7 +300,7 @@ export function updateProfile(req, res) {
     isEmptyStr(params.first) ||
     isEmptyStr(params.last) ||
     !isEmail(params.email) ||
-    !isNumber(params.entranceYear) ||
+    isNaN(params.entranceYear) ||
     isEmptyStr(params.major)
   ) {
     res.json({
@@ -304,7 +360,7 @@ export function updateInterests(req, res) {
 
 /**
  * Queues a user to be updated in the recommendation server
- * @param {string} user 
+ * @param {string} user
  */
 export function queueUser(user) {
   const client = dgram.createSocket("udp4");
