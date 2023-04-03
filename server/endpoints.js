@@ -306,7 +306,7 @@ export function updateInterests(req, res) {
  * Queues a user to be updated in the recommendation server
  * @param {string} user 
  */
-export function queueUser(args) {
+export function queueUser(user) {
   const client = dgram.createSocket("udp4");
   const message = Buffer.from("recs " + user);
   client.send(message, REC_SERVER_PORT, "localhost", (err) => {

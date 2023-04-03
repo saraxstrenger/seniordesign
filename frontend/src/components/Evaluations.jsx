@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "./NavBar";
 import style from "./css/utils.module.css";
-import CoursesAddCoursesForm from "./CoursesAddCoursesForm";
+import EvaluationsAddEvaluationForm from "./EvaluationsAddCoursesForm";
 import { AiFillCaretDown } from "react-icons/ai";
 
 // const USER = 1;
@@ -72,9 +72,8 @@ function Courses(props) {
     <div className={style.page}>
       <NavBar />
       <div className={style.pageBody} style={{ ...col }}>
-        <h1 style={{margin:0}}>Course Evaluations</h1>
 
-        <CoursesAddCoursesForm
+        <EvaluationsAddEvaluationForm
           evaluations={evaluations}
           setEvaluations={setEvaluations}
         />
@@ -82,7 +81,7 @@ function Courses(props) {
         <div
           style={{ minWidth: "75%" }}
         >
-          <h2 style={{margin:0}}>Your Courses:</h2>
+          <h2 style={{margin:0}}>Your Evaluations:</h2>
         </div>
 
         {errorMsg ? (

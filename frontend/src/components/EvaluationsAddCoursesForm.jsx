@@ -13,7 +13,7 @@ const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 const inputFormat = {
   border: "1px solid black",
   borderRadius: "10px",
-  padding: "12px 16px",
+  padding: "8px 16px",
   width: "40%",
   marginRight: "10px",
   fontSize: "16px",
@@ -22,9 +22,9 @@ const inputFormat = {
 };
 
 const buttonFormat = {
-  borderRadius: "6px",
+  borderRadius: "8px",
   border: "none",
-  padding: "12px 32px",
+  padding: "8px 16px",
   fontSize: "18px",
   fontWeight: "bold",
   backgroundColor: "#0077FF",
@@ -32,7 +32,7 @@ const buttonFormat = {
   cursor: "pointer",
 };
 
-export default function CoursesAddCoursesForm(props) {
+export default function EvaluationsAddEvaluationForm(props) {
   const { evaluations, setEvaluations } = props;
   const [errorMsg, setErrorMsg] = useState("");
   const [workloadData, setWorkloadData] = useState([2, 2, 2, 2]);
@@ -83,13 +83,13 @@ export default function CoursesAddCoursesForm(props) {
               style={{ ...buttonFormat }}
               onClick={() => setAddCourse(true)}
             >
-              Add Course
+              Add Evaluation
             </button>
           </center>
         </div>
       ) : (
         <>
-          <h2 style={{ margin: "20px 0" }}>New Course:</h2>
+          <h2 style={{ margin: "0" }}>New Evaluation:</h2>
           <form style={col} onSubmit={tryAddCourses}>
             <div style={{ marginBottom: "20px", ...row }}>
               <input
@@ -196,7 +196,7 @@ export default function CoursesAddCoursesForm(props) {
               </div>
             </div>
 
-            <div style={{ ...row, height: 350 }}>
+            <div style={{ ...row, height: 350}}>
               <WorkloadChart
                 data={workloadData}
                 updateData={setWorkloadData}

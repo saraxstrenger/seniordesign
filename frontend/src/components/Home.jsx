@@ -95,10 +95,8 @@ function Home(props) {
         className={styles.page}
         style={{ alignItems: "center", overflow: "visible" }}
       >
-        <div style={{ ...row, alignItems: "center" }}>
-          <h1>Home page</h1>
-          <Logout {...props} />
-        </div>
+        
+        <Logout {...props} />
         <form style={{ ...row, width: "100%" }} onSubmit={trySearch}>
           <input
             type="text"
@@ -141,12 +139,16 @@ function Recommendations(props) {
       ) : interests.length > 0 ? (
         <div style={{ width: "100%" }}>
           {interests.map((interest) => {
-            return (
-              <div style={{ overflowX: "visible", padding: 12 }}>
-                <h2 style={{ margin: 0 }}>{interest}</h2>
-                <CourseSlider courses={recommendations[interest]} />
-              </div>
-            );
+            if (!recommendations[interest]) {
+              return null;
+            } else {
+              return (
+                <div style={{ overflowX: "visible", padding: 12 }}>
+                  <h2 style={{ margin: 0 }}>{interest}</h2>
+                  <CourseSlider courses={recommendations[interest]} />
+                </div>
+              );
+            }
           })}
         </div>
       ) : (

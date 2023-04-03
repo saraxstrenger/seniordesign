@@ -51,13 +51,13 @@ export default function Profile(props) {
             width: "75%",
           }}
         >
-          <h1>Profile</h1>
+          {/* <h1>Profile</h1> */}
 
           {errorMsg ? (
             errorMsg
           ) : (
             <div style={col}>
-              <h3>My Interests:</h3>
+              <h2>Your Interests:</h2>
               <div
                 style={{
                   display: "flex",
@@ -67,7 +67,7 @@ export default function Profile(props) {
               >
                 <ProfileInterestsForm interests={profileData.interests} />
               </div>
-              <h3>Account Settings:</h3>
+              <h2>Account Settings:</h2>
               <ProfileUpdateForm
                 profileData={profileData}
                 setProfileData={setProfileData}
