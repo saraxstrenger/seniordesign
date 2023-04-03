@@ -45,7 +45,7 @@ def update_rec(username, num_recs, embed_rec, user_table):
       new_interests.append(interest)
 
   # terminate early if no computation should be made
-  if new_interests==0:
+  if len(new_interests)==0:
     return
 
   # compute new recommendations
