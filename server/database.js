@@ -1,6 +1,4 @@
 import { ddbDocClient } from "./ddbDocClient.js";
-import { PutCommand } from "@aws-sdk/lib-dynamodb";
-import { ddb } from "./ddbClient.js";
 
 const USER_TABLE = "users";
 const COURSE_TABLE = "Course_Table"; // not updated
@@ -21,8 +19,6 @@ export async function createUser(
       email,
       entranceYear,
       major,
-      // courses: ddbDocClient.createSet([]),
-      // interests: ddbDocClient.createSet([]),
     },
     ConditionExpression: "attribute_not_exists(username)",
   };

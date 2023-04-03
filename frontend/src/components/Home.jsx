@@ -25,10 +25,11 @@ const sliderTitleStyle = {
 
 function Home(props) {
   const [searchResult, setSearchResult] = useState({});
+  const [recommendations, setRecommendations] = useState([]);
   const [interests, setInterests] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [inFlight, setInFlight] = useState(false);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   React.useEffect(() => {
     fetch("/home", {
       method: "GET",
@@ -53,7 +54,10 @@ function Home(props) {
           );
         } else {
           setInterests(resJson.interests);
+          setRecommendations(resJson.recs);
+          console.log(resJson.recs);
         }
+        setLoading(false);
       });
   }, [props]);
 
@@ -84,14 +88,6 @@ function Home(props) {
       });
   };
 
-  const courses = [
-    { name: "Course 1", image: "/course1.jpg" },
-    { name: "Course 2", image: "/course2.jpg" },
-    { name: "Course 3", image: "/course3.jpg" },
-    { name: "Course 4", image: "/course4.jpg" },
-    { name: "Course 5", image: "/course5.jpg" },
-  ];
-
   return (
     <>
       <NavBar />
@@ -100,7 +96,7 @@ function Home(props) {
         style={{ alignItems: "center", overflow: "visible" }}
       >
         <div style={{ ...row, alignItems: "center" }}>
-          <h1 className="font-weight-light">Home page</h1>
+          <h1>Home page</h1>
           <Logout {...props} />
         </div>
         <form style={{ ...row, width: "100%" }} onSubmit={trySearch}>
@@ -115,52 +111,78 @@ function Home(props) {
         {inFlight ? <LoadingDots /> : null}
         {JSON.stringify(searchResult)}
 
-        {interests.length > 0 ? (
-          <div style={{width: "100%"}}>
-            {interests.map((interest) => {
-              return (
-                <div style={{ overflowX: "visible", padding: 24 }}>
-                  <h2 style={{margin: 0}}>{interest}</h2>
-                  <CourseSlider courses={courses} />
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              flexGrow: 1,
-              width: "70%",
-            }}
-          >
-            {errorMsg ? (
-              errorMsg
-            ) : (
-              <center>
-                <h3>
-                  No interests added! Visit the{" "}
-                  <a
-                    onClick={() => {
-                      navigate("/profile");
-                    }}
-                    style={{
-                      textDecoration: "underline",
-                      color: "#55868C",
-                      cursor: "pointer",
-                    }}
-                  >
-                    profile page
-                  </a>{" "}
-                  to add interests and get personalized recommendations.
-                </h3>
-              </center>
-            )}
-          </div>
-        )}
+        <Recommendations
+          loading={loading}
+          interests={interests}
+          recommendations={recommendations}
+          errorMsg={errorMsg}
+        />
       </div>
+    </>
+  );
+}
+
+function Recommendations(props) {
+  const { loading, interests, recommendations, errorMsg } = props;
+  const navigate = useNavigate();
+  return (
+    <>
+      {loading ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            flexGrow: 1,
+          }}
+        >
+          <LoadingDots />
+        </div>
+      ) : interests.length > 0 ? (
+        <div style={{ width: "100%" }}>
+          {interests.map((interest) => {
+            return (
+              <div style={{ overflowX: "visible", padding: 12 }}>
+                <h2 style={{ margin: 0 }}>{interest}</h2>
+                <CourseSlider courses={recommendations[interest]} />
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            flexGrow: 1,
+            width: "70%",
+          }}
+        >
+          {errorMsg ? (
+            errorMsg
+          ) : (
+            <center>
+              <h3>
+                No interests added! Visit the{" "}
+                <a
+                  onClick={() => {
+                    navigate("/profile");
+                  }}
+                  style={{
+                    textDecoration: "underline",
+                    color: "#55868C",
+                    cursor: "pointer",
+                  }}
+                >
+                  profile page
+                </a>{" "}
+                to add interests and get personalized recommendations.
+              </h3>
+            </center>
+          )}
+        </div>
+      )}
     </>
   );
 }

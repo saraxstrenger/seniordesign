@@ -72,7 +72,7 @@ function Courses(props) {
     <div className={style.page}>
       <NavBar />
       <div className={style.pageBody} style={{ ...col }}>
-        <h1>Courses</h1>
+        <h1 style={{margin:0}}>Course Evaluations</h1>
 
         <CoursesAddCoursesForm
           evaluations={evaluations}
@@ -82,7 +82,7 @@ function Courses(props) {
         <div
           style={{ minWidth: "75%" }}
         >
-          <h2>Your Courses:</h2>
+          <h2 style={{margin:0}}>Your Courses:</h2>
         </div>
 
         {errorMsg ? (

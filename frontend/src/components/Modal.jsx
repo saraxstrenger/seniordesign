@@ -2,7 +2,7 @@ import "./css/Modal.css";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Modal(props) {
-  const { isOpen, setIsOpen, children } = props;
+  const { isOpen, children } = props;
   return (
     <AnimatePresence>
       {isOpen && (
@@ -18,7 +18,7 @@ export default function Modal(props) {
             exit={{ scale: 0 }}
             className="modal-content-wrapper"
           >
-            <motion.div className="modal-content">{props.children}</motion.div>
+            <motion.div className="modal-content">{children}</motion.div>
           </motion.div>
         </motion.div>
       )}

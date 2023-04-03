@@ -1,19 +1,5 @@
-import * as db from "./database.js";
-
-console.log("hello");
-// db.updateInterests("mario", ["physics"], (err, data) => {
-//   if (err) {
-//     console.log("Error", err.stack);
-//   } else {
-//     console.log("Success", JSON.stringify(data));
-//   }
-// });
+// import * as db from "./database.js";
+import * as req from "./endpoints.js";
 
 
-db.getUser("mario", (err, data) => {
-  if (err) {
-    console.log("Error", err.stack);
-  } else {
-    console.log("Success", JSON.stringify(data));
-  }
-});
+req.sendSocketMessage("sara");

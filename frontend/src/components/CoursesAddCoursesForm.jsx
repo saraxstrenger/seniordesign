@@ -75,7 +75,7 @@ export default function CoursesAddCoursesForm(props) {
   };
 
   return (
-    <div style={{ minWidth: "75%", padding: "30px" }}>
+    <div style={{ minWidth: "75%", padding: "8px" }}>
       {!addCourse ? (
         <div style={{ width: "100%", ...row }}>
           <center>

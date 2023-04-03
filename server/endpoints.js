@@ -298,13 +298,17 @@ export function updateInterests(req, res) {
       res.json({ success: true });
     }
   });
-
-  sendSocketMessage(req.session.userid);
+  // send message to server to update recommendations
+  queueUser(req.session.userid);
 }
 
-export function sendSocketMessage(args) {
+/**
+ * Queues a user to be updated in the recommendation server
+ * @param {string} user 
+ */
+export function queueUser(args) {
   const client = dgram.createSocket("udp4");
-  const message = Buffer.from("recs " + args);
+  const message = Buffer.from("recs " + user);
   client.send(message, REC_SERVER_PORT, "localhost", (err) => {
     client.close();
   });
@@ -323,8 +327,9 @@ export function getHome(req, res) {
     } else {
       const interests = data.Item.interests ?? [];
       const courses = data.Item.courses;
+      const recs = data.Item.recs;
       // Todo: add more info?
-      res.json({ success: true, interests, courses });
+      res.json({ success: true, interests, courses, recs });
     }
   });
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CourseInfoCard(props) {
   const [courseInfo, setCourseInfo] = useState({});
@@ -18,7 +19,6 @@ export default function CourseInfoCard(props) {
       })
       .then((resJson) => {
         if (resJson.success) {
-          console.log(resJson.data);
           setCourseInfo(resJson.data);
         } else {
           setErrorMsg(resJson.error);
@@ -27,19 +27,38 @@ export default function CourseInfoCard(props) {
   }, [props]);
 
   return (
-    <div>
-      {errorMsg ? (
-        errorMsg
-      ) : (
-        <>
-          <h3>{courseInfo.Course_Code}</h3>
-          {courseInfo.Description}
-          <br />
-          <b>Difficulty:</b> {courseInfo.Difficulty}
-          <br />
-          <b>Interest:</b> {courseInfo.Interest}
-        </>
+    <AnimatePresence>
+      {props.isShown && (
+        <motion.div
+          initial={{ height: 0 }}
+          animate={{ height: "fit-content", transition: { duration: 0.3 } }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            padding: "8px 0px",
+          }}
+          exit={{ height: 0, transition: { duration: 0.3 } }}
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.3 } }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
+          >
+            {errorMsg ? (
+              errorMsg
+            ) : (
+              <>
+                {/* <h3>{courseInfo.Course_Code}</h3> */}
+                {courseInfo.Description}
+                <br />
+                <b>Difficulty:</b> {courseInfo.Difficulty}
+                <br />
+                <b>Interest:</b> {courseInfo.Interest}
+              </>
+            )}
+          </motion.div>
+        </motion.div>
       )}
-    </div>
+    </AnimatePresence>
   );
 }
