@@ -9,6 +9,10 @@
 
 #define PORT 3030
 #define MAXLINE 1024
+#define PYTHON "python3"
+#define PYTHON_SCRIPT "../RecSystem/Database.py"
+#define NUM_RECS "10"
+
 using namespace std;
 int main(int argc, char **argv)
 {
@@ -80,26 +84,26 @@ void RecServer::processNextRequest()
     // int client_fd = accept(socket_fd, (struct sockaddr *)&client_addr, &client_size);
 
     // get next message
-    int chars  = recvfrom(socket_fd, (char *)buffer,
-                                 MAXLINE,
-                                 0,
-                                 (struct sockaddr *)&client_addr,
-                                 &client_size);
+    int chars = recvfrom(socket_fd, (char *)buffer,
+                         MAXLINE,
+                         0,
+                         (struct sockaddr *)&client_addr,
+                         &client_size);
 
     if (chars < 0)
     {
         return;
     }
 
+    char *token = strtok(buffer, " ");
 
-    char * token = strtok(buffer, " ");
-
-    if(strcmp(token, "recs") != 0)
+    if (strcmp(token, "recs") != 0)
     {
         return;
     }
-    char * user = strtok(NULL, " ");
-    if(strlen(user)<1) {
+    char *user = strtok(NULL, " ");
+    if (strlen(user) < 1)
+    {
         return;
     }
 
@@ -122,10 +126,7 @@ void RecServer::processNextRequest()
     if (pid == 0)
     {
         printf("running rec script for: %s\n", user);
-        std::string python = "python3";
-        std::string pythonArg = "test.py";
-        const char *pythonArgs[] = {python.c_str(), pythonArg.c_str(), user, NULL};
-        execvp(python.c_str(), (char *const *)pythonArgs);
+        runScript(user);
     }
     else
     {
@@ -148,16 +149,12 @@ void RecServer::cleanUpChildren()
             active_children.erase(pid);
             if (waiting_requests.size() > 0)
             {
-                const char *buffer = waiting_requests.front().c_str();
+                const char *user = waiting_requests.front().c_str();
                 waiting_requests.pop();
                 pid_t pid = fork();
                 if (pid == 0)
                 {
-                    printf("[C]: %s", buffer);
-                    std::string python = "python3";
-                    std::string pythonArg = "test.py";
-                    const char *pythonArgs[] = {python.c_str(), pythonArg.c_str(), NULL};
-                    execvp(python.c_str(), (char *const *)pythonArgs);
+                    runScript(user);
                 }
                 else
                 {
@@ -167,4 +164,14 @@ void RecServer::cleanUpChildren()
             }
         }
     } while (pid > 0);
+}
+
+void RecServer::runScript(const char *user)
+{
+    const char *python_args[] = {PYTHON,
+                                 PYTHON_SCRIPT,
+                                 "-u", user,
+                                 "-n", NUM_RECS,
+                                 NULL};
+    execvp(PYTHON, (char *const *)python_args);
 }

@@ -21,4 +21,5 @@ private:
     int createAndBindSocket(int port);
     void processNextRequest();
     void cleanUpChildren();
+    void runScript(const char * user);
 };
