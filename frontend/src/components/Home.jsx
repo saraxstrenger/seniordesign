@@ -11,17 +11,6 @@ const row = {
   justifyContent: "center",
   flexDirection: "row",
 };
-const col = {
-  display: "flex",
-  justifyContent: "flex-start",
-  flexDirection: "column",
-  alignItems: "stretch",
-};
-const sliderTitleStyle = {
-  fontWeight: "bold",
-  fontSize: "1.5rem",
-  marginBottom: "1rem",
-};
 
 function Home(props) {
   const [searchResult, setSearchResult] = useState({});
@@ -46,7 +35,6 @@ function Home(props) {
         return res.json();
       })
       .then((resJson) => {
-        console.log(resJson);
         if (resJson === null || resJson.success === false) {
           setErrorMsg(
             resJson?.errorMsg ||
@@ -55,7 +43,6 @@ function Home(props) {
         } else {
           setInterests(resJson.interests);
           setRecommendations(resJson.recs);
-          console.log(resJson.recs);
         }
         setLoading(false);
       });
@@ -84,7 +71,6 @@ function Home(props) {
       .then((resJson) => {
         setInFlight(false);
         setSearchResult(resJson);
-        console.log("result: " + resJson);
       });
   };
 
@@ -95,7 +81,6 @@ function Home(props) {
         className={styles.page}
         style={{ alignItems: "center", overflow: "visible" }}
       >
-        
         <Logout {...props} />
         <form style={{ ...row, width: "100%" }} onSubmit={trySearch}>
           <input
@@ -168,6 +153,7 @@ function Recommendations(props) {
               <h3>
                 No interests added! Visit the{" "}
                 <a
+                  href="/profile"
                   onClick={() => {
                     navigate("/profile");
                   }}

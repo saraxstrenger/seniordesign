@@ -63,7 +63,7 @@ def update_rec(username, num_recs, embed_rec, user_table):
   for interest, recs in new_recs.items():
     if index != 0:
       update_expression += ', '
-    attribute = '#interst'+str(index)
+    attribute = '#interest'+str(index)
     attribute_names[attribute] = interest
     value = ':val'+str(index)
     attribute_values[value] = recs

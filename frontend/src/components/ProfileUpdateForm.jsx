@@ -1,6 +1,8 @@
 import { useState } from "react";
 import LoadingDots from "./LoadingDots";
 import { useNavigate } from "react-router-dom";
+import "./css/Buttons.css"
+
 const row = {
   display: "flex",
   justifyContent: "center",
@@ -107,10 +109,11 @@ export default function ProfileUpdateForm(props) {
         />
 
         {editProfileMode ? (
-          <label for="submit">
+          <label for="submitProfileUpdate">
             <input
+              className={"btn"}
               label={"submit"}
-              id={"submit"}
+              id={"submitProfileUpdate"}
               type={"submit"}
               isEdit={editProfileMode}
             />
@@ -120,6 +123,7 @@ export default function ProfileUpdateForm(props) {
       </form>
       <button
         style={{ margin: 8 }}
+        className={"btn"}
         onClick={() => setEditProfileMode(!editProfileMode)}
       >
         {editProfileMode ? "Cancel" : "Update Profile"}
@@ -135,9 +139,9 @@ function range(size, startAt = 0) {
 
 function ProfileFormElement({ label, id, value, isEdit, ...formProps }) {
   return (
-    <div style={{ padding: 8 }}>
+    <div style={{ padding: 8, display:"flex", flexDirection:"row"}}>
       {isEdit ? (
-        <div>
+        <>
           <label style={{ padding: "0px 4px" }} for={id}>
             <b>{label}: </b>
           </label>
@@ -147,13 +151,14 @@ function ProfileFormElement({ label, id, value, isEdit, ...formProps }) {
             name={id}
             placeholder={label}
             defaultValue={value}
+          
           />
-        </div>
+        </>
       ) : (
-        <div>
+        <>
           <b>{label}: </b>
           {value}
-        </div>
+        </>
       )}
     </div>
   );

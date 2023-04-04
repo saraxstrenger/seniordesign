@@ -4,8 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function CourseInfoCard(props) {
   const [courseInfo, setCourseInfo] = useState({});
   const [errorMsg, setErrorMsg] = useState("");
+  const { courseId, isShown } = props;
   useEffect(() => {
-    fetch("/course/" + props.courseId, {
+    console.log(courseId);
+
+    fetch("/course/" + courseId, {
       method: "GET",
       headers: {
         "Content-type": "application/json",
@@ -24,11 +27,11 @@ export default function CourseInfoCard(props) {
           setErrorMsg(resJson.error);
         }
       });
-  }, [props]);
+  }, [courseId]);
 
   return (
     <AnimatePresence>
-      {props.isShown && (
+      {isShown && (
         <motion.div
           initial={{ height: 0 }}
           animate={{ height: "fit-content", transition: { duration: 0.3 } }}

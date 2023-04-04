@@ -8,7 +8,7 @@ const REC_SERVER_PORT = 3030;
 
 export function auth(req, res) {
   if (req.session?.userid) {
-    res.send(200); // OK - user is logged in
+    res.sendStatus(200); // OK - user is logged in
   } else {
     res.sendStatus(401); // Unauthorized
   }
