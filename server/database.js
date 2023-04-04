@@ -190,7 +190,7 @@ export async function updateEvaluation(
       const params = {
         TableName: EVAL_TABLE,
         Key: {
-          evaluationId,
+          id: evaluationId,
         },
         UpdateExpression:
           "SET #department = :department, #number = :number, #year = :year, #semester = :semester, #difficulty = :difficulty, #interest = :interest",
@@ -226,7 +226,43 @@ export async function deleteEvaluation(
   { department, number, year, semester },
   callback
 ) {
-  // TODO: implement
+  const evaluationId = [user, department, number, year, semester].join("_");
+  //check if evaluation exists
+  db.getEvaluation(evalutionId, (err, data) => {
+    // means course evaluation doesn't exist
+    if (err) {
+      callback(err, data);
+    // course evaluation exists
+    } else {
+      const evalDeleteParams = {
+        TableName: EVAL_TABLE,
+        Key: {
+          id: evaluationId,
+        },
+      };
+      const userUpdateParams = {
+        TableName: USER_TABLE,
+        Key: {
+          username: user,
+        },
+        UpdateExpression: "DELETE #courses :item",
+        ExpressionAttributeNames: {
+          "#courses": "courses",
+        },
+        ExpressionAttributeValues: {
+          ":item": evaluationId,
+        },
+      };
+      const transactionParams = {
+        TransactItems: [
+          { Delete: evalDeleteParams },
+          { Update: userUpdateParams },
+        ],
+      };
+      ddbDocClient.transactWrite(transactionParams, callback);
+    }
+  });
+
 }
 
 /**
