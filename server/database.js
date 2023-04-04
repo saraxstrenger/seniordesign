@@ -163,7 +163,7 @@ export async function getEvaluation(
     },
   };
 
-  ddbDocClient.get(params, callback);
+  ddbDocClient.get(params, callback); 
 }
 
 /**
@@ -174,10 +174,46 @@ export async function getEvaluation(
  */
 export async function updateEvaluation(
   user,
-  { department, number, year, semester, difficulty, interest },
+  { department, number, year, semester, difficulty, interest }, 
   callback
 ) {
-  // TODO: implement
+
+  const evaluationId = [user, department, number, year, semester].join("_");
+
+  // Checking if user has already evaluted course
+  db.getEvaluation(evalutionId, (err, data) => {
+    // means course evaluation doesn't exist
+    if (err) {
+      callback(err, data);
+    // course evaluation exists
+    } else {
+      const params = {
+        TableName: EVAL_TABLE,
+        Key: {
+          evaluationId,
+        },
+        UpdateExpression:
+          "SET #department = :department, #number = :number, #year = :year, #semester = :semester, #difficulty = :difficulty, #interest = :interest",
+        ExpressionAttributeNames: {
+          "#department": "department",
+          "#number": "number",
+          "#year": "year",
+          "#semester": "semester",
+          "#difficulty": "difficulty",
+          "#interest": "interest",
+        },
+        ExpressionAttributeValues: {
+          ":department": department,
+          ":number": number,
+          ":year": year,
+          ":semester": semester,
+          ":difficulty": difficulty,
+          ":interest": interest,
+        },
+      };
+      ddbDocClient.update(params, callback);
+    }
+  });
 }
 
 /**
