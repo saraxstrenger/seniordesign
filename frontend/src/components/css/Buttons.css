@@ -32,3 +32,24 @@
   background: #C3756F;
   color: #ffffff;
 }
+
+.text-btn{
+  background: none;
+  border: none;
+  color: #55868c;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0px;
+  margin: 0px;
+}
+
+.text-btn:hover{
+  text-decoration: underline;
+}
+.btn-small{
+  font-size: small;
+}
+
+.btn-orange{
+  color: #FF8811;
+}

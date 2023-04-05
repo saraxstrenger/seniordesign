@@ -5,7 +5,9 @@ import styles from "./css/utils.module.css";
 import { useNavigate } from "react-router-dom";
 import LoadingDots from "./LoadingDots";
 import CourseSlider from "./CourseSlider";
-import AuthAPI from "../AuthAPI";
+import { AuthAPI, RecommendationsContext } from "../context";
+import Modal from "./Modal";
+import CourseInfoPage from "./CourseInfoPage";
 
 const row = {
   display: "flex",
@@ -21,6 +23,8 @@ function Home(props) {
   const [errorMsg, setErrorMsg] = useState("");
   const [inFlight, setInFlight] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [focusedCourse, setFocusedCourse] = useState(null);
+
   useEffect(() => {
     fetch("/home", {
       headers: {
@@ -82,25 +86,41 @@ function Home(props) {
         className={styles.page}
         style={{ alignItems: "center", overflow: "visible" }}
       >
-        <Logout {...props} />
-        <form style={{ ...row, width: "100%" }} onSubmit={trySearch}>
-          <input
-            type="text"
-            placeholder="Search"
-            name="searchTerm"
-            style={{ minWidth: "50%" }}
-          />
-          <input type="submit" value="Search" />
-        </form>
-        {inFlight ? <LoadingDots /> : null}
-        {JSON.stringify(searchResult)}
+        <RecommendationsContext.Provider
+          value={{ focusedCourse, setFocusedCourse }}
+        >
+          <Logout {...props} />
+          <form style={{ ...row, width: "100%" }} onSubmit={trySearch}>
+            <input
+              type="text"
+              placeholder="Search"
+              name="searchTerm"
+              style={{ minWidth: "50%" }}
+            />
+            <input type="submit" value="Search" />
+          </form>
+          {inFlight ? <LoadingDots /> : null}
+          {JSON.stringify(searchResult)}
 
-        <Recommendations
-          loading={loading}
-          interests={interests}
-          recommendations={recommendations}
-          errorMsg={errorMsg}
-        />
+          <Recommendations
+            loading={loading}
+            interests={interests}
+            recommendations={recommendations}
+            errorMsg={errorMsg}
+          />
+          <Modal isOpen={focusedCourse}>
+            <div>
+              <CourseInfoPage course={focusedCourse} />
+              <button
+                onClick={() => {
+                  setFocusedCourse(null);
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </Modal>
+        </RecommendationsContext.Provider>
       </div>
     </>
   );

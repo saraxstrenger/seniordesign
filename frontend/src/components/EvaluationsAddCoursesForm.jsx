@@ -56,17 +56,14 @@ export default function EvaluationsAddEvaluationForm(props) {
       {!showForm ? (
         <div style={{ width: "100%", ...row }}>
           <center>
-            <button
-              className={"form-button"}
-              onClick={() => setShowForm(true)}
-            >
+            <button className={"form-button"} onClick={() => setShowForm(true)}>
               Add Evaluation
             </button>
           </center>
         </div>
       ) : (
         <>
-          <h2 >New Evaluation:</h2>
+          <h2>New Evaluation:</h2>
           <form style={col} onSubmit={tryAddCourses}>
             <div style={{ marginBottom: "20px", ...row }}>
               <input
@@ -167,8 +164,9 @@ export default function EvaluationsAddEvaluationForm(props) {
               </div>
             </div>
 
-            <div style={{ ...row, height: 350 }}>
+            <div style={{ ...row }}>
               <WorkloadChart
+                height={350}
                 data={workloadData}
                 updateData={setWorkloadData}
                 onDrop={function (e) {

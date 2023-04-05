@@ -19,6 +19,8 @@ export default class WorkloadChart extends React.Component {
       data: props.data,
       onDrop: props.onDrop,
       editEnabled: props?.editEnabled ?? true,
+      height: props?.height,
+      width: props?.width,
     };
   }
 
@@ -30,6 +32,8 @@ export default class WorkloadChart extends React.Component {
     const config = {
       chart: {
         animation: false,
+        height: this.state?.height,
+        width: this.state?.width,
       },
       caption: this.state.editEabled
         ? {
@@ -63,19 +67,19 @@ export default class WorkloadChart extends React.Component {
                 dragMinY: 0,
               }
             : null,
-            point:{
-              events:  {
-                    drop:  this.state.editEnabled
-                    ?(e) => {
-                      const newData = this.state.onDrop(e);
-                      this.setState({ data: newData });
-                    }:null,
+          point: {
+            events: {
+              drop: this.state.editEnabled
+                ? (e) => {
+                    const newData = this.state.onDrop(e);
+                    this.setState({ data: newData });
                   }
-                ,
+                : null,
             },
+          },
         },
-        line:  {
-          cursor:"ns-resize",
+        line: {
+          cursor: "ns-resize",
         },
       },
       tooltip: {

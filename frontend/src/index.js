@@ -8,7 +8,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
-import AuthAPI from "./AuthAPI";
+import { AuthAPI } from "./context";
 import Profile from "./components/Profile";
 import Footer from "./components/Footer";
 import Evaluations from "./components/Evaluations";
@@ -26,14 +26,13 @@ root.render(<App />);
 function App() {
   const [auth, setAuth] = React.useState(Cookies.get("session"));
   console.log(Cookies.get());
-  console.log()
+  console.log();
   // only allows logged in users to pass
 
   // React.useEffect(() => {
   //   const myCookie = Cookies.get('usersession');
   //   console.log("use effect:", myCookie);
   // }, []);
-
 
   return (
     <div
