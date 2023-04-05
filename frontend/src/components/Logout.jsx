@@ -1,7 +1,8 @@
-import React from "react";
+import React , {useContext} from "react";
 import { useNavigate } from "react-router-dom";
-
-export default function Logout({ setLoggedIn }) {
+import AuthAPI from "../AuthAPI";
+export default function Logout() {
+  const setLoggedIn = useContext(AuthAPI).setAuth;
   const navigate = useNavigate();
   const handleLogout = () => {
     // alert("logging out");

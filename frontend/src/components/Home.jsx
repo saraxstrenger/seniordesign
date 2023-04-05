@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Logout from "./Logout";
 import NavBar from "./NavBar";
 import styles from "./css/utils.module.css";
 import { useNavigate } from "react-router-dom";
 import LoadingDots from "./LoadingDots";
 import CourseSlider from "./CourseSlider";
+import AuthAPI from "../AuthAPI";
 
 const row = {
   display: "flex",
@@ -13,21 +14,21 @@ const row = {
 };
 
 function Home(props) {
+  const setLoggedIn = useContext(AuthAPI).setAuth;
   const [searchResult, setSearchResult] = useState({});
   const [recommendations, setRecommendations] = useState([]);
   const [interests, setInterests] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [inFlight, setInFlight] = useState(false);
   const [loading, setLoading] = useState(true);
-  React.useEffect(() => {
+  useEffect(() => {
     fetch("/home", {
-      method: "GET",
       headers: {
         "Content-type": "application/json",
       },
     })
       .then((res) => {
-        props.setLoggedIn(res.status !== 401);
+        setLoggedIn(res.status !== 401);
 
         if (res.status !== 200) {
           return null;
@@ -46,7 +47,7 @@ function Home(props) {
         }
         setLoading(false);
       });
-  }, [props]);
+  }, [setLoggedIn]);
 
   const trySearch = async function (e) {
     e.preventDefault();
@@ -63,7 +64,7 @@ function Home(props) {
     })
       .then((res) => {
         if (res.status === 401) {
-          props.setLoggedIn(false);
+          setLoggedIn(false);
         } else {
           return res.json();
         }

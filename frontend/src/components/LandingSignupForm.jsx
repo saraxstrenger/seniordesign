@@ -1,13 +1,13 @@
 import React from "react";
 import styles from "./css/utils.module.css";
-import { useState } from "react";
-
+import { useState, useContext } from "react";
+import AuthAPI from "../AuthAPI";
 function range(size, startAt = 0) {
   return [...Array(size).keys()].map((i) => i + startAt);
 }
 
 export default function LandingSignupForm(props) {
-  const { setLoggedIn } = props;
+  const setLoggedIn = useContext(AuthAPI).setAuth;
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
   const [username, setUsername] = useState("");

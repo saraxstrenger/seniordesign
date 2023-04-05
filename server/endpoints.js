@@ -21,24 +21,25 @@ export function logout(req, res, next) {
   // clear the user from the session object and save.
   // this will ensure that re-using the old session id
   // does not have a logged in user
-  req.session.user = null;
-  req.session.save(function (err) {
-    if (err) {
-      res.sendStatus(500);
-      return;
-    }
+  req.session=null;
+  res.sendStatus(200);
+  // req.session.save(function (err) {
+  //   if (err) {
+  //     res.sendStatus(500);
+  //     return;
+  //   }
 
-    // regenerate the session, which is good practice to help
-    // guard against forms of session fixation
-    // req.session.destroy();
-    req.session.regenerate(function (err) {
-      if (err) {
-        res.sendStatus(500);
-        return;
-      }
-      res.sendStatus(200);
-    });
-  });
+  //   // regenerate the session, which is good practice to help
+  //   // guard against forms of session fixation
+  //   // req.session.destroy();
+  //   req.session.regenerate(function (err) {
+  //     if (err) {
+  //       res.sendStatus(500);
+  //       return;
+  //     }
+  //     res.sendStatus(200);
+  //   });
+  // });
 }
 
 export async function login(req, res) {
@@ -61,6 +62,7 @@ export async function login(req, res) {
       const password = data.Item.password;
       if (password !== null && password === pass) {
         req.session = setCookie(req.session, user);
+        // res.cookie('usersession', 'encryptedmumbojumbo', { maxAge: 60*60*24*3, httpOnly: false });
         res.json({ success: true });
       } else {
         res.json({

@@ -1,33 +1,40 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
+import {
+  BrowserRouter as Router,
+  Outlet,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import AuthAPI from "./AuthAPI";
 import Profile from "./components/Profile";
 import Footer from "./components/Footer";
 import Evaluations from "./components/Evaluations";
 import Home from "./components/Home";
 import Landing from "./components/Landing";
-// import { Navigate } from "react-router-dom";
+import Cookies from "js-cookie";
+
+import "./index.css";
+// import { useNavigate } from "react-router-dom";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(<App />);
 
 function App() {
-  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [auth, setAuth] = React.useState(Cookies.get("session"));
+  console.log(Cookies.get());
+  console.log()
   // only allows logged in users to pass
-  const AuthRedirect = ({ children }) => {
-    if (loggedIn) {
-      return children;
-    }
-    return <Landing setLoggedIn={setLoggedIn} />;
-  };
-  React.useEffect(() => {
-    fetch("/auth").then((res) => {
-      setLoggedIn(res.status === 200);
-    });
-  }, [loggedIn]);
+
+  // React.useEffect(() => {
+  //   const myCookie = Cookies.get('usersession');
+  //   console.log("use effect:", myCookie);
+  // }, []);
+
+
   return (
     <div
       style={{
@@ -36,58 +43,53 @@ function App() {
         minHeight: "100vh",
       }}
     >
-      <Router>
-        <div
-          style={{ flexGrow: "1", display: "flex", flexDirection: "column" }}
-        >
-          <Routes>
-            <Route
-              path="/"
-              element={
-                loggedIn ? (
-                  <Home setLoggedIn={setLoggedIn} />
-                ) : (
-                  <Landing setLoggedIn={setLoggedIn} />
-                )
-              }
-            />
-            <Route
-              path="/"
-              element={
-                loggedIn ? (
-                  <Home setLoggedIn={setLoggedIn} />
-                ) : (
-                  <Landing setLoggedIn={setLoggedIn} />
-                )
-              }
-            />
-            <Route
-              path="/home"
-              element={
-                <Home setLoggedIn={setLoggedIn} />
-              }
-            />
-            <Route
-              path="/evaluations"
-              element={
-                <AuthRedirect>
-                  <Evaluations setLoggedIn={setLoggedIn} />
-                </AuthRedirect>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <AuthRedirect>
-                  <Profile setLoggedIn={setLoggedIn} />
-                </AuthRedirect>
-              }
-            />
-          </Routes>
-        </div>
-        <Footer />
-      </Router>
+      <AuthAPI.Provider value={{ auth, setAuth }}>
+        <Endpoints />
+      </AuthAPI.Provider>
     </div>
+  );
+}
+
+function Endpoints() {
+  const ProtectedRoute = ({ auth, path, children }) => {
+    // const Navigate = useNavigate();
+    return auth ? <Outlet /> : <Navigate to="/login" />;
+  };
+
+  const Auth = React.useContext(AuthAPI);
+  return (
+    <Router>
+      <div style={{ flexGrow: "1", display: "flex", flexDirection: "column" }}>
+        <Routes>
+          <Route exact path="/" element={<ProtectedRoute auth={Auth.auth} />}>
+            <Route exact path="/" element={<Home />} />
+          </Route>
+          <Route path="/login" element={<Landing />} />
+          <Route
+            exact
+            path="/home"
+            element={<ProtectedRoute auth={Auth.auth} />}
+          >
+            <Route exact path="/home" element={<Home />} />
+          </Route>
+          <Route
+            exact
+            path="/evaluations"
+            element={<ProtectedRoute auth={Auth.auth} />}
+          >
+            <Route exact path="/evaluations" element={<Evaluations />} />
+          </Route>
+          <Route
+            exact
+            path="/profile"
+            element={<ProtectedRoute auth={Auth.auth} />}
+          >
+            <Route exact path="/profile" element={<Profile />} />
+          </Route>
+        </Routes>
+      </div>
+      <Footer />
+    </Router>
   );
 }
 

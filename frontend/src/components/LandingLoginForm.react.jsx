@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import  AuthAPI from "../AuthAPI";
 
-export default function LandingLoginForm({ setLoggedIn }) {
+export default function LandingLoginForm( ) {
+  const setLoggedIn = useContext(AuthAPI).setAuth;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");

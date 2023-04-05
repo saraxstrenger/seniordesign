@@ -39,7 +39,7 @@ export default function EvaluationsInfoCard({ evaluationId }) {
 
   return (
     <div style={{ overflow: "wrap" }}>
-      <div style={{...row, justifyContent: "space-around"}}>
+      <div style={{ ...row, justifyContent: "space-around" }}>
         <div>
           <b>Difficulty: </b>
           {evaluationInfo.difficulty}
@@ -51,7 +51,9 @@ export default function EvaluationsInfoCard({ evaluationId }) {
       </div>
 
       <div>
-        {workloadData.length === 4 ? (
+        {errorMsg ? (
+          { errorMsg }
+        ) : workloadData.length === 4 ? (
           <WorkloadChart
             data={workloadData}
             updateData={editMode ? setWorkloadData : null}
