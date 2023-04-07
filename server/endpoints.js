@@ -21,7 +21,7 @@ export function logout(req, res, next) {
   // clear the user from the session object and save.
   // this will ensure that re-using the old session id
   // does not have a logged in user
-  req.session=null;
+  req.session = null;
   res.sendStatus(200);
   // req.session.save(function (err) {
   //   if (err) {
@@ -83,25 +83,42 @@ function isEmptyStr(str) {
 }
 
 function isEmail(email) {
-  //TODO
-  return true;
+
+  if(!email) return false;
+
+  const emailRegex = /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
+  return emailRegex.test(email);
 }
 
+function isValidYear(year) {
+  if (isNaN(year)) return false;
+
+  if (year < 2000) return false;
+
+  const currentYear = new Date().getFullYear();
+  if (year > currentYear) return false;
+
+  return true;
+}
 export function signup(req, res) {
+  console.log("signup request received");
   const params = req.body;
+  console.log(params);
   params.year = parseInt(params.year, 10);
   if (
     isEmptyStr(params.first) ||
     isEmptyStr(params.last) ||
     isEmptyStr(params.username) ||
     isEmptyStr(params.password) || // todo: password validation? letters, numbers etc
-    isEmail(params.email) ||
-    isNaN(params.entranceYear) ||
+    !isEmail(params.email) ||
+    !isValidYear(params.entranceYear) ||
     isEmptyStr(params.major)
   ) {
     res.json({ success: false, errorMsg: "Invalid input" });
+    return;
   }
 
+  console.log("params valid");
   // try to create db entry
   db.createUser(params, (err, data) => {
     if (err) {
@@ -337,18 +354,18 @@ export function changePassword(req, res) {
   // TODO
 }
 
-export function updateInterests(req, res) {
+export function addInterest(req, res) {
   if (!req.session?.userid) {
     res.sendStatus(401); // Unauthorized
     return;
   }
-  const newInterests = req.body?.interests;
+  const newInterest = req.body?.interest;
 
-  if (newInterests === undefined) {
+  if (newInterest === undefined) {
     res.json({ success: false, errorMsg: "Unable to perform operation." });
     return;
   }
-  db.updateInterests(req.session.userid, newInterests, (err, data) => {
+  db.addInterest(req.session.userid, newInterest, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
       res.json({ success: false, errorMsg: "Unable to perform operation." });
@@ -358,6 +375,27 @@ export function updateInterests(req, res) {
   });
   // send message to server to update recommendations
   queueUser(req.session.userid);
+}
+
+export function removeInterest(req, res) {
+  if (!req.session?.userid) {
+    res.sendStatus(401); // Unauthorized
+    return;
+  }
+  const interest = req.body?.interest;
+
+  if (interest === undefined) {
+    res.json({ success: false, errorMsg: "Unable to perform operation." });
+    return;
+  }
+  db.removeInterest(req.session.userid, interest, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
+    } else {
+      res.json({ success: true });
+    }
+  });
 }
 
 /**

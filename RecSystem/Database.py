@@ -31,26 +31,24 @@ def update_rec(username, num_recs, embed_rec, user_table):
         err.response['Error']['Message'])
     return
   
-  existing_interests = []
-  if "interests" in response["Item"]:
-    existing_interests = response["Item"]["interests"]
-
-  exististing_recs = {}
-  if 'recs' in response['Item']:
-    exististing_recs = response['Item']['recs']
+  uncomputed_interests = []
+  if 'Item' not in response:
+    print("Couldn't find user %s in user table", username)
+    return
   
-  new_interests =[]
-  for interest in existing_interests:
-    if interest not in exististing_recs:
-      new_interests.append(interest)
+  existing_interests = response['Item']['interests']
+
+  for interest, recommendations in existing_interests.items():
+    if recommendations is None or len(recommendations) == 0:
+      uncomputed_interests.append(interest)
 
   # terminate early if no computation should be made
-  if len(new_interests)==0:
+  if len(uncomputed_interests)==0:
     return
 
   # compute new recommendations
   new_recs = {}
-  for interest in new_interests:
+  for interest in uncomputed_interests:
     recs = embed_rec.k_nearest_neighbors(interest, num_recs)
     course_codes = [name[:8] for name in recs]
     new_recs[interest] = course_codes
@@ -68,7 +66,7 @@ def update_rec(username, num_recs, embed_rec, user_table):
     value = ':val'+str(index)
     attribute_values[value] = recs
 
-    update_expression += "recs."+attribute + ' = '+value
+    update_expression += "interests."+attribute + ' = '+value
     index += 1
 
   user_table.update_item(

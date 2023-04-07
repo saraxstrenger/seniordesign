@@ -19,6 +19,7 @@ export async function createUser(
       email,
       entranceYear,
       major,
+      interests: {},
     },
     ConditionExpression: "attribute_not_exists(username)",
   };
@@ -67,23 +68,44 @@ export function updateUser(
 }
 
 /**
- * updates _user_'s interest list to _interests_ (set of strings)
- * @param {*} user
- * @param {*} interests
- * @param {*} callback
+ * updates _user_'s interest list to include _interest_ 
+ * @param {string} user
+ * @param {string} interest
+ * @param {function(err, data)} callback
  */
-export function updateInterests(user, interests, callback) {
+export function addInterest(user, interest, callback) {
   const params = {
     TableName: USER_TABLE,
     Key: {
       username: user,
     },
-    UpdateExpression: "SET #interests = :interests",
+    UpdateExpression: "SET interests.#newInterest = :emptyRecommendation",
     ExpressionAttributeNames: {
-      "#interests": "interests",
+      "#newInterest": interest,
     },
     ExpressionAttributeValues: {
-      ":interests": interests,
+      ":emptyRecommendation": [],
+    },
+    ConditionExpression: "attribute_not_exists(interests.#newInterest)",
+  };
+  ddbDocClient.update(params, callback);
+}
+
+/**
+ * updates _user_'s interest list to remove _interest_
+ * @param {string} user
+ * @param {string} interest
+ * @param {function(err, data)} callback
+ */
+export function removeInterest(user, interest, callback) {
+  const params = {
+    TableName: USER_TABLE,
+    Key: {
+      username: user,
+    },
+    UpdateExpression: "REMOVE interests.#interest",
+    ExpressionAttributeNames: {
+      "#interest": interest,
     },
   };
   ddbDocClient.update(params, callback);

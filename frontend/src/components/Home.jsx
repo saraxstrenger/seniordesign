@@ -18,7 +18,6 @@ const row = {
 function Home(props) {
   const setLoggedIn = useContext(AuthAPI).setAuth;
   const [searchResult, setSearchResult] = useState({});
-  const [recommendations, setRecommendations] = useState([]);
   const [interests, setInterests] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [inFlight, setInFlight] = useState(false);
@@ -47,7 +46,6 @@ function Home(props) {
           );
         } else {
           setInterests(resJson.interests);
-          setRecommendations(resJson?.recs ?? {});
         }
         setLoading(false);
       });
@@ -105,7 +103,6 @@ function Home(props) {
           <Recommendations
             loading={loading}
             interests={interests}
-            recommendations={recommendations}
             errorMsg={errorMsg}
           />
           <Modal isOpen={focusedCourse}>
@@ -127,8 +124,16 @@ function Home(props) {
 }
 
 function Recommendations(props) {
-  const { loading, interests, recommendations, errorMsg } = props;
+  const { loading, interests, errorMsg } = props;
   const navigate = useNavigate();
+
+  const interestsWithRecs = Object.keys(interests).reduce((acc, interest) => {
+    if (interests[interest].length > 0) {
+      acc[interest] = interests[interest];
+    }
+    return acc;
+  }, {});
+
   return (
     <>
       {loading ? (
@@ -142,19 +147,15 @@ function Recommendations(props) {
         >
           <LoadingDots />
         </div>
-      ) : interests.length > 0 ? (
+      ) : Object.keys(interestsWithRecs).length > 0 ? (
         <div style={{ width: "100%" }}>
-          {interests.map((interest) => {
-            if (!recommendations[interest]) {
-              return null;
-            } else {
-              return (
-                <div style={{ overflowX: "visible", padding: 12 }}>
-                  <h2 style={{ margin: 0 }}>{interest}</h2>
-                  <CourseSlider courses={recommendations[interest]} />
-                </div>
-              );
-            }
+          {Object.keys(interestsWithRecs).map((interest) => {
+            return (
+              <div style={{ overflowX: "visible", padding: 12 }}>
+                <h2 style={{ margin: 0 }}>{interest}</h2>
+                <CourseSlider courses={interestsWithRecs[interest]} />
+              </div>
+            );
           })}
         </div>
       ) : (
@@ -167,29 +168,33 @@ function Recommendations(props) {
             width: "70%",
           }}
         >
-          {errorMsg ? (
-            errorMsg
-          ) : (
-            <center>
-              <h3>
-                No interests added! Visit the{" "}
-                <a
-                  href="/profile"
-                  onClick={() => {
-                    navigate("/profile");
-                  }}
-                  style={{
-                    textDecoration: "underline",
-                    color: "#55868C",
-                    cursor: "pointer",
-                  }}
-                >
-                  profile page
-                </a>{" "}
-                to add interests and get personalized recommendations.
-              </h3>
-            </center>
-          )}
+          <center>
+            <h3>
+              {Object.keys(interests).length > 0 ? (
+                "We are hard at work on your recommendations... check back later!"
+              ) : errorMsg ? (
+                errorMsg
+              ) : (
+                <>
+                  No interests added! Visit the{" "}
+                  <a
+                    href="/profile"
+                    onClick={() => {
+                      navigate("/profile");
+                    }}
+                    style={{
+                      textDecoration: "underline",
+                      color: "#55868C",
+                      cursor: "pointer",
+                    }}
+                  >
+                    profile page
+                  </a>{" "}
+                  to add interests and get personalized recommendations.
+                </>
+              )}
+            </h3>
+          </center>
         </div>
       )}
     </>

@@ -65,7 +65,7 @@ export default function Profile(props) {
                   alignItems: "center",
                 }}
               >
-                <ProfileInterestsForm interests={profileData.interests} />
+                <ProfileInterestsForm interests={profileData?.interests ?? {}} />
               </div>
               <h2>Account Settings:</h2>
               <ProfileUpdateForm
