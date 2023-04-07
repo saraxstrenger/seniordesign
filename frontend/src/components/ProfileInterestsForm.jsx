@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./css/Buttons.css";
+import LoadingDots from "./LoadingDots";
 
 // const row = {
 //   display: "flex",
@@ -9,10 +10,18 @@ import "./css/Buttons.css";
 
 export default function ProfileInterestsForm(props) {
   const { interests } = props;
-  const [updatedInterests, setUpdatedInterests] = useState(interests);
+  const [interestsSet, setInterestsSet] = useState(new Set(interests));
   const [errorMsg, setErrorMsg] = useState("");
 
+  useEffect(() => {
+    setInterestsSet(new Set(interests ?? []));
+  }, [interests]);
+
   const removeInterest = (removedInterest) => {
+    if(!interestsSet.has(removedInterest)) {
+      setErrorMsg("Interest not found.");
+      return;
+    }
     fetch("/removeInterest", {
       method: "POST",
       headers: {
@@ -35,12 +44,9 @@ export default function ProfileInterestsForm(props) {
           setErrorMsg(resJson?.errorMsg ?? "Unable to remove interest.");
         } else {
           setErrorMsg("");
-          setUpdatedInterests((oldInterests) =>
-            {
-              delete oldInterests[removedInterest];
-              return oldInterests;
-            }
-          );
+          const updatedInterests = new Set(interestsSet);
+          updatedInterests.delete(removedInterest);
+          setInterestsSet(updatedInterests);
         }
       });
   };
@@ -48,7 +54,7 @@ export default function ProfileInterestsForm(props) {
   const addInterest = (e) => {
     e.preventDefault();
     const newInterest = e.target.newInterest.value;
-    if (updatedInterests[newInterest] !== undefined) {
+    if (interestsSet.has(newInterest)) {
       setErrorMsg("Interest already exists!");
       return;
     }
@@ -60,7 +66,7 @@ export default function ProfileInterestsForm(props) {
         "Content-type": "application/json",
       },
       body: JSON.stringify({
-        interests: newInterest,
+        interest: newInterest,
       }),
     })
       .then((res) => {
@@ -78,10 +84,9 @@ export default function ProfileInterestsForm(props) {
           );
         } else if (resJson.success === true) {
           setErrorMsg("");
-          setUpdatedInterests((oldInterests) => {
-            oldInterests[newInterest] = [];
-            return oldInterests;
-          });
+          const updatedInterests =new Set(interestsSet);
+          updatedInterests.add(newInterest);
+          setInterestsSet(updatedInterests);
           e.target.newInterest.value = "";
         }
       });
@@ -97,8 +102,10 @@ export default function ProfileInterestsForm(props) {
           padding: 12,
         }}
       >
-        {Object.keys(updatedInterests).length > 0 ? (
-          Object.keys(updatedInterests).map((interest, index) => {
+        {interests === null ? (
+          <LoadingDots/>
+        ) : interestsSet.size > 0 ? (
+          Array.from(interestsSet).map((interest, index) => {
             return (
               <div key={index}>
                 <InterestBubble
@@ -111,9 +118,9 @@ export default function ProfileInterestsForm(props) {
             );
           })
         ) : (
-          // <div style={{ padding: 12 }}>
-          <h4 style={{ margin: 8 }}>No interests added yet!</h4>
-          // {/* // </div> */}
+          <>
+            <h4 style={{ margin: 8 }}>No interests added yet!</h4>
+          </>
         )}
       </div>
       <div style={{ dropShadow: "1px 1px 2px rgba(0, 0, 0, 0.25)" }}>

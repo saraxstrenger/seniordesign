@@ -11,7 +11,8 @@ const col = {
 };
 export default function Profile(props) {
   const { setLoggedIn } = props;
-  const [profileData, setProfileData] = useState({});
+  const [profileData, setProfileData] = useState([]);
+  const [interests, setInterests] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function Profile(props) {
         console.log(resJson);
         if (resJson.success) {
           setProfileData(resJson.user);
+          setInterests(Object.keys(resJson.user.interests));
         } else {
           setErrorMsg("Unable to load user profile at this time.");
         }
@@ -65,7 +67,7 @@ export default function Profile(props) {
                   alignItems: "center",
                 }}
               >
-                <ProfileInterestsForm interests={profileData?.interests ?? {}} />
+                <ProfileInterestsForm interests={interests} />
               </div>
               <h2>Account Settings:</h2>
               <ProfileUpdateForm
