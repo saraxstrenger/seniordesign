@@ -42,7 +42,7 @@ function Home(props) {
           );
         } else {
           setInterests(resJson.interests);
-          setRecommendations(resJson.recs);
+          setRecommendations(resJson?.recs ?? {});
         }
         setLoading(false);
       });
