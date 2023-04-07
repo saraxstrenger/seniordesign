@@ -4,7 +4,7 @@ import style from "./css/utils.module.css";
 import EvaluationsAddEvaluationForm from "./EvaluationsAddCoursesForm";
 import { AiFillCaretDown } from "react-icons/ai";
 import EvaluationsInfoCard from "./EvaluationsInfoCard";
-import { AuthAPI} from "../context";
+import { AuthAPI } from "../context";
 
 // const USER = 1;
 const DEPT = 1;
@@ -24,26 +24,12 @@ function Courses(props) {
   const [evaluations, setEvaluations] = useState([]);
 
   useEffect(() => {
-    fetch("/auth", {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json",
-      },
-    }).then((res) => {
-      setLoggedIn(res.status === 200);
-    });
-  });
-
-  useEffect(() => {
     fetch("/evaluations", {
       method: "GET",
       headers: {
         "Content-type": "application/json",
       },
     }).then(async (res) => {
-      console.log("evals");
-      console.log(res);
-
       if (res.status === 401) {
         // unauthorized
         props.setLoggedIn(false);
@@ -51,12 +37,12 @@ function Courses(props) {
         setErrorMsg("Unable to get evaluations at this time.");
       } else {
         const data = await res.json();
-        console.log(data);
-
+        if (data.courses === undefined || data.courses.length === 0) {
+          setEvaluations([]);
+          return;
+        }
         const evals = data.courses.map((evaluation) => {
-          console.log(evaluation);
           const attributes = evaluation.split("_");
-          console.log(attributes);
           return {
             department: attributes[DEPT],
             number: attributes[NUM],
@@ -93,9 +79,20 @@ function Courses(props) {
               justifyContent: "center",
             }}
           >
-            {evaluations.map((evaluation) => {
-              return <CourseEvalCard {...evaluation} key={evaluation.id} />;
-            })}
+            {evaluations.length === 0 ? (
+              <div style={{padding: "24px 12px", fontSize:"large"}}>
+                <center>
+                  No evaluations found!
+                  <br />
+                  Add an evaluation above to start getting personalized course
+                  recommendations.
+                </center>
+              </div>
+            ) : (
+              evaluations.map((evaluation) => {
+                return <CourseEvalCard {...evaluation} key={evaluation.id} />;
+              })
+            )}
           </div>
         )}
       </div>
@@ -145,7 +142,7 @@ function CourseEvalCard({ department, number, semester, year, id }) {
             onClick={handleClick}
           />
         </div>
-        {expand && <EvaluationsInfoCard evaluationId={id} isShown={expand}/>}
+        {expand && <EvaluationsInfoCard evaluationId={id} isShown={expand} />}
       </div>
     </div>
   );

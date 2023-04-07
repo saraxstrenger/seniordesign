@@ -138,7 +138,7 @@ export async function addEvaluation(
     },
     ExpressionAttributeValues: {
       ":item": ddbDocClient.createSet([evaluationId]),
-    },
+    }
   };
 
   // create course evaluation
@@ -168,7 +168,7 @@ export async function addEvaluation(
     ],
   };
 
-  ddbDocClient.transactWrite(transactionParams, callback);
+  ddbDocClient.transactWrite(transactionParams, (err, data )=>callback(err, courseCreationParams.Item));
 }
 
 /**

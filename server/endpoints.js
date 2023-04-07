@@ -193,7 +193,8 @@ export function addEvaluation(req, res) {
       console.log("Error", err.stack);
       res.json({ success: false, errorMsg: "Class already exists" });
     } else {
-      res.json({ success: true });
+      console.log("Success adding eval", data);
+      res.json({ success: true, courseId: data.id });
     }
   });
 }

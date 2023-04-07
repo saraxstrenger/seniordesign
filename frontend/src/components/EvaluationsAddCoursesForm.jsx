@@ -39,6 +39,7 @@ export default function EvaluationsAddEvaluationForm(props) {
     });
     let resJson = await res.json();
     if (resJson.success === true) {
+      courseData.id = resJson.courseId;
       const updated = evaluations.concat([courseData]);
       setEvaluations(updated);
       setShowForm(false);
