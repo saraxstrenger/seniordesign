@@ -1,13 +1,14 @@
 import React from "react";
 import styles from "./css/utils.module.css";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthAPI } from "../context";
 
 function range(size, startAt = 0) {
   return [...Array(size).keys()].map((i) => i + startAt);
 }
 
 export default function LandingSignupForm(props) {
-  const { setLoggedIn } = props;
+  const setLoggedIn = useContext(AuthAPI).setAuth;
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
   const [username, setUsername] = useState("");
@@ -17,10 +18,14 @@ export default function LandingSignupForm(props) {
   const [entranceYear, setEntranceYear] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const FormElement = function(props) {
+  const FormElement = function (props) {
     return (
       <div style={{ padding: 8 }}>
-        <label  for={props.id} style={{ paddingRight: 8 }} hidden={props.labelHidden === true}>
+        <label
+          for={props.id}
+          style={{ paddingRight: 8 }}
+          hidden={props.labelHidden === true}
+        >
           {props.label}
         </label>
         {props.type === "select" ? (
@@ -40,7 +45,7 @@ export default function LandingSignupForm(props) {
     );
   };
 
-  const trySignup = async function(e) {
+  const trySignup = async function (e) {
     e.preventDefault();
 
     // todo: some inflight display/loading
@@ -67,7 +72,7 @@ export default function LandingSignupForm(props) {
       setErrorMsg("");
       setLoggedIn(true);
     } else {
-        // todo: display meaningful error message (probably from backend)
+      // todo: display meaningful error message (probably from backend)
       setErrorMsg(
         resJson?.errorMsg ?? "Unable to complete login at this time."
       );

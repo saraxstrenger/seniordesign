@@ -174,14 +174,14 @@ export async function getEvaluation(
  */
 export async function updateEvaluation(
   user,
-  { department, number, year, semester, difficulty, interest }, 
+  { department, number, year, semester, difficulty, interest, workload }, 
   callback
 ) {
 
   const evaluationId = [user, department, number, year, semester].join("_");
 
   // Checking if user has already evaluted course
-  db.getEvaluation(evalutionId, (err, data) => {
+  getEvaluation(evaluationId, (err, data) => {
     // means course evaluation doesn't exist
     if (err) {
       callback(err, data);
@@ -193,22 +193,22 @@ export async function updateEvaluation(
           id: evaluationId,
         },
         UpdateExpression:
-          "SET #department = :department, #number = :number, #year = :year, #semester = :semester, #difficulty = :difficulty, #interest = :interest",
+          "SET #difficulty = :difficulty, #interest = :interest, #workload1 = :workload1, #workload2 = :workload2, #workload3 = :workload3, #workload4 = :workload4",
         ExpressionAttributeNames: {
-          "#department": "department",
-          "#number": "number",
-          "#year": "year",
-          "#semester": "semester",
           "#difficulty": "difficulty",
           "#interest": "interest",
+          "#workload1": "workload1",
+          "#workload2": "workload2",
+          "#workload3": "workload3",
+          "#workload4": "workload4",
         },
         ExpressionAttributeValues: {
-          ":department": department,
-          ":number": number,
-          ":year": year,
-          ":semester": semester,
           ":difficulty": difficulty,
           ":interest": interest,
+          ":workload1": workload[0],
+          ":workload2": workload[1],
+          ":workload3": workload[2],
+          ":workload4": workload[3],
         },
       };
       ddbDocClient.update(params, callback);
@@ -228,7 +228,7 @@ export async function deleteEvaluation(
 ) {
   const evaluationId = [user, department, number, year, semester].join("_");
   //check if evaluation exists
-  db.getEvaluation(evalutionId, (err, data) => {
+  getEvaluation(evaluationId, (err, data) => {
     // means course evaluation doesn't exist
     if (err) {
       callback(err, data);
@@ -250,7 +250,7 @@ export async function deleteEvaluation(
           "#courses": "courses",
         },
         ExpressionAttributeValues: {
-          ":item": evaluationId,
+          ":item": ddbDocClient.createSet([evaluationId])
         },
       };
       const transactionParams = {

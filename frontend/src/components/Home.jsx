@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Logout from "./Logout";
 import NavBar from "./NavBar";
 import styles from "./css/utils.module.css";
 import { useNavigate } from "react-router-dom";
 import LoadingDots from "./LoadingDots";
 import CourseSlider from "./CourseSlider";
+import { AuthAPI, RecommendationsContext } from "../context";
+import Modal from "./Modal";
+import CourseInfoPage from "./CourseInfoPage";
 
 const row = {
   display: "flex",
@@ -13,21 +16,23 @@ const row = {
 };
 
 function Home(props) {
+  const setLoggedIn = useContext(AuthAPI).setAuth;
   const [searchResult, setSearchResult] = useState({});
   const [recommendations, setRecommendations] = useState([]);
   const [interests, setInterests] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [inFlight, setInFlight] = useState(false);
   const [loading, setLoading] = useState(true);
-  React.useEffect(() => {
+  const [focusedCourse, setFocusedCourse] = useState(null);
+
+  useEffect(() => {
     fetch("/home", {
-      method: "GET",
       headers: {
         "Content-type": "application/json",
       },
     })
       .then((res) => {
-        props.setLoggedIn(res.status !== 401);
+        setLoggedIn(res.status !== 401);
 
         if (res.status !== 200) {
           return null;
@@ -46,7 +51,7 @@ function Home(props) {
         }
         setLoading(false);
       });
-  }, [props]);
+  }, [setLoggedIn]);
 
   const trySearch = async function (e) {
     e.preventDefault();
@@ -63,7 +68,7 @@ function Home(props) {
     })
       .then((res) => {
         if (res.status === 401) {
-          props.setLoggedIn(false);
+          setLoggedIn(false);
         } else {
           return res.json();
         }
@@ -81,25 +86,41 @@ function Home(props) {
         className={styles.page}
         style={{ alignItems: "center", overflow: "visible" }}
       >
-        <Logout {...props} />
-        <form style={{ ...row, width: "100%" }} onSubmit={trySearch}>
-          <input
-            type="text"
-            placeholder="Search"
-            name="searchTerm"
-            style={{ minWidth: "50%" }}
-          />
-          <input type="submit" value="Search" />
-        </form>
-        {inFlight ? <LoadingDots /> : null}
-        {JSON.stringify(searchResult)}
+        <RecommendationsContext.Provider
+          value={{ focusedCourse, setFocusedCourse }}
+        >
+          <Logout {...props} />
+          <form style={{ ...row, width: "100%" }} onSubmit={trySearch}>
+            <input
+              type="text"
+              placeholder="Search"
+              name="searchTerm"
+              style={{ minWidth: "50%" }}
+            />
+            <input type="submit" value="Search" />
+          </form>
+          {inFlight ? <LoadingDots /> : null}
+          {JSON.stringify(searchResult)}
 
-        <Recommendations
-          loading={loading}
-          interests={interests}
-          recommendations={recommendations}
-          errorMsg={errorMsg}
-        />
+          <Recommendations
+            loading={loading}
+            interests={interests}
+            recommendations={recommendations}
+            errorMsg={errorMsg}
+          />
+          <Modal isOpen={focusedCourse}>
+            <div>
+              <CourseInfoPage course={focusedCourse} />
+              <button
+                onClick={() => {
+                  setFocusedCourse(null);
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </Modal>
+        </RecommendationsContext.Provider>
       </div>
     </>
   );

@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-
-export default function Logout({ setLoggedIn }) {
+import { AuthAPI } from "../context";
+export default function Logout() {
+  const setLoggedIn = useContext(AuthAPI).setAuth;
   const navigate = useNavigate();
   const handleLogout = () => {
-    // alert("logging out");
     fetch("/logout", {
       method: "POST",
       headers: {
@@ -13,7 +13,6 @@ export default function Logout({ setLoggedIn }) {
     }).then((res) => {
       console.log(res);
       if (res.status === 200) {
-        // console.log(setLoggedIn)
         setLoggedIn(false);
         navigate("/");
       } else {
@@ -22,5 +21,9 @@ export default function Logout({ setLoggedIn }) {
       }
     });
   };
-  return <div style={{padding:12}}><button onClick={handleLogout}>Logout</button></div>;
+  return (
+    <div style={{ padding: 12 }}>
+      <button onClick={handleLogout}>Logout</button>
+    </div>
+  );
 }

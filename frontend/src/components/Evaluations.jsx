@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import NavBar from "./NavBar";
 import style from "./css/utils.module.css";
 import EvaluationsAddEvaluationForm from "./EvaluationsAddCoursesForm";
 import { AiFillCaretDown } from "react-icons/ai";
 import EvaluationsInfoCard from "./EvaluationsInfoCard";
+import { AuthAPI} from "../context";
 
 // const USER = 1;
 const DEPT = 1;
@@ -18,6 +19,7 @@ const col = {
 // const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
 function Courses(props) {
+  const setLoggedIn = useContext(AuthAPI).setAuth;
   const [errorMsg, setErrorMsg] = useState("");
   const [evaluations, setEvaluations] = useState([]);
 
@@ -28,7 +30,7 @@ function Courses(props) {
         "Content-type": "application/json",
       },
     }).then((res) => {
-      props.setLoggedIn(res.status === 200);
+      setLoggedIn(res.status === 200);
     });
   });
 
@@ -112,14 +114,14 @@ function CourseEvalCard({ department, number, semester, year, id }) {
     <div
       className={style.cardColor}
       style={{
-        width: "350px",
-        margin: "10px",
+        width: 350,
+        margin: 10,
+        padding: 8,
         filter: "drop-shadow(1px 1px 2px #2B4162)",
-        borderRadius: "12px",
-        overflow: "hidden",
+        borderRadius: 12,
       }}
     >
-      <div style={{ padding: "12px", borderBottom: "1px solid #ccc" }}>
+      <div style={{ padding: 12, borderBottom: "1px solid #ccc" }}>
         <div
           style={{
             display: "flex",
@@ -143,7 +145,7 @@ function CourseEvalCard({ department, number, semester, year, id }) {
             onClick={handleClick}
           />
         </div>
-        {expand && <EvaluationsInfoCard evaluationId={id} />}
+        {expand && <EvaluationsInfoCard evaluationId={id} isShown={expand}/>}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import CourseInfoCard from "./CourseInfoCard";
+import CoursePreviewCard from "./CoursePreviewCard";
 // import { motion, AnimatePresence } from "framer-motion";
 import "./css/CourseCard.css";
 const responsive = {
@@ -24,8 +24,8 @@ const responsive = {
 };
 
 export default function CourseSlider(props) {
-  const [expandedIndex, setExpandedIndex] = useState(-1);
-  const { courses } = props;
+  const [expandedIndex, setExpandedIndex] = useState(-1);  
+  const { courses, ...cardProps} = props;
   const handleCardClick = (index) => {
     if (expandedIndex === index) {
       setExpandedIndex(-1);
@@ -36,31 +36,18 @@ export default function CourseSlider(props) {
   return (
     <Carousel responsive={responsive} itemWidth={300}>
       {courses.map((course, index) => (
-        <div key={index}>
-          {/* <AnimatePresence> */}
+        <div key={index} style={{ width: "100%"}}>
           <div
             onClick={() => handleCardClick(index)}
             className={
               "sliderCard card card-container"
-              // (expandedIndex === index ? " expanded" : "")
             }
           >
-            <img
-              src={course.image}
-              alt={"COURSE NAME"}
-              width="100%"
-              className={"sliderCardImage"}
-            />
-            <h3 >
-              {course}
-            </h3>
-
-            <CourseInfoCard
+            <CoursePreviewCard
               courseId={course}
-              isShown={expandedIndex === index}
+              {...cardProps}
             />
           </div>
-          {/* </AnimatePresence> */}
         </div>
       ))}
     </Carousel>

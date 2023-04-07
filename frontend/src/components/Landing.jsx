@@ -37,9 +37,9 @@ function Landing(props) {
         </div>
         <div style={{ width:"50%"}}>
           {isLogin ? (
-            <LandingLoginForm {...props} />
+            <LandingLoginForm />
           ) : (
-            <LandingSignupForm {...props} />
+            <LandingSignupForm/>
           )}
         </div>
       </div>

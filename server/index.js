@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import session from "express-session";
 import http from "http";
+import cookieSession from "cookie-session";
 
 const PORT = 3001;
 /* Session Setup */
@@ -12,17 +13,21 @@ app.use(bodyParser.urlencoded({ extended: true })); // to support URL-encoded bo
 app.use(bodyParser.json());
 app.set("trust proxy", 1); // trust first proxy
 app.use(
-  session({
-    // genid: function(req) {
-    //   return genuuid() // use UUIDs for session IDs
-    // },
-    resave: false, // Forces the session to be saved back to the session store, even if the session was never modified during the request.
-    saveUninitialized: true, // Forces a session that is "uninitialized" to be saved to the store. A session is uninitialized when it is new but not modified.
-    secret: "keyboard cat", // used to sign session ID cookie
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  cookieSession({
     name: "session",
-    // cookie: { secure: true }, // cookie: Settings object for the session ID cookie.
+    keys: ["keyboard cat"],
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    httpOnly: false
   })
+  // session({
+  //   resave: false, // Forces the session to be saved back to the session store, even if the session was never modified during the request.
+  //   saveUninitialized: true, // Forces a session that is "uninitialized" to be saved to the store. A session is uninitialized when it is new but not modified.
+  //   secret: "keyboard cat", // used to sign session ID cookie
+  //   maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  //   name: "session",
+  //   // cookie: { secure: true }, // cookie: Settings object for the session ID cookie.
+  // })
 );
 app.use(cookieParser());
 var httpServer = http.createServer(app);
