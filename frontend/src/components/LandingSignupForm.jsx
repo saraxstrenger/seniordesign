@@ -15,7 +15,7 @@ export default function LandingSignupForm(props) {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [major, setMajor] = useState("");
-  const [entranceYear, setEntranceYear] = useState("");
+  const [entranceYear, setEntranceYear] = useState(-1);
   const [errorMsg, setErrorMsg] = useState("");
 
   const FormElement = function (props) {

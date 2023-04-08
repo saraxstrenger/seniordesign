@@ -107,7 +107,11 @@ function Home(props) {
           />
           <Modal isOpen={focusedCourse}>
             <div>
-              <CourseInfoPage course={focusedCourse} />
+              {focusedCourse !== null ? (
+                <CourseInfoPage course={focusedCourse} />
+              ) : (
+                <LoadingDots />
+              )}
               <button
                 onClick={() => {
                   setFocusedCourse(null);

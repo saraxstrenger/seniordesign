@@ -44,14 +44,35 @@ export default function CoursePreviewCard(props) {
   }, [courseId, setCourseInfo]);
 
   return (
-    <div onClick={(e) => {
-      e.stopPropagation();
-      setFocusedCourse(courseId);
-    }} style={{ cursor: "pointer" }}>
-      <h3 style={{ marginTop: 0 }}>{courseId}</h3>
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        setFocusedCourse(courseId);
+      }}
+      style={{ cursor: "pointer" }}
+    >
+      <div style={{ ...row, justifyContent: "space-between" }}>
+        <h3 style={{ marginTop: 0 }}>{courseId}</h3>
+        <div style={{ alignItems: "flex-start" }}>
+          <button
+            className="text-btn btn-small btn-orange"
+            onClick={() => {
+              setFocusedCourse(courseInfo);
+            }}
+          >
+            see more
+          </button>
+        </div>
+      </div>
       <div>{errorMsg ? errorMsg : truncateDescription(description, 250)}</div>
-      <div style={{ display: "flex", justifyContent: "flex-end" , color: "#FF8811"}}>
-          See more
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          color: "#FF8811",
+        }}
+      >
+        See more
       </div>
     </div>
   );
