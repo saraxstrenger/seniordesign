@@ -272,7 +272,7 @@ export async function deleteEvaluation(
           "#courses": "courses",
         },
         ExpressionAttributeValues: {
-          ":item": ddbDocClient.createSet([evaluationId])
+          ":item": ddbDocClient.createSet([evaluationId]),
         },
       };
       const transactionParams = {
@@ -293,6 +293,20 @@ export async function deleteEvaluation(
  */
 export async function addLikedCourse(user, { courseId }, callback) {
   // TODO: implement
+  const likedCoursesParams = {
+    TableName: USER_TABLE,
+    Key: {
+      username: user,
+    },
+    UpdateExpression: "ADD #likedCourses :item",
+    ExpressionAttributeNames: {
+      "#likedCourses": "likedCourses",
+    },
+    ExpressionAttributeValues: {
+      ":item": ddbDocClient.createSet([courseId]),
+    }
+  };
+  ddbDocClient.update(likedCoursesParams, callback);
 }
 
 /**
