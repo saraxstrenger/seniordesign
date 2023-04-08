@@ -1,12 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-// import { motion, AnimatePresence } from "framer-motion";
-// import Modal from "./Modal";
-import "./css/Buttons.css";
 import { RecommendationsContext } from "../context";
-const row = {
-  display: "flex",
-  flexDirection: "row",
-};
+import "./css/Buttons.css";
 
 export default function CoursePreviewCard(props) {
   const { courseId } = props;
@@ -22,6 +16,11 @@ export default function CoursePreviewCard(props) {
     const lastSpace = truncated.lastIndexOf(" ");
     return truncated.slice(0, lastSpace) + "...";
   };
+
+  const openModal = () => {
+    // Code to open the modal
+  };
+
   useEffect(() => {
     fetch("/course/" + courseId, {
       method: "GET",
@@ -45,21 +44,15 @@ export default function CoursePreviewCard(props) {
   }, [courseId, setCourseInfo]);
 
   return (
-    <div >
-      <div style={{ ...row, justifyContent: "space-between" }}>
-        <h3 style={{ marginTop: 0 }}>{courseId}</h3>
-        <div style={{ alignItems: "flex-start" }}>
-          <button
-            className="text-btn btn-small btn-orange"
-            onClick={() => {
-              setFocusedCourse(courseId);
-            }}
-          >
-            see more
-          </button>
-        </div>
-      </div>
+    <div onClick={(e) => {
+      e.stopPropagation();
+      setFocusedCourse(courseId);
+    }} style={{ cursor: "pointer" }}>
+      <h3 style={{ marginTop: 0 }}>{courseId}</h3>
       <div>{errorMsg ? errorMsg : truncateDescription(description, 250)}</div>
+      <div style={{ display: "flex", justifyContent: "flex-end" , color: "#FF8811"}}>
+          See more
+      </div>
     </div>
   );
 }
