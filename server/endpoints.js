@@ -83,8 +83,7 @@ function isEmptyStr(str) {
 }
 
 function isEmail(email) {
-
-  if(!email) return false;
+  if (!email) return false;
 
   const emailRegex = /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
   return emailRegex.test(email);
@@ -346,6 +345,7 @@ export function getCourseInfo(req, res) {
       console.log("Error", err.stack);
       res.json({ success: false, errorMsg: "Unable to perform operation." });
     } else {
+      delete data.Item.courseEmbedding;
       res.json({ success: true, data: data.Item });
     }
   });
@@ -429,4 +429,26 @@ export function getHome(req, res) {
       res.json({ success: true, interests, courses, recs });
     }
   });
+}
+
+export function getFullCourseInfo(req, res) {
+  const courseId = req.params.id;
+  db.getCourseInfo(courseId, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
+    } else {
+      // run python script to get personalized predictions
+      // predictions = getPersonalizedPredictions(courseId);
+      res.json({
+        success: true,
+        data: { difficulty: 3, interest: 2, workload: [1, 2, 3, 4] },
+      });
+    }
+  });
+}
+
+function getPersonalizedPredictions(courseId) {
+  // TODO
+  const pythonProcess = spawn("python3", [EMBEDDING_SCRIPT_PATH, courseId]);
 }
