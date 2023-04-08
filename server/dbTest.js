@@ -37,7 +37,7 @@ import * as db from "./database.js";
 //     }
 // });
 
-// const params = { courseId: "CIS 1210"};
+// const params = { courseId: "CIS 5450"};
 // db.addLikedCourse("skota", params, (err, data) => {
 //     if (err) {
 //         console.log("Error", err.stack);

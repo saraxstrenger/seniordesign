@@ -201,7 +201,6 @@ export async function updateEvaluation(
 ) {
 
   const evaluationId = [user, department, number, year, semester].join("_");
-
   // Checking if user has already evaluted course
   getEvaluation(evaluationId, (err, data) => {
     // means course evaluation doesn't exist
@@ -292,7 +291,6 @@ export async function deleteEvaluation(
  * see updateInterests for example).
  */
 export async function addLikedCourse(user, { courseId }, callback) {
-  // TODO: implement
   const likedCoursesParams = {
     TableName: USER_TABLE,
     Key: {
@@ -314,7 +312,20 @@ export async function addLikedCourse(user, { courseId }, callback) {
  * see updateInterests for example).
  */
 export async function removeLikedCourse(user, { courseId }, callback) {
-  // TODO: implement
+  const likedCoursesParams = {
+    TableName: USER_TABLE,
+    Key: {
+      username: user,
+    },
+    UpdateExpression: "DELETE #likedCourses :item",
+    ExpressionAttributeNames: {
+      "#likedCourses": "likedCourses",
+    },
+    ExpressionAttributeValues: {
+      ":item": ddbDocClient.createSet([courseId]),
+    }
+  };
+  ddbDocClient.update(likedCoursesParams, callback);
 }
 
 /**
@@ -322,7 +333,36 @@ export async function removeLikedCourse(user, { courseId }, callback) {
  * @param user
  */
 export async function deleteAccount(user) {
-  // TODO: implement
+  //TODO: Work in progress. Am able to delete user but trying to figure out how to delete all associated evaluations
+  getUser(user, (err, data) => {
+    // means course evaluation doesn't exist
+    if (err) {
+      callback(err, data);
+    // course evaluation exists
+    } else {
+      const userDeleteParams = {
+        TableName: USER_TABLE,
+        Key: {
+          username: user,
+        },
+      };
+      //TODO: Work in progress
+      const evalDeleteParams = {
+        TableName: EVAL_TABLE,
+        FilterExpression: "begins_with(myKey, :partialKey)",
+        ExpressionAttributeValues: {
+            ":partialKey": ddbDocClient.createSet([user])
+        }
+      };
+      const transactionParams = {
+        TransactItems: [
+          { Delete: userDeleteParams },
+          { Delete: evalDeleteParams },
+        ],
+      };
+      ddbDocClient.transactWrite(transactionParams, callback);
+    }
+  });
 }
 
 export async function getCourseInfo(courseId, callback) {
