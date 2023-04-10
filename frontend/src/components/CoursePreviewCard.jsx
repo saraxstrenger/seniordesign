@@ -2,6 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { RecommendationsContext } from "../context";
 import "./css/Buttons.css";
 
+const row = {
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "space-evenly",
+};
 export default function CoursePreviewCard(props) {
   const { courseId } = props;
   const [courseInfo, setCourseInfo] = useState({});
@@ -45,34 +50,23 @@ export default function CoursePreviewCard(props) {
 
   return (
     <div
+      style={{ width: "100%", cursor: "pointer" }}
       onClick={(e) => {
         e.stopPropagation();
-        setFocusedCourse(courseId);
+        setFocusedCourse(courseInfo);
       }}
-      style={{ cursor: "pointer" }}
     >
-      <div style={{ ...row, justifyContent: "space-between" }}>
-        <h3 style={{ marginTop: 0 }}>{courseId}</h3>
-        <div style={{ alignItems: "flex-start" }}>
-          <button
-            className="text-btn btn-small btn-orange"
-            onClick={() => {
-              setFocusedCourse(courseInfo);
-            }}
-          >
-            see more
-          </button>
-        </div>
-      </div>
-      <div>{errorMsg ? errorMsg : truncateDescription(description, 250)}</div>
       <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          color: "#FF8811",
-        }}
+        className={"sliderCard card card-container"}
       >
-        See more
+        <div>
+          <div style={{ ...row, justifyContent: "space-between" }}>
+            <h3 style={{ marginTop: 0 }}>{courseId}</h3>
+          </div>
+          <div>
+            {errorMsg ? errorMsg : truncateDescription(description, 250)}
+          </div>
+        </div>
       </div>
     </div>
   );

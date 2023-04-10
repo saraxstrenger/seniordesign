@@ -105,22 +105,22 @@ function Home(props) {
             interests={interests}
             errorMsg={errorMsg}
           />
-          <Modal isOpen={focusedCourse}>
-            <div>
-              {focusedCourse !== null ? (
-                <CourseInfoPage course={focusedCourse} />
-              ) : (
-                <LoadingDots />
-              )}
-              <button
-                onClick={() => {
-                  setFocusedCourse(null);
-                }}
-              >
-                Close
-              </button>
-            </div>
+          {/* <div style={{ width: "70%" }} > */}
+          <Modal isOpen={focusedCourse} modalStyle={{width: "70%"}}>
+            {focusedCourse !== null ? (
+              <CourseInfoPage course={focusedCourse} />
+            ) : (
+              <LoadingDots />
+            )}
+            <button
+              onClick={() => {
+                setFocusedCourse(null);
+              }}
+            >
+              Close
+            </button>
           </Modal>
+          {/* </div> */}
         </RecommendationsContext.Provider>
       </div>
     </>

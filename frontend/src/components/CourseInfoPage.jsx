@@ -5,12 +5,11 @@ import LoadingDots from "./LoadingDots";
 const row = {
   display: "flex",
   flexDirection: "row",
-  justifyContent: "space-evenly",
 };
 const col = {
   display: "flex",
   flexDirection: "column",
-  width: "50%"
+  width: "50%",
 };
 
 export default function CourseInfoPage(props) {
@@ -41,26 +40,50 @@ export default function CourseInfoPage(props) {
 
   console.log(course);
   return (
-    <div style={{minHeight: 300}}>
-      <h2 style={{ margin: 0 }}>{course?.Course_Code}</h2>
-      <div style={row}>
-        <div style={col}>
-          <h3>Course Name TODO</h3>
-          <div> {course?.Description}</div>
+    <div>
+      <h2 style={{ marginTop: 0 }}>{course?.Course_Code}</h2>
+      <div style={{ ...row, overflow: "hidden", height: 360 }}>
+        <div style={{ ...col, padding:  "0px 8px" }}>
+          <h3 style={{ margin: 0 }}>Course Name TODO</h3>
+          <div
+            style={{
+              overflowY: "auto",
+              padding: 8,
+              textAlign: "left",
+              textIndent: 50,
+            }}
+          >
+            {course?.Description}
+          </div>
         </div>
-        <div style={col}>
-          <h3>Personalized Predictions</h3>
+        <div style={{...col, padding:  "0px 8px"}}>
+          <h3 style={{ margin: 0 }}>Personalized Predictions</h3>
           {predictions !== null ? (
             <>
-              <h3>Interest: {predictions?.interest}/5</h3>
-              <h3>Difficulty: {predictions?.difficulty}/5</h3>
-              <h3>Workload:</h3>
+              <div>
+                <hr />
+              </div>
+              <div style={{ ...row, justifyContent: "space-evenly" }}>
+                <div style={row}>
+                  <b>Interest:</b> {predictions?.interest}/5
+                </div>
+                <div style={row}>
+                  <b>Difficulty: </b> {predictions?.difficulty}/5
+                </div>
+              </div>
+              <div>
+                <hr />
+              </div>
+              <h4 style={{ margin: 0 }}>Workload:</h4>
               <WorkloadChart
-                height={300}
-                width={300}
+                height={250}
+                // width={200}
                 data={predictions?.workload}
                 editEnabled={false}
               />
+              <div>
+                <hr />
+              </div>
             </>
           ) : (
             <div
