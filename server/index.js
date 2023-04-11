@@ -40,7 +40,7 @@ function isAuthenticated(req, res, next) {
   console.log(req.session);
   if (req.session.userid) {
     console.log(
-      "request body" + JSON.stringify(req.body ?? { body: "no body" })
+      "request path" + JSON.stringify(req.path)+ " request body: "+ JSON.stringify(req.body)
     );
     next();
   } else {
@@ -70,7 +70,7 @@ app.post("/logout", isAuthenticated, routes.logout);
 app.post("/login", express.urlencoded({ extended: false }), routes.login);
 app.post("/signup", routes.signup);
 app.post("/addEvaluation", isAuthenticated, routes.addEvaluation);
-app.post("/search", isAuthenticated, routes.getReccomendations);
+app.post("/search", isAuthenticated, routes.getSearchResults);
 app.post("/updateProfile", isAuthenticated, routes.updateProfile);
 app.post("/addInterest", isAuthenticated, routes.addInterest);
 app.post("/removeInterest", isAuthenticated, routes.removeInterest);

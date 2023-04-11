@@ -63,8 +63,8 @@ export default function CoursePreviewCard(props) {
           <div style={{ ...row, justifyContent: "space-between" }}>
             <h3 style={{ marginTop: 0 }}>{courseId}</h3>
           </div>
-          <div>
-            {errorMsg ? errorMsg : truncateDescription(description, 250)}
+          <div className={"truncate"}>
+            {errorMsg ? errorMsg : description}
           </div>
         </div>
       </div>

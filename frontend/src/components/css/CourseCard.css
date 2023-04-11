@@ -4,15 +4,24 @@
   margin: 8px;
   border-radius: 10px;
   min-height: 172px;
-  border: 1px solid var(--card-border-color, #2B4162);
-  box-shadow: 1px 1px 1px var(--card-shadow-color, #2B4162);
+  border: 1px solid var(--card-border-color, #2b4162);
+  box-shadow: 1px 1px 1px var(--card-shadow-color, #2b4162);
   /* overflow: hidden; */
 }
 
-.sliderCard:hover{
-  box-shadow: 2px 2px 2px var(--card-shadow-color, #2B4162);
-  background: #f7f7f7;;
+.sliderCard:hover {
+  box-shadow: 2px 2px 2px var(--card-shadow-color, #2b4162);
+  background: #f7f7f7;
 }
 .sliderCardImage {
   border-radius: "5px";
+}
+
+.truncate {
+  display: -webkit-box; /* Use the old -webkit-box syntax to support older browsers */
+  -webkit-line-clamp: 6; /* Limit the number of lines to 3 */
+  -webkit-box-orient: vertical; /* Set the direction of the box to vertical */
+  overflow: hidden; /* Hides the overflowed text */
+  text-overflow: ellipsis; /* Adds the "..." at the end of the truncated text */
+  line-clamp: 6; /* Sets the maximum height of the div to 3 lines */
 }
