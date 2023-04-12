@@ -14,10 +14,10 @@
   border-radius: 8px;
   border: none;
   padding: 8px 16px;
-  margin: 0px 8px;
+  margin: 4px 8px;
   font-size: 18px;
   font-weight: bold;
-  background-color: #CC8328;
+  background-color: #cc8328;
   color: white;
   cursor: pointer;
 }

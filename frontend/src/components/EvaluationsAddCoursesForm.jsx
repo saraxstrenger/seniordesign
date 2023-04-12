@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import WorkloadChart from "./WorkloadChart";
 import "./css/Forms.css";
+import "./css/Buttons.css";
 const col = {
   display: "flex",
   justifyContent: "center",
@@ -9,10 +10,9 @@ const col = {
 const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
 export default function EvaluationsAddEvaluationForm(props) {
-  const { evaluations, setEvaluations } = props;
+  const { evaluations, setEvaluations, setShowForm} = props;
   const [errorMsg, setErrorMsg] = useState("");
   const [workloadData, setWorkloadData] = useState([2, 2, 2, 2]);
-  const [showForm, setShowForm] = useState(false);
 
   const resetForm = function () {
     setWorkloadData([2, 2, 2, 2]);
@@ -54,160 +54,140 @@ export default function EvaluationsAddEvaluationForm(props) {
 
   return (
     <div style={{ minWidth: "75%", padding: "8px" }}>
-      {!showForm ? (
-        <div style={{ width: "100%", ...row }}>
-          <center>
-            <button className={"form-button"} onClick={() => setShowForm(true)}>
-              Add Evaluation
-            </button>
-          </center>
+      <h2>New Evaluation:</h2>
+      <form style={col} onSubmit={tryAddCourses}>
+        <div style={{ marginBottom: "20px", ...row }}>
+          <input
+            name="department"
+            id="department"
+            type="text"
+            placeholder={"Course Dept (e.g. CIS)"}
+            required
+            className={"form-input"}
+          />
+
+          <input
+            className={"form-input"}
+            name="number"
+            id="number"
+            type="number"
+            placeholder={"Course # (e.g. 1600)"}
+            min={1}
+            required
+            style={{
+              appearance: "none",
+              WebkitAppearance: "none",
+              MozAppearance: "textfield",
+            }}
+          />
+
+          <select
+            name="semester"
+            id="semester"
+            required
+            className={"form-input"}
+          >
+            <option value="" style={{ color: "gray" }} disabled selected hidden>
+              Semester
+            </option>
+            <option value="Fall">Fall</option>
+            <option value="Spring">Spring</option>
+            <option value="Summer">Summer</option>
+          </select>
+
+          <input
+            name="year"
+            id="year"
+            type="number"
+            step="1"
+            min={2015}
+            max={new Date().getFullYear()}
+            placeholder={"Year Taken"}
+            required
+            className={"form-input"}
+          />
         </div>
-      ) : (
-        <>
-          <h2>New Evaluation:</h2>
-          <form style={col} onSubmit={tryAddCourses}>
-            <div style={{ marginBottom: "20px", ...row }}>
-              <input
-                name="department"
-                id="department"
-                type="text"
-                placeholder={"Course Dept (e.g. CIS)"}
-                required
-                className={"form-input"}
-              />
 
-              <input
-                className={"form-input"}
-                name="number"
-                id="number"
-                type="number"
-                placeholder={"Course # (e.g. 1600)"}
-                min={1}
-                required
-                style={{
-                  appearance: "none",
-                  WebkitAppearance: "none",
-                  MozAppearance: "textfield",
-                }}
-              />
+        <div style={row}>
+          <div style={{ width: "30%", ...row, alignItems: "center" }}>
+            <label for="interest" style={{ paddingRight: 8 }}>
+              Interest:
+            </label>
+            <select
+              name="interest"
+              id="interest"
+              type="number"
+              required
+              className={"form-input"}
+            >
+              <option label="-"></option>
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={4}>4</option>
+              <option value={5}>5</option>
+            </select>
+          </div>
 
-              <select
-                name="semester"
-                id="semester"
-                required
-                className={"form-input"}
-              >
-                <option
-                  value=""
-                  style={{ color: "gray" }}
-                  disabled
-                  selected
-                  hidden
-                >
-                  Semester
-                </option>
-                <option value="Fall">Fall</option>
-                <option value="Spring">Spring</option>
-                <option value="Summer">Summer</option>
-              </select>
+          <div style={{ width: "30%", ...row, alignItems: "center" }}>
+            <label style={{ paddingRight: 8 }} for="difficulty">
+              Difficulty:
+            </label>
+            <select
+              name="difficulty"
+              type="number"
+              required
+              className={"form-input"}
+            >
+              <option label="-"></option>
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={4}>4</option>
+              <option value={5}>5</option>
+            </select>
+          </div>
+        </div>
 
-              <input
-                name="year"
-                id="year"
-                type="number"
-                step="1"
-                min={2015}
-                max={new Date().getFullYear()}
-                placeholder={"Year Taken"}
-                required
-                className={"form-input"}
-              />
-            </div>
+        <div style={{ ...row }}>
+          <WorkloadChart
+            height={350}
+            data={workloadData}
+            updateData={setWorkloadData}
+            onDrop={function (e) {
+              // round to one decimal place
+              const y = Math.round(e.target.options.y * 10) / 10;
+              // update event to reflect new rounded y value
+              e.target.options.y = y;
+              const x = e.target.index;
+              setWorkloadData((oldData) => {
+                oldData[x] = y;
+                return oldData;
+              });
+              // return data so chart updates
+              return workloadData;
+            }}
+          />
+        </div>
 
-            <div style={row}>
-              <div style={{ width: "30%", ...row, alignItems: "center" }}>
-                <label for="interest" style={{ paddingRight: 8 }}>
-                  Interest:
-                </label>
-                <select
-                  name="interest"
-                  id="interest"
-                  type="number"
-                  required
-                  className={"form-input"}
-                >
-                  <option label="-"></option>
-                  <option value={1}>1</option>
-                  <option value={2}>2</option>
-                  <option value={3}>3</option>
-                  <option value={4}>4</option>
-                  <option value={5}>5</option>
-                </select>
-              </div>
-
-              <div style={{ width: "30%", ...row, alignItems: "center" }}>
-                <label style={{ paddingRight: 8 }} for="difficulty">
-                  Difficulty:
-                </label>
-                <select
-                  name="difficulty"
-                  type="number"
-                  required
-                  className={"form-input"}
-                >
-                  <option label="-"></option>
-                  <option value={1}>1</option>
-                  <option value={2}>2</option>
-                  <option value={3}>3</option>
-                  <option value={4}>4</option>
-                  <option value={5}>5</option>
-                </select>
-              </div>
-            </div>
-
-            <div style={{ ...row }}>
-              <WorkloadChart
-                height={350}
-                data={workloadData}
-                updateData={setWorkloadData}
-                onDrop={function (e) {
-                  // round to one decimal place
-                  const y = Math.round(e.target.options.y * 10) / 10;
-                  // update event to reflect new rounded y value
-                  e.target.options.y = y;
-                  const x = e.target.index;
-                  setWorkloadData((oldData) => {
-                    oldData[x] = y;
-                    return oldData;
-                  });
-                  // return data so chart updates
-                  return workloadData;
-                }}
-              />
-            </div>
-
-            {errorMsg !== "" ? (
-              <center>
-                <div style={{ color: "red", fontSize: "small" }}>
-                  {errorMsg}
-                </div>
-              </center>
-            ) : null}
-            <div style={{ ...row, justifyContent: "center" }}>
-              <input className={"form-button"} type="submit" value="Submit" />
-              <button
-                className={"form-button"}
-                onClick={() => {
-                  setShowForm(false);
-                  resetForm();
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </>
-      )}
+        {errorMsg !== "" ? (
+          <center>
+            <div style={{ color: "red", fontSize: "small" }}>{errorMsg}</div>
+          </center>
+        ) : null}
+        <div style={{ ...row, justifyContent: "center" }}>
+          <input className={"form-button"} type="submit" value="Submit" />
+          <button
+            className={"btn btn-tertiary"}
+            onClick={() => {
+              setShowForm(false);
+              resetForm();
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

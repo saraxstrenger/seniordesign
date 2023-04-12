@@ -2,10 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import NavBar from "./NavBar";
 import style from "./css/utils.module.css";
 import EvaluationsAddEvaluationForm from "./EvaluationsAddCoursesForm";
-import { AiFillCaretDown } from "react-icons/ai";
 import EvaluationsInfoCard from "./EvaluationsInfoCard";
 import { AuthAPI } from "../context";
 import "./css/Card.css";
+import "./css/Buttons.css";
 import { AnimatePresence, motion } from "framer-motion";
 
 // const USER = 1;
@@ -18,12 +18,18 @@ const col = {
   display: "flex",
   flexDirection: "column",
 };
+const row = {
+  display: "flex",
+  justifyContent: "center",
+  flexDirection: "row",
+};
 // const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
 function Courses(props) {
   const setLoggedIn = useContext(AuthAPI).setAuth;
   const [errorMsg, setErrorMsg] = useState("");
   const [evaluations, setEvaluations] = useState([]);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     fetch("/evaluations", {
@@ -62,13 +68,29 @@ function Courses(props) {
     <div className={style.page}>
       <NavBar />
       <div className={style.pageBody} style={{ ...col }}>
-        <EvaluationsAddEvaluationForm
-          evaluations={evaluations}
-          setEvaluations={setEvaluations}
-        />
+        {showForm ? (
+          <EvaluationsAddEvaluationForm
+            evaluations={evaluations}
+            setEvaluations={setEvaluations}
+            setShowForm={setShowForm}
+          />
+        ) : null}
 
-        <div style={{ minWidth: "75%" }}>
-          <h2 style={{ margin: 0 }}>Your Evaluations:</h2>
+        <div style={{ minWidth: "75%", padding: "8px" }}>
+          <div style={{ ...row, justifyContent: "space-between", alignItems:"center" }}>
+            <h2>Your Evaluations:</h2>
+            <br />
+            {showForm === false ? (
+              <center>
+                <button
+                  className={"btn btn-primary"}
+                  onClick={() => setShowForm(true)}
+                >
+                  Add Evaluation
+                </button>
+              </center>
+            ) : null}
+          </div>
 
           {errorMsg ? (
             <div>{errorMsg}</div>
