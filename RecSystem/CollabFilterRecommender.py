@@ -5,7 +5,7 @@ class CollabFilterRecommender():
   # fit the models. Consider functionizing if we add more columns
   def __init__(self):
     #eventually we'll want to load the data from the database
-    eval_fn = '../data/test_evaluations.csv'
+    eval_fn = '../data/new_course_evals.csv'
     eval_df = pd.read_csv(eval_fn)
     diff_dict = {'user': [], 'item': [], 'rating': []}
     interest_dict = {'user': [], 'item': [], 'rating': []}
@@ -16,14 +16,14 @@ class CollabFilterRecommender():
     users = []
     items = []
     for row in eval_df.itertuples(index=False):
-      user = row[0]
-      item = row[1]
-      diff = row[2]
-      interest = row[3]
-      workload1 = row[4]
-      workload2 = row[5]
-      workload3 = row[6]
-      workload4 = row[7]
+      user = row[4]
+      item = row[7] + ' ' + str(row[1])
+      diff = row[5]
+      interest = row[6]
+      workload1 = row[8]
+      workload2 = row[9]
+      workload3 = row[10]
+      workload4 = row[11]
       
       
       users.append(user)
@@ -86,7 +86,7 @@ class CollabFilterRecommender():
     workload2_algo.fit(workload2_data.build_full_trainset())
     workload3_algo.fit(workload3_data.build_full_trainset())
     workload4_algo.fit(workload4_data.build_full_trainset())
-
+    
     self.algos = {
       'difficulty': diff_algo,
       'interest': interest_algo,
