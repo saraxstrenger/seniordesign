@@ -14,19 +14,40 @@ class EmbeddingRecommender():
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
         # stored as (course_name, course_embedding) pairs
         self.courses = []
-        seen = set()
-        
-        # eventually we'll want to load the data from the database
-        courses_df = pd.read_csv('../data/test_courses.csv')
-        for row in courses_df.itertuples():
-            full_course_name = row[1]
-            course_name= full_course_name[9:]
-            if course_name in seen:
-                continue
-            seen.add(course_name)
-            course_description = row[-1]
-            self.courses.append((full_course_name, self.embed_course(course_name, course_description)))
+        self.seen = set()
     
+    def upload_courses_from_csv(self, filepath):
+        courses_df = pd.read_csv(filepath)
+        for row in courses_df.itertuples():
+            id = row[1]
+            course_title = row[2]
+            course_name = id[:-1] + ": " + course_title
+            course_description = row[3]
+            if id in self.seen:
+                continue
+            self.seen.add(id)
+            self.courses.append((course_name, self.embed_course(course_name, course_description)))
+    
+    def upload_course_subset(self):
+        courses_df = pd.read_csv('../data/course_catalog.csv')
+        def get_course_number(id):
+            try:
+                return int(id[-5:-1])
+            except:
+                return 9999
+        courses_df['course_number'] = courses_df['code'].apply(get_course_number)
+        courses_df['dept'] = courses_df['code'].apply(lambda x: x[:3])
+        courses_df = courses_df[(courses_df['course_number'] < 2000) & (courses_df['dept'] != 'CIS')]
+        for row in courses_df.itertuples():
+            code = row[1]
+            course_title = row[2]
+            course_name = code + ": " + course_title
+            course_description = row[3]
+            if id in self.seen:
+                continue
+            self.seen.add(id)
+            self.courses.append((course_name, self.embed_course(course_name, course_description)))
+        
     def embed_course(self, course_name, course_description):
         course_name_embedding = self.embed(course_name)
         course_description_embedding = self.embed(course_description)
@@ -39,8 +60,6 @@ class EmbeddingRecommender():
     def embed(self, text):
         embedding = self.model.encode(text)
         return embedding
-    
-        
         
     # returns the k nearest neighbors to target from candidates, using euclidian distance 
     # Q for future Saurabh: Is Euclidian distance a wise distance measure here? 
@@ -85,12 +104,13 @@ def main():
     num_recs = args.num_recs
 
     rec = EmbeddingRecommender()
+    rec.upload_courses_from_csv('../data/cis_catalog.csv')
     
     res = rec.k_nearest_neighbors(interest, num_recs)
     resStr = "\n".join(res)
     print(resStr)
     return resStr
-    
+
 if __name__ == '__main__':
     main()
 

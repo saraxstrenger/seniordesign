@@ -2,14 +2,17 @@ import boto3
 from botocore.exceptions import ClientError
 from EmbeddingRecommender import EmbeddingRecommender
 import argparse
+import time
+import math
 # uploads the emebddings to the database
 def upload_emebddings(course_table, embed_rec):
   for (course_name, course_embedding) in embed_rec.courses:
+    code = course_name.split(': ')[0]
     course_table.update_item(
       Key={
-        'Course_Code': course_name[:8]
+        'code': code
         },
-      UpdateExpression='SET courseEmbedding = :val1',
+      UpdateExpression='SET embedding = :val1',
       ExpressionAttributeValues={
         ':val1': str(course_embedding)
         }
@@ -78,12 +81,18 @@ def update_rec(username, num_recs, embed_rec, user_table):
     ExpressionAttributeValues=attribute_values,
   )
   
+def main_embed_upload():
+  dynamodb = boto3.resource('dynamodb')
+  course_table_name = 'courses'
+  course_table = dynamodb.Table(course_table_name)
+  embed_rec = EmbeddingRecommender()
+  embed_rec.upload_course_subset()
+  #embed_rec.upload_courses_from_csv('../data/cis_catalog.csv')
+  upload_emebddings(course_table, embed_rec)
   
 def main():
   embed_rec = EmbeddingRecommender()
   dynamodb = boto3.resource('dynamodb')
-  #course_table_name = 'Course_Table'
-  #course_table = dynamodb.Table(course_table_name)
   
   user_table_name = 'users'
   user_table = dynamodb.Table(user_table_name)
@@ -96,6 +105,5 @@ def main():
   username = args.username
   update_rec(username, num_recs, embed_rec, user_table)
   
-  
 if __name__ == '__main__':
-  main()  
+  main()
