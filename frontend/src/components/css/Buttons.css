@@ -3,7 +3,7 @@
   border-radius: 8px;
   border: none;
   padding: 8px 16px;
-  margin: 0px 8px;
+  margin: 4px 8px;
   font-size: 18px;
   font-weight: bold;
   background-color: #CC8328;
@@ -12,13 +12,28 @@
 }
 
 .btn-secondary {
+  border: none;
+  background-color: #5C846B;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-tertiary {
+  border: none;
+  background-color: #283044;
+  color: white;
+  cursor: pointer;
+}
+
+
+.btn-outline {
   color: #739E82;
   background-color: #FFFFFF;
   text-decoration: underline;
   border: 2px solid #FFFFFF;
 
 }
-.btn-secondary:hover {
+.btn-outline:hover {
   border: 2px solid #739E82;
 }
 

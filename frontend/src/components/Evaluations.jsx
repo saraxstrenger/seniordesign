@@ -5,6 +5,8 @@ import EvaluationsAddEvaluationForm from "./EvaluationsAddCoursesForm";
 import { AiFillCaretDown } from "react-icons/ai";
 import EvaluationsInfoCard from "./EvaluationsInfoCard";
 import { AuthAPI } from "../context";
+import "./css/Card.css";
+import { AnimatePresence, motion } from "framer-motion";
 
 // const USER = 1;
 const DEPT = 1;
@@ -67,34 +69,35 @@ function Courses(props) {
 
         <div style={{ minWidth: "75%" }}>
           <h2 style={{ margin: 0 }}>Your Evaluations:</h2>
-        </div>
 
-        {errorMsg ? (
-          <div>{errorMsg}</div>
-        ) : (
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-            }}
-          >
-            {evaluations.length === 0 ? (
-              <div style={{padding: "24px 12px", fontSize:"large"}}>
-                <center>
-                  No evaluations found!
-                  <br />
-                  Add an evaluation above to start getting personalized course
-                  recommendations.
-                </center>
-              </div>
-            ) : (
-              evaluations.map((evaluation) => {
-                return <CourseEvalCard {...evaluation} key={evaluation.id} />;
-              })
-            )}
-          </div>
-        )}
+          {errorMsg ? (
+            <div>{errorMsg}</div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                // flexWrap: "wrap",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              {evaluations.length === 0 ? (
+                <div style={{ padding: "24px 12px", fontSize: "large" }}>
+                  <center>
+                    No evaluations found!
+                    <br />
+                    Add an evaluation above to start getting personalized course
+                    recommendations.
+                  </center>
+                </div>
+              ) : (
+                evaluations.map((evaluation) => {
+                  return <CourseEvalCard {...evaluation} key={evaluation.id} />;
+                })
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -108,17 +111,11 @@ function CourseEvalCard({ department, number, semester, year, id }) {
   };
 
   return (
-    <div
-      className={style.cardColor}
-      style={{
-        width: 350,
-        margin: 10,
-        padding: 8,
-        filter: "drop-shadow(1px 1px 2px #2B4162)",
-        borderRadius: 12,
-      }}
-    >
-      <div style={{ padding: 12, borderBottom: "1px solid #ccc" }}>
+    <div className={expand ? "card-no-hover" : "card"}>
+      <div
+        style={{ padding: "8px 16px", cursor: "pointer" }}
+        onClick={() => setExpand(!expand)}
+      >
         <div
           style={{
             display: "flex",
@@ -126,24 +123,32 @@ function CourseEvalCard({ department, number, semester, year, id }) {
             alignItems: "center",
           }}
         >
-          <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-            {department + " " + number}
-          </div>
+          <h4 style={{ margin: 0 }}>{department + " " + number}</h4>
           <div>{semester + " " + year}</div>
         </div>
       </div>
-      <div style={{ padding: "12px" }}>
-        <div style={{ marginBottom: "8px" }}>
-          <AiFillCaretDown
+
+      {expand && (
+        <AnimatePresence>
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: "fit-content", transition: { duration: 0.3 } }}
             style={{
-              transform: `rotate(${expand ? "-90deg" : "0deg"})`,
-              transition: "transform 0.3s ease",
+              display: "flex",
+              flexDirection: "column",
+              padding: "8px 0px",
             }}
-            onClick={handleClick}
-          />
-        </div>
-        {expand && <EvaluationsInfoCard evaluationId={id} isShown={expand} />}
-      </div>
+            exit={{ height: 0, transition: { duration: 0.3 } }}
+            id="evaluations-info-card"
+          >
+            <EvaluationsInfoCard
+              evaluationId={id}
+              isShown={expand}
+              setIsShown={setExpand}
+            />
+          </motion.div>
+        </AnimatePresence>
+      )}
     </div>
   );
 }

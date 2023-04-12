@@ -57,7 +57,7 @@ export default function CoursePreviewCard(props) {
         setFocusedCourse(courseInfo);
       }}
     >
-      <div className={"sliderCard card card-container"} style={{flexGrow:1}}>
+      <div className={"card card card-container"} style={{flexGrow:1}}>
         <div>
           <div style={{ ...col, justifyContent: "space-between" }}>
             <h3 style={{ margin: 0, color: "#2C5530" }}>{courseId}</h3>

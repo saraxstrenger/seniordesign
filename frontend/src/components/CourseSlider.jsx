@@ -5,7 +5,7 @@ import { RecommendationsContext } from "../context";
 import CoursePreviewCard from "./CoursePreviewCard";
 import "./css/Buttons.css";
 // import { motion, AnimatePresence } from "framer-motion";
-import "./css/CourseCard.css";
+import "./css/Card.css";
 const responsive = {
   superLargeDesktop: {
     breakpoint: { max: 4000, min: 3000 },

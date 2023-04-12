@@ -1,4 +1,4 @@
-.sliderCard {
+.card {
   background: #ffffff;
   padding: 10px;
   margin: 8px;
@@ -8,11 +8,20 @@
   /* overflow: hidden; */
 }
 
-.sliderCard:hover {
+.card:hover {
   box-shadow: 2px 2px 2px var(--card-shadow-color, #2b4162);
   background: #f7f7f7;
 }
-.sliderCardImage {
+
+.card-no-hover {
+  background: #ffffff;
+  padding: 10px;
+  margin: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border-color, #2b4162);
+  box-shadow: 1px 1px 1px var(--card-shadow-color, #2b4162);
+}
+.cardImage {
   border-radius: "5px";
 }
 

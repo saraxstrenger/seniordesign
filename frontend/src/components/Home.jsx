@@ -84,7 +84,6 @@ function Home(props) {
         });
         setSearchResult(normalizedResults);
         setSearchMode(true);
-        console.log(resJson.data);
       });
   };
 
@@ -226,7 +225,7 @@ function Recommendations(props) {
         <div style={{ width: "100%" }}>
           {Object.keys(interestsWithRecs).map((interest) => {
             return (
-              <div style={{ overflowX: "visible", padding: 12 }}>
+              <div style={{ overflowX: "visible", padding: "12px 0px" }}>
                 <h2 style={{ margin: 0 }}>{interest}</h2>
                 <CourseSlider courses={interestsWithRecs[interest]} />
               </div>
