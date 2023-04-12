@@ -1,7 +1,9 @@
 import React, { useContext, useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import { RecommendationsContext } from "../context";
 import CoursePreviewCard from "./CoursePreviewCard";
+import "./css/Buttons.css";
 // import { motion, AnimatePresence } from "framer-motion";
 import "./css/CourseCard.css";
 const responsive = {
@@ -10,44 +12,80 @@ const responsive = {
     items: 5,
   },
   desktop: {
-    breakpoint: { max: 3000, min: 1024 },
+    breakpoint: { max: 3000, min: 1200 },
     items: 3,
   },
   tablet: {
-    breakpoint: { max: 1024, min: 464 },
+    breakpoint: { max: 1200, min: 600 },
     items: 2,
   },
   mobile: {
-    breakpoint: { max: 464, min: 0 },
+    breakpoint: { max: 600, min: 0 },
     items: 1,
   },
 };
 
 export default function CourseSlider(props) {
-  const [expandedIndex, setExpandedIndex] = useState(-1);  
-  const { courses, ...cardProps} = props;
-  const handleCardClick = (index) => {
-    if (expandedIndex === index) {
-      setExpandedIndex(-1);
-    } else {
-      setExpandedIndex(index);
-    }
-  };
-  return (
-    <Carousel responsive={responsive} itemWidth={300}>
-      {courses.map((course, index) => (
-        <div key={index} style={{ width: "100%"}}>
+  const [expandedIndex, setExpandedIndex] = useState(-1);
+  const { courses, ...cardProps } = props;
+  const setFocusedCourse = useContext(RecommendationsContext).setFocusedCourse;
+
+  const ButtonGroup = ({ next, previous, goToSlide, ...rest }) => {
+    const {
+      carouselState: { currentSlide },
+    } = rest;
+    return (
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          right: 0,
+          // zIndex: -1,
+          pointerEvents: "none",
+
+          // background:"yellow"
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            height: "fit-content",
+            // zIndex: 10,
+          }}
+        >
           <div
-            onClick={() => handleCardClick(index)}
             className={
-              "sliderCard card card-container"
+              currentSlide !== 0 ? "btn-carousel" : "btn-carousel invisible"
             }
           >
-            <CoursePreviewCard
-              courseId={course}
-              {...cardProps}
-            />
+            <button onClick={() => previous()} />
           </div>
+          <div className={"btn-carousel"} >
+            <button onClick={() => next()} />
+          </div>
+        </div>
+      </div>
+    );
+  };
+  return (
+    <Carousel
+      responsive={responsive}
+      itemWidth={300}
+      arrows={false}
+      customButtonGroup={<ButtonGroup />}
+    >
+      {courses.map((course, index) => (
+        <div key={index}>
+          <CoursePreviewCard courseId={course} {...cardProps} />
         </div>
       ))}
     </Carousel>

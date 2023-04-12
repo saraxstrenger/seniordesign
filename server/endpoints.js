@@ -43,8 +43,12 @@ export function logout(req, res, next) {
 }
 
 export async function login(req, res) {
-  const user = req.body.username;
-  const pass = req.body.password;
+  const user = req.body?.username;
+  const pass = req.body?.password;
+  if (user === null || pass === null) {
+    res.sendStatus(400); // Bad Request
+    return;
+  }
   // TODO: encrypt password
   const errorMsg = {
     success: false,
@@ -83,8 +87,7 @@ function isEmptyStr(str) {
 }
 
 function isEmail(email) {
-
-  if(!email) return false;
+  if (!email) return false;
 
   const emailRegex = /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
   return emailRegex.test(email);
@@ -102,7 +105,11 @@ function isValidYear(year) {
 }
 export function signup(req, res) {
   console.log("signup request received");
-  const params = req.body;
+  const params = req?.body ?? null;
+  if (params === null) {
+    res.json({ success: false, errorMsg: "Invalid input" });
+    return;
+  }
   console.log(params);
   params.year = parseInt(params.year, 10);
   if (
@@ -132,7 +139,7 @@ export function signup(req, res) {
 }
 
 function isValidRating(rating) {
-  return Number.isInteger(rating) && rating >= 1 && rating <= 5;
+  return rating ==undefined || Number.isInteger(rating) && rating >= 1 && rating <= 5;
 }
 
 function isValidWorkload(workload) {
@@ -155,9 +162,12 @@ function isValidWorkload(workload) {
 export function addEvaluation(req, res) {
   console.log("add class request received");
   const params = req.body;
+  if(params === null) {
+    res.sendStatus(400);
+    return;
+  }
+
   const session = req.session;
-  console.log(session.userid);
-  console.log(req.body);
   if (!session.userid) {
     res.sendStatus(401); // Unauthorized
     return;
@@ -248,8 +258,7 @@ export function getReccomendations(req, res) {
   if (session?.userid) {
     const searchTerm = req.body.searchTerm;
     if (searchTerm == undefined) {
-      console.log("get Recommendations failed");
-      res.json({ success: false, errorMsg: "Unable to perform operation." });
+      res.json({ success: false, errorMsg: "Invalid request body." });
       return;
     }
     const pythonProcess = spawn("python3", [
@@ -315,6 +324,10 @@ export function updateProfile(req, res) {
     return;
   }
   const params = req.body;
+  if(params.year===undefined){
+    res.sendStatus(400); // Bad Request
+    return;
+  }
   params.year = parseInt(params.year, 10);
   if (
     isEmptyStr(params.first) ||
@@ -340,12 +353,26 @@ export function updateProfile(req, res) {
 }
 
 export function getCourseInfo(req, res) {
-  const courseId = req.params.id;
+  const courseId = req.params?.id;
+
+  if (courseId === undefined) {
+    res.sendStatus(400); // Bad Request
+    return;
+  }
+  console.log("["+courseId+"]")
+
   db.getCourseInfo(courseId, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
       res.json({ success: false, errorMsg: "Unable to perform operation." });
     } else {
+      if (data===undefined || data.Item===undefined) {
+        console.log("Unable to find course with id: " + courseId + ".")
+        res.sendStatus(404); // Not Found
+        return;
+      }
+      console.log("Course found: "+data.Item.Course_Code)
+      delete data.Item?.courseEmbedding;
       res.json({ success: true, data: data.Item });
     }
   });
@@ -427,6 +454,50 @@ export function getHome(req, res) {
       const recs = data.Item.recs;
       // Todo: add more info?
       res.json({ success: true, interests, courses, recs });
+    }
+  });
+}
+
+export function getFullCourseInfo(req, res) {
+  const courseId = req.params.id;
+  const normalizedId = courseId.replace(/\u00A0/g, " ");
+
+  db.getCourseInfo(normalizedId, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
+    } else {
+      // run python script to get personalized predictions
+      // predictions = getPersonalizedPredictions(courseId);
+      res.json({
+        success: true,
+        data: { difficulty: 3, interest: 2, workload: [1, 2, 3, 4] },
+      });
+    }
+  });
+}
+
+function getPersonalizedPredictions(courseId) {
+  // TODO
+  const pythonProcess = spawn("python3", [EMBEDDING_SCRIPT_PATH, courseId]);
+}
+
+export function getSearchResults(req, res){
+  const searchTerm = req.body?.searchTerm;
+  if (searchTerm === undefined) {
+    res.json({ success: false, errorMsg: "Invalid request body." });
+    return;
+  }
+  db.getSearchResults(searchTerm, (err, data) => {
+    if (err) {
+      console.log("Error", err.stack);
+      res.json({ success: false, errorMsg: "Unable to perform operation." });
+    } else {
+      var trimmedData = data.slice(0, Math.min(25, data.length));
+      trimmedData = trimmedData.map((item) => {
+        return item[0];
+      });
+      res.json({ success: true, data:  trimmedData});
     }
   });
 }

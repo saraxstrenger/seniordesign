@@ -40,7 +40,7 @@ function isAuthenticated(req, res, next) {
   console.log(req.session);
   if (req.session.userid) {
     console.log(
-      "request body" + JSON.stringify(req.body ?? { body: "no body" })
+      "request path" + JSON.stringify(req.path)+ " request body: "+ JSON.stringify(req.body)
     );
     next();
   } else {
@@ -57,6 +57,7 @@ app.get("/evaluations/:id", isAuthenticated, routes.getEvaluation);
 app.get("/evaluations", isAuthenticated, routes.getEvaluations);
 app.get("/profile", isAuthenticated, routes.getProfile);
 app.get("/course/:id", isAuthenticated, routes.getCourseInfo);
+app.get("/predictions/:id", isAuthenticated, routes.getFullCourseInfo);
 app.get("/home", isAuthenticated, routes.getHome);
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {
@@ -69,7 +70,7 @@ app.post("/logout", isAuthenticated, routes.logout);
 app.post("/login", express.urlencoded({ extended: false }), routes.login);
 app.post("/signup", routes.signup);
 app.post("/addEvaluation", isAuthenticated, routes.addEvaluation);
-app.post("/search", isAuthenticated, routes.getReccomendations);
+app.post("/search", isAuthenticated, routes.getSearchResults);
 app.post("/updateProfile", isAuthenticated, routes.updateProfile);
 app.post("/addInterest", isAuthenticated, routes.addInterest);
 app.post("/removeInterest", isAuthenticated, routes.removeInterest);

@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-// import { motion, AnimatePresence } from "framer-motion";
-// import Modal from "./Modal";
-import "./css/Buttons.css";
 import { RecommendationsContext } from "../context";
+import "./css/Buttons.css";
+
 const row = {
   display: "flex",
   flexDirection: "row",
+  justifyContent: "space-evenly",
 };
-
 export default function CoursePreviewCard(props) {
   const { courseId } = props;
   const [courseInfo, setCourseInfo] = useState({});
@@ -22,6 +21,11 @@ export default function CoursePreviewCard(props) {
     const lastSpace = truncated.lastIndexOf(" ");
     return truncated.slice(0, lastSpace) + "...";
   };
+
+  const openModal = () => {
+    // Code to open the modal
+  };
+
   useEffect(() => {
     fetch("/course/" + courseId, {
       method: "GET",
@@ -45,21 +49,25 @@ export default function CoursePreviewCard(props) {
   }, [courseId, setCourseInfo]);
 
   return (
-    <div >
-      <div style={{ ...row, justifyContent: "space-between" }}>
-        <h3 style={{ marginTop: 0 }}>{courseId}</h3>
-        <div style={{ alignItems: "flex-start" }}>
-          <button
-            className="text-btn btn-small btn-orange"
-            onClick={() => {
-              setFocusedCourse(courseId);
-            }}
-          >
-            see more
-          </button>
+    <div
+      style={{ width: "100%", cursor: "pointer" }}
+      onClick={(e) => {
+        e.stopPropagation();
+        setFocusedCourse(courseInfo);
+      }}
+    >
+      <div
+        className={"sliderCard card card-container"}
+      >
+        <div>
+          <div style={{ ...row, justifyContent: "space-between" }}>
+            <h3 style={{ marginTop: 0 }}>{courseId}</h3>
+          </div>
+          <div className={"truncate"}>
+            {errorMsg ? errorMsg : description}
+          </div>
         </div>
       </div>
-      <div>{errorMsg ? errorMsg : truncateDescription(description, 250)}</div>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import "./css/Modal.css";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Modal(props) {
-  const { isOpen, children } = props;
+  const { isOpen, modalStyle, children } = props;
   return (
     <AnimatePresence>
       {isOpen && (
@@ -13,6 +13,7 @@ export default function Modal(props) {
           className="modal-backdrop"
         >
           <motion.div
+            style={modalStyle}
             initial={{ scale: 0 }}
             animate={{ scale: 1, transition: { duration: 0.3 } }}
             exit={{ scale: 0 }}

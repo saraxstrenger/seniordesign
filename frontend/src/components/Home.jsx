@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import Logout from "./Logout";
 import NavBar from "./NavBar";
 import styles from "./css/utils.module.css";
@@ -8,6 +8,7 @@ import CourseSlider from "./CourseSlider";
 import { AuthAPI, RecommendationsContext } from "../context";
 import Modal from "./Modal";
 import CourseInfoPage from "./CourseInfoPage";
+import CoursePreviewCard from "./CoursePreviewCard";
 
 const row = {
   display: "flex",
@@ -17,13 +18,17 @@ const row = {
 
 function Home(props) {
   const setLoggedIn = useContext(AuthAPI).setAuth;
-  const [searchResult, setSearchResult] = useState({});
+  const [searchResult, setSearchResult] = useState([]);
   const [interests, setInterests] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [inFlight, setInFlight] = useState(false);
   const [loading, setLoading] = useState(true);
   const [focusedCourse, setFocusedCourse] = useState(null);
-
+  const [searchMode, setSearchMode] = useState(false);
+  const formRef = useRef(null);
+  const handleClearForm = () => {
+    formRef.current.reset();
+  };
   useEffect(() => {
     fetch("/home", {
       headers: {
@@ -73,7 +78,12 @@ function Home(props) {
       })
       .then((resJson) => {
         setInFlight(false);
-        setSearchResult(resJson);
+        const normalizedResults = resJson.data.map((str) => {
+          return (str = str.replace(/\u00A0/g, " "));
+        });
+        setSearchResult(normalizedResults);
+        setSearchMode(true);
+        console.log(resJson.data);
       });
   };
 
@@ -88,7 +98,11 @@ function Home(props) {
           value={{ focusedCourse, setFocusedCourse }}
         >
           <Logout {...props} />
-          <form style={{ ...row, width: "100%" }} onSubmit={trySearch}>
+          <form
+            style={{ ...row, width: "100%" }}
+            onSubmit={trySearch}
+            ref={formRef}
+          >
             <input
               type="text"
               placeholder="Search"
@@ -97,26 +111,52 @@ function Home(props) {
             />
             <input type="submit" value="Search" />
           </form>
-          {inFlight ? <LoadingDots /> : null}
-          {JSON.stringify(searchResult)}
+          {searchMode ? (
+            <button
+              onClick={() => {
+                handleClearForm();
+                setSearchMode(false);
+              }}
+            >
+              Back to Recommendations
+            </button>
+          ) : null}
 
-          <Recommendations
-            loading={loading}
-            interests={interests}
-            errorMsg={errorMsg}
-          />
-          <Modal isOpen={focusedCourse}>
-            <div>
-              <CourseInfoPage course={focusedCourse} />
-              <button
-                onClick={() => {
-                  setFocusedCourse(null);
-                }}
-              >
-                Close
-              </button>
+          {inFlight ? <LoadingDots /> : null}
+          {searchMode ? (
+            <div style={{ padding: "0px 12px"}}>
+              <h2>Search Results</h2>
+              {searchResult.map((course, index) => {
+                return (
+                  <div key={index}>
+                    <CoursePreviewCard courseId={course} />
+                  </div>
+                );
+              })}
             </div>
+          ) : (
+            <Recommendations
+              loading={loading}
+              interests={interests}
+              errorMsg={errorMsg}
+            />
+          )}
+          {/* <div style={{ width: "70%" }} > */}
+          <Modal isOpen={focusedCourse} modalStyle={{ width: "70%" }}>
+            {focusedCourse !== null ? (
+              <CourseInfoPage course={focusedCourse} />
+            ) : (
+              <LoadingDots />
+            )}
+            <button
+              onClick={() => {
+                setFocusedCourse(null);
+              }}
+            >
+              Close
+            </button>
           </Modal>
+          {/* </div> */}
         </RecommendationsContext.Provider>
       </div>
     </>

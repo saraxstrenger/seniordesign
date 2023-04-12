@@ -1,9 +1,12 @@
 import { ddbDocClient } from "./ddbDocClient.js";
+import stopword from 'stopword';
+import natural from 'natural';
+import {stemmer} from 'stemmer';
 
 const USER_TABLE = "users";
 const COURSE_TABLE = "Course_Table"; // not updated
 const EVAL_TABLE = "evaluations";
-
+const INDEX_TABLE = "index";
 export async function createUser(
   { username, password, first, last, email, entranceYear, major },
   callback
@@ -68,7 +71,7 @@ export function updateUser(
 }
 
 /**
- * updates _user_'s interest list to include _interest_ 
+ * updates _user_'s interest list to include _interest_
  * @param {string} user
  * @param {string} interest
  * @param {function(err, data)} callback
@@ -122,7 +125,7 @@ export function updatePassword(user, { oldPassword, newPassword }, callback) {}
 
 export async function addEvaluation(
   user,
-  { department, number, year, semester, difficulty, interest, workload},
+  { department, number, year, semester, difficulty, interest, workload },
   callback
 ) {
   const evaluationId = [user, department, number, year, semester].join("_");
@@ -138,7 +141,7 @@ export async function addEvaluation(
     },
     ExpressionAttributeValues: {
       ":item": ddbDocClient.createSet([evaluationId]),
-    }
+    },
   };
 
   // create course evaluation
@@ -168,16 +171,15 @@ export async function addEvaluation(
     ],
   };
 
-  ddbDocClient.transactWrite(transactionParams, (err, data )=>callback(err, courseCreationParams.Item));
+  ddbDocClient.transactWrite(transactionParams, (err, data) =>
+    callback(err, courseCreationParams.Item)
+  );
 }
 
 /**
  * gets course evaluation for a user.
  */
-export async function getEvaluation(
-  evaluationId,
-  callback
-) {
+export async function getEvaluation(evaluationId, callback) {
   const params = {
     TableName: EVAL_TABLE,
     Key: {
@@ -185,7 +187,7 @@ export async function getEvaluation(
     },
   };
 
-  ddbDocClient.get(params, callback); 
+  ddbDocClient.get(params, callback);
 }
 
 /**
@@ -196,18 +198,16 @@ export async function getEvaluation(
  */
 export async function updateEvaluation(
   user,
-  { department, number, year, semester, difficulty, interest, workload }, 
+  { department, number, year, semester, difficulty, interest, workload },
   callback
 ) {
-
   const evaluationId = [user, department, number, year, semester].join("_");
-
   // Checking if user has already evaluted course
   getEvaluation(evaluationId, (err, data) => {
     // means course evaluation doesn't exist
     if (err) {
       callback(err, data);
-    // course evaluation exists
+      // course evaluation exists
     } else {
       const params = {
         TableName: EVAL_TABLE,
@@ -254,7 +254,7 @@ export async function deleteEvaluation(
     // means course evaluation doesn't exist
     if (err) {
       callback(err, data);
-    // course evaluation exists
+      // course evaluation exists
     } else {
       const evalDeleteParams = {
         TableName: EVAL_TABLE,
@@ -272,7 +272,7 @@ export async function deleteEvaluation(
           "#courses": "courses",
         },
         ExpressionAttributeValues: {
-          ":item": ddbDocClient.createSet([evaluationId])
+          ":item": ddbDocClient.createSet([evaluationId]),
         },
       };
       const transactionParams = {
@@ -284,7 +284,6 @@ export async function deleteEvaluation(
       ddbDocClient.transactWrite(transactionParams, callback);
     }
   });
-
 }
 
 /**
@@ -292,7 +291,20 @@ export async function deleteEvaluation(
  * see updateInterests for example).
  */
 export async function addLikedCourse(user, { courseId }, callback) {
-  // TODO: implement
+  const likedCoursesParams = {
+    TableName: USER_TABLE,
+    Key: {
+      username: user,
+    },
+    UpdateExpression: "ADD #likedCourses :item",
+    ExpressionAttributeNames: {
+      "#likedCourses": "likedCourses",
+    },
+    ExpressionAttributeValues: {
+      ":item": ddbDocClient.createSet([courseId]),
+    },
+  };
+  ddbDocClient.update(likedCoursesParams, callback);
 }
 
 /**
@@ -300,7 +312,20 @@ export async function addLikedCourse(user, { courseId }, callback) {
  * see updateInterests for example).
  */
 export async function removeLikedCourse(user, { courseId }, callback) {
-  // TODO: implement
+  const likedCoursesParams = {
+    TableName: USER_TABLE,
+    Key: {
+      username: user,
+    },
+    UpdateExpression: "DELETE #likedCourses :item",
+    ExpressionAttributeNames: {
+      "#likedCourses": "likedCourses",
+    },
+    ExpressionAttributeValues: {
+      ":item": ddbDocClient.createSet([courseId]),
+    },
+  };
+  ddbDocClient.update(likedCoursesParams, callback);
 }
 
 /**
@@ -308,7 +333,36 @@ export async function removeLikedCourse(user, { courseId }, callback) {
  * @param user
  */
 export async function deleteAccount(user) {
-  // TODO: implement
+  //TODO: Work in progress. Am able to delete user but trying to figure out how to delete all associated evaluations
+  getUser(user, (err, data) => {
+    // means course evaluation doesn't exist
+    if (err) {
+      callback(err, data);
+      // course evaluation exists
+    } else {
+      const userDeleteParams = {
+        TableName: USER_TABLE,
+        Key: {
+          username: user,
+        },
+      };
+      //TODO: Work in progress
+      const evalDeleteParams = {
+        TableName: EVAL_TABLE,
+        FilterExpression: "begins_with(myKey, :partialKey)",
+        ExpressionAttributeValues: {
+          ":partialKey": ddbDocClient.createSet([user]),
+        },
+      };
+      const transactionParams = {
+        TransactItems: [
+          { Delete: userDeleteParams },
+          { Delete: evalDeleteParams },
+        ],
+      };
+      ddbDocClient.transactWrite(transactionParams, callback);
+    }
+  });
 }
 
 export async function getCourseInfo(courseId, callback) {
@@ -321,4 +375,53 @@ export async function getCourseInfo(courseId, callback) {
   };
 
   ddbDocClient.get(params, callback);
+}
+
+/**
+ * Queries for courses corresponding to given tokens (from search query)
+ * @param {string} searchTerm
+ * @param {function(err, data)} callback
+ */
+export async function getSearchResults(searchTerm, callback) {
+  const tokenizer = new natural.WordTokenizer();
+  const normalized = searchTerm.toLowerCase();
+  var tokens = tokenizer.tokenize(normalized);
+  tokens=stopword.removeStopwords(tokens);
+  tokens = tokens.map((token) => stemmer(token));
+
+  var tokenSet = [...new Set(tokens)];
+
+  if(tokenSet.length>100){
+    tokenSet=tokenSet.slice(0,100);
+  }
+  
+  const batchGetParams ={
+    TableName: INDEX_TABLE,
+    RequestItems: {
+      [INDEX_TABLE]: {
+        Keys: tokenSet.map((token) => ({ token })),
+      },
+    },
+  }
+  
+  ddbDocClient.batchGet(batchGetParams, (err, data) => {
+    if(err){
+      return callback(err, data);
+    }
+    const coursePrecedenceMap = {};
+    const items = data.Responses[INDEX_TABLE];
+    items.forEach((item) => {
+      item.courses.forEach((courseId) => {
+        if(coursePrecedenceMap[courseId]){
+          coursePrecedenceMap[courseId]+=1;
+        }else{
+          coursePrecedenceMap[courseId]=1;
+        }
+      });
+    });
+    const coursePrecedenceList = Object.entries(coursePrecedenceMap).sort((a,b)=>b[1]-a[1]);
+    return callback(err, coursePrecedenceList);
+  });
+
+
 }

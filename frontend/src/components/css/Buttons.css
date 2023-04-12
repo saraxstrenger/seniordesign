@@ -53,3 +53,17 @@
 .btn-orange{
   color: #FF8811;
 }
+
+.btn-carousel{
+  background: #55868c;
+  color: #ffffff;
+  border: 2px solid #55868c;
+  border-radius: 16px;
+  padding: 4px 12px;
+  margin: 4px;
+  pointer-events: all;
+}
+
+.invisible{
+  visibility: hidden;
+}
