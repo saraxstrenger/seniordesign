@@ -9,6 +9,7 @@ import { AuthAPI, RecommendationsContext } from "../context";
 import Modal from "./Modal";
 import CourseInfoPage from "./CourseInfoPage";
 import CoursePreviewCard from "./CoursePreviewCard";
+import "./css/Forms.css";
 
 const row = {
   display: "flex",
@@ -92,14 +93,14 @@ function Home(props) {
       <NavBar />
       <div
         className={styles.page}
-        style={{ alignItems: "center", overflow: "visible" }}
+        style={{ alignItems: "center", overflow: "visible", padding: 24 }}
       >
         <RecommendationsContext.Provider
           value={{ focusedCourse, setFocusedCourse }}
         >
           <Logout {...props} />
           <form
-            style={{ ...row, width: "100%" }}
+            style={{ ...row, width: "100%", alignItems: "center" }}
             onSubmit={trySearch}
             ref={formRef}
           >
@@ -108,32 +109,20 @@ function Home(props) {
               placeholder="Search"
               name="searchTerm"
               style={{ minWidth: "50%" }}
+              className="form-input"
             />
-            <input type="submit" value="Search" />
+            <input type="submit" value="Search" className="form-button" />
           </form>
+
           {searchMode ? (
-            <button
-              onClick={() => {
+            <SearchResults
+              inFlight={inFlight}
+              searchResult={searchResult}
+              clearSearch={() => {
                 handleClearForm();
                 setSearchMode(false);
               }}
-            >
-              Back to Recommendations
-            </button>
-          ) : null}
-
-          {inFlight ? <LoadingDots /> : null}
-          {searchMode ? (
-            <div style={{ padding: "0px 12px"}}>
-              <h2>Search Results</h2>
-              {searchResult.map((course, index) => {
-                return (
-                  <div key={index}>
-                    <CoursePreviewCard courseId={course} />
-                  </div>
-                );
-              })}
-            </div>
+            />
           ) : (
             <Recommendations
               loading={loading}
@@ -141,7 +130,6 @@ function Home(props) {
               errorMsg={errorMsg}
             />
           )}
-          {/* <div style={{ width: "70%" }} > */}
           <Modal isOpen={focusedCourse} modalStyle={{ width: "70%" }}>
             {focusedCourse !== null ? (
               <CourseInfoPage course={focusedCourse} />
@@ -156,13 +144,60 @@ function Home(props) {
               Close
             </button>
           </Modal>
-          {/* </div> */}
         </RecommendationsContext.Provider>
       </div>
     </>
   );
 }
 
+function SearchResults(props) {
+  const { searchResult, inFlight, clearSearch } = props;
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h2>Search Results</h2>
+        <button className="btn btn-secondary btn-small" onClick={clearSearch}>
+          Back to Recommendations
+        </button>
+      </div>
+      <div
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {inFlight ? (
+          <LoadingDots />
+        ) : searchResult.length == 0 ? (
+          <center>
+            <h3>No results</h3>
+          </center>
+        ) : (
+          searchResult.map((course, index) => {
+            return (
+              <div key={index}>
+                <CoursePreviewCard courseId={course} />
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
 function Recommendations(props) {
   const { loading, interests, errorMsg } = props;
   const navigate = useNavigate();

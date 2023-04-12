@@ -4,7 +4,7 @@ import natural from 'natural';
 import {stemmer} from 'stemmer';
 
 const USER_TABLE = "users";
-const COURSE_TABLE = "Course_Table"; // not updated
+const COURSE_TABLE = "courses";
 const EVAL_TABLE = "evaluations";
 const INDEX_TABLE = "index";
 export async function createUser(
@@ -370,7 +370,7 @@ export async function getCourseInfo(courseId, callback) {
   const params = {
     TableName: COURSE_TABLE,
     Key: {
-      Course_Code: courseId,
+      code: courseId,
     },
   };
 

@@ -84,9 +84,7 @@ export default function CourseSlider(props) {
       customButtonGroup={<ButtonGroup />}
     >
       {courses.map((course, index) => (
-        <div key={index}>
-          <CoursePreviewCard courseId={course} {...cardProps} />
-        </div>
+          <CoursePreviewCard courseId={course} {...cardProps} key={index} />
       ))}
     </Carousel>
   );

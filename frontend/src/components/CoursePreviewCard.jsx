@@ -2,29 +2,18 @@ import React, { useContext, useEffect, useState } from "react";
 import { RecommendationsContext } from "../context";
 import "./css/Buttons.css";
 
-const row = {
+const col = {
   display: "flex",
-  flexDirection: "row",
-  justifyContent: "space-evenly",
+  flexDirection: "column",
+  // justifyContent: "space-evenly",
 };
 export default function CoursePreviewCard(props) {
   const { courseId } = props;
   const [courseInfo, setCourseInfo] = useState({});
   const [errorMsg, setErrorMsg] = useState("");
-  const description = courseInfo?.Description ?? "";
+  const description = courseInfo?.description ?? "";
+  const title = courseInfo?.title ?? "";
   const setFocusedCourse = useContext(RecommendationsContext).setFocusedCourse;
-  const truncateDescription = (description, n) => {
-    if (description.length <= n) {
-      return description;
-    }
-    const truncated = description.slice(0, n);
-    const lastSpace = truncated.lastIndexOf(" ");
-    return truncated.slice(0, lastSpace) + "...";
-  };
-
-  const openModal = () => {
-    // Code to open the modal
-  };
 
   useEffect(() => {
     fetch("/course/" + courseId, {
@@ -37,7 +26,13 @@ export default function CoursePreviewCard(props) {
         if (res.status === 401) {
           //unauthorized
           return { success: false, error: "Unauthorized" };
-        } else return res.json();
+        } else if (res.status !== 200) {
+          return {
+            success: false,
+            error: "Unable to load course information at this time.",
+          };
+        }
+        return res.json();
       })
       .then((resJson) => {
         if (resJson.success) {
@@ -50,22 +45,28 @@ export default function CoursePreviewCard(props) {
 
   return (
     <div
-      style={{ width: "100%", cursor: "pointer" }}
+      style={{
+        width: "100%",
+        cursor: "pointer",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
       onClick={(e) => {
         e.stopPropagation();
         setFocusedCourse(courseInfo);
       }}
     >
-      <div
-        className={"sliderCard card card-container"}
-      >
+      <div className={"sliderCard card card-container"} style={{flexGrow:1}}>
         <div>
-          <div style={{ ...row, justifyContent: "space-between" }}>
-            <h3 style={{ marginTop: 0 }}>{courseId}</h3>
+          <div style={{ ...col, justifyContent: "space-between" }}>
+            <h3 style={{ margin: 0, color: "#2C5530" }}>{courseId}</h3>
+
+            <h4 style={{ margin: "4px 0px 12px 0px", color: "#739E82" }}>
+              {title}
+            </h4>
           </div>
-          <div className={"truncate"}>
-            {errorMsg ? errorMsg : description}
-          </div>
+          <div className={"truncate"}>{errorMsg ? errorMsg : description}</div>
         </div>
       </div>
     </div>

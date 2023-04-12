@@ -1,35 +1,52 @@
 .btn {
-  border: 2px solid #55868c;
-  background-color: #55868c;
-  color: #ffffff;
-  padding: 14px 28px;
-  font-size: 16px;
+  height: fit-content;
+  border-radius: 8px;
+  border: none;
+  padding: 8px 16px;
+  margin: 0px 8px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #CC8328;
+  color: white;
   cursor: pointer;
-  border-radius: 16px;
-  padding: 4px 12px;
-  margin: 4px;
 }
 
-.btn:hover {
+.btn-secondary {
+  color: #739E82;
+  background-color: #FFFFFF;
+  text-decoration: underline;
+  border: 2px solid #FFFFFF;
+
+}
+.btn-secondary:hover {
+  border: 2px solid #739E82;
+}
+
+.btn-small{
+  padding: 8px 14px;
+  font-size: 12px;
+}
+/* .btn:hover {
   background: #ffffff;
   border-color: #55868c;
   color: #55868c;
 
-}
+} */
 
 .bubble {
   border-radius: 20px;
-  padding: 4px 8px;
+  padding: 8px 16px;
   margin: 4px;
-  background: #CC8B86;
-  border: 3px solid #C3756F;
+  font-size: 16px;
+  background: #739E82;
+  border: 3px solid #649074;
   color: #FFFFFF;
   cursor: "default";
 
 }
 
 .bubble:hover {
-  background: #C3756F;
+  background: #649074;
   color: #ffffff;
 }
 

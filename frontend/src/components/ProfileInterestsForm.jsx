@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./css/Buttons.css";
+import "./css/Forms.css";
 import LoadingDots from "./LoadingDots";
 
 // const row = {
@@ -159,7 +160,7 @@ function AddInterestForm(props) {
   const { addInterest } = props;
   return (
     <form onSubmit={addInterest}>
-      <input type="text" name="newInterest" id="newInterest" />
+      <input type="text" name="newInterest" id="newInterest" className="form-input"  style={{minWidth: "50%"}}/>
       <input type="submit" id="submit" className={"btn"} value="add" />
     </form>
   );
