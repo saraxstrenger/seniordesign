@@ -1,12 +1,14 @@
 import pandas as pd
 from surprise import Reader, Dataset, KNNWithMeans
 import argparse
+import sqlite3
 class CollabFilterRecommender():
   # fit the models. Consider functionizing if we add more columns
   def __init__(self):
-    #eventually we'll want to load the data from the database
-    eval_fn = '../data/new_course_evals.csv'
-    eval_df = pd.read_csv(eval_fn)
+    #NEED TO REPLACE THIS WITH THE PATH TO THE DATABASE, run .databases in sqlite3 to find the path on whichever computer is the 'server'
+    conn = sqlite3.connect('/Users/saurabhshah/seniordesign.sqlite')
+    eval_df = pd.read_sql_query('SELECT * FROM evaluations', conn)
+    conn.close()
     diff_dict = {'user': [], 'item': [], 'rating': []}
     interest_dict = {'user': [], 'item': [], 'rating': []}
     workload1_dict = {'user': [], 'item': [], 'rating': []}
@@ -17,6 +19,8 @@ class CollabFilterRecommender():
     items = []
     for row in eval_df.itertuples(index=False):
       user = row[4]
+      if user == 'user':
+        continue
       item = row[7] + ' ' + str(row[1])
       diff = row[5]
       interest = row[6]
@@ -95,6 +99,8 @@ class CollabFilterRecommender():
       'workload3': workload3_algo,
       'workload4': workload4_algo
     }
+    
+    
     
   def predict(self, student, course, prediction_type):
     algo = self.algos[prediction_type]

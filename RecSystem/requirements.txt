@@ -5,3 +5,4 @@ surprise
 argparse
 boto3
 sklearn
+sqlite3
