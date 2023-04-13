@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import NavBar from "./NavBar";
 import styles from "./css/utils.module.css";
 import ProfileUpdateForm from "./ProfileUpdateForm";
-import ProfileUpdatePasswordForm from "./ProfileUpdatePasswordForm";
 import ProfileInterestsForm from "./ProfileInterestsForm";
+import "./css/Card.css";
+import "./css/Buttons.css";
+
 const col = {
   display: "flex",
   justifyContent: "center",
@@ -69,12 +71,13 @@ export default function Profile(props) {
               >
                 <ProfileInterestsForm interests={interests} />
               </div>
-              <h2>Account Settings:</h2>
+              <div className={true ? "card-no-hover" : "card"}>
               <ProfileUpdateForm
                 profileData={profileData}
                 setProfileData={setProfileData}
               />
-              <ProfileUpdatePasswordForm />
+              
+            </div>
             </div>
           )}
         </div>

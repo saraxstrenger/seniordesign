@@ -1,7 +1,9 @@
 import { useState } from "react";
 import LoadingDots from "./LoadingDots";
 import { useNavigate } from "react-router-dom";
-import "./css/Buttons.css"
+import "./css/Buttons.css";
+import "./css/Profile.css";
+import ProfileUpdatePasswordForm from "./ProfileUpdatePasswordForm";
 
 const row = {
   display: "flex",
@@ -12,7 +14,6 @@ const row = {
 const col = {
   display: "flex",
   justifyContent: "center",
-  alignItems: "center",
   flexDirection: "column",
 };
 
@@ -60,104 +61,160 @@ export default function ProfileUpdateForm(props) {
 
   return (
     <div style={col}>
-      <div style={row}>
-        <ProfileFormElement
-          label={"Username"}
-          value={profileData?.username}
-          isEdit={false}
-        />
-      </div>
-      <form onSubmit={tryUpdateProfile} style={col}>
-        <div style={row}>
-          <ProfileFormElement
-            label={"First Name"}
-            id={"first"}
-            value={profileData?.first ?? ""}
-            type={"text"}
-            isEdit={editProfileMode}
-          />
-
-          <ProfileFormElement
-            label={"Last Name"}
-            id={"last"}
-            value={profileData?.last ?? ""}
-            type={"text"}
-            isEdit={editProfileMode}
-          />
+      <form onSubmit={tryUpdateProfile}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h2>Account Settings:</h2>
+          {!editProfileMode ? (
+            <button className={`btn`} onClick={() => setEditProfileMode(true)}>
+              Update Profile
+            </button>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              <label htmlFor="submitProfileUpdate">
+                <input
+                  className="btn"
+                  label={"submit"}
+                  id={"submitProfileUpdate"}
+                  type={"submit"}
+                  isEdit={editProfileMode}
+                />
+              </label>
+              <button
+                className={`btn btn-cancel`}
+                onClick={() => setEditProfileMode(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
-        <ProfileFormElement
-          label={"Email"}
-          id={"email"}
-          value={profileData?.email ?? ""}
-          type={"text"}
-          isEdit={editProfileMode}
-        />
-        <ProfileFormElement
-          label={"Major"}
-          id={"major"}
-          value={profileData?.major ?? ""}
-          type={"text"}
-          isEdit={editProfileMode}
-        />
-        <ProfileFormElement
-          label={"Entrance Year"}
-          id={"entranceYear"}
-          value={profileData?.entranceYear ?? ""}
-          type={"number"}
-          options={range(25, currentYear - 25)}
-          isEdit={editProfileMode}
-        />
+        
+        <div style={{ display: "grid", gridTemplateColumns: "auto 1fr" }}>
+  <ProfileFormElement
+    label={"Username :"}
+    value={profileData?.username}
+    isEdit={false}
+  />
+</div>
+<hr />
+<div style={{ display: "grid", gridTemplateColumns: "350px 1fr" }}>
+  <ProfileFormElement
+    label={<span style={{ whiteSpace: "nowrap" }}>First Name :</span>}
+    id={"first"}
+    value={profileData?.first ?? ""}
+    type={"text"}
+    isEdit={editProfileMode}
+  />
+  <ProfileFormElement
+    label={"Last Name :"}
+    id={"last"}
+    value={profileData?.last ?? ""}
+    type={"text"}
+    isEdit={editProfileMode}
+  />
+</div>
+<hr />
+<div style={{ display: "grid", gridTemplateColumns: "200px 1fr" }}>
+  <ProfileFormElement
+    label={<span style={{ whiteSpace: "nowrap" }}>Email :</span>}
+    id={"email"}
+    value={profileData?.email ?? ""}
+    type={"text"}
+    isEdit={editProfileMode}
+  />
+</div>
+<hr />
+<div style={{ display: "grid", gridTemplateColumns: "auto 1fr" }}>
+  <div style={{ display: "flex", alignItems: "center" }}>
+    <ProfileFormElement
+      label={<span style={{ whiteSpace: "nowrap" }}>Password : *******</span>}
+      value={null}
+      isEdit={false}
+    />
+  </div>
+  {!editProfileMode ? null : (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        marginLeft: "80px",
+      }}
+    >
+      <ProfileUpdatePasswordForm />
+    </div>
+  )}
+</div>
 
-        {editProfileMode ? (
-          <label for="submitProfileUpdate">
-            <input
-              className={"btn"}
-              label={"submit"}
-              id={"submitProfileUpdate"}
-              type={"submit"}
-              isEdit={editProfileMode}
-            />
-          </label>
-        ) : null}
-        {errorMsg ? <div style={{ color: "red" }}>{errorMsg}</div> : null}
+
+        {errorMsg && <div className="error-msg">{errorMsg}</div>}
       </form>
-      <button
-        style={{ margin: 8 }}
-        className={"btn"}
-        onClick={() => setEditProfileMode(!editProfileMode)}
-      >
-        {editProfileMode ? "Cancel" : "Update Profile"}
-      </button>
       {profileUpdateInProgress ? <LoadingDots /> : null}
     </div>
   );
 }
 
-function range(size, startAt = 0) {
-  return [...Array(size).keys()].map((i) => i + startAt);
-}
-
 function ProfileFormElement({ label, id, value, isEdit, ...formProps }) {
   return (
-    <div style={{ padding: 8, display:"flex", flexDirection:"row"}}>
+    <div
+      style={{
+        padding: "16px 0",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
       {isEdit ? (
         <>
-          <label style={{ padding: "0px 4px" }} for={id}>
-            <b>{label}: </b>
+          <label
+            style={{
+              padding: "0px 8px",
+              width: "120px",
+              textAlign: "right",
+              fontSize: "18px",
+            }}
+            htmlFor={id}
+          >
+            <b>{label}</b>
           </label>
           <input
-            {...formProps}
             id={id}
-            name={id}
-            placeholder={label}
-            defaultValue={value}
-          
+            type="text"
+            value={value}
+            style={{
+              border: "2px solid #999",
+              borderRadius: "6px",
+              padding: "10px",
+              backgroundColor: "#f6f6f6",
+              fontSize: "16px",
+            }}
+            {...formProps}
           />
         </>
       ) : (
         <>
-          <b>{label}: </b>
-          {value}
+          <label
+            style={{
+              padding: "0px 8px",
+              width: "120px",
+              textAlign: "right",
+              fontSize: "18px",
+            }}
+          >
+            <b>{label}</b>
+          </label>
+          <span>{value}</span>
         </>
       )}
     </div>
