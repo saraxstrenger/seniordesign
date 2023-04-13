@@ -2,7 +2,7 @@ var AWS = require("aws-sdk");
 let awsConfig = {
     "region": "us-east-1",
     "endpoint": "http://dynamodb.us-east-1.amazonaws.com",
-    "accessKeyId": "XXXXXXXX", "secretAccessKey": "XXXXXXXXX"
+    "accessKeyId": "XXXXXXXXXXXX", "secretAccessKey": "XXXXXXXXXXX"
 };
 AWS.config.update(awsConfig);
 
@@ -14,34 +14,53 @@ let save = function () {
         const fs = require('fs')
         const csv = require('fast-csv');
         const data = [];
+        const items = [];
      
-        fs.createReadStream('./test_evaluations.csv')
+        fs.createReadStream('./new_course_evals.csv')
             .pipe(csv.parse({ headers: true }))
             .on('error', error => console.error(error))
             .on('data', row => data.push(row))
             .on('end', function(){
                 for (i = 0; i < data.length; i++) {
-                    if (data[i]["e_id"] != 0) {
+                    if (data[i]["id"] != 0) {
                         var input = {
-                            "Evaluation_Id": data[i]["e_id"], 
-                            "Course_Code": data[i]["code"], 
-                            "Difficulty": data[i]["difficulty"], 
-                            "Interest": data[i]["interest"]
+                            "id": data[i]["id"], 
+                            "department": data[i]["department"], 
+                            "difficulty": parseInt(data[i]["difficulty"]), 
+                            "interest": parseInt(data[i]["interest"]),
+                            "number": data[i]["number"],
+                            "semester": data[i]["semester"],
+                            "user": data[i]["user"],
+                            "workload1": parseInt(data[i]["workload1"]),
+                            "workload2": parseInt(data[i]["workload2"]),
+                            "workload3": parseInt(data[i]["workload3"]),
+                            "workload4": parseInt(data[i]["workload4"]),
+                            "year": data[i]["year"],
                         };
-                        var params = {
-                            TableName: "Evaluation_Table",
-                            Item:  input
-                        };
-                        docClient.put(params, function (err, data) {
-                    
-                            if (err) {
-                                console.log("users::save::error - " + JSON.stringify(err, null, 2));                      
-                            } else {
-                                console.log("users::save::success" );                      
-                            }
-                        });
-                    } 
+                        items.push(input);
+                    }
                 }
+                const batchSize = 25;
+                const batchCount = Math.ceil(items.length / batchSize);
+                for (let i = 0; i < batchCount; i++) {
+                    const startIndex = i * batchSize;
+                    const endIndex = Math.min((i + 1) * batchSize, items.length);
+                    const batch = items.slice(startIndex, endIndex);
+                    const params = {
+                        RequestItems: {
+                            'evaluations': batch.map(item => ({
+                            PutRequest: { Item: item },
+                            })),
+                        },
+                    };    
+                    docClient.batchWrite(params, function (err, data) {
+                        if (err) {
+                            console.log("users::save::error - " + JSON.stringify(err, null, 2));                      
+                        } else {
+                            console.log("users::save::success");                      
+                        }
+                    });
+                } 
             })
 
         // Populating the User Table
@@ -110,4 +129,5 @@ let save = function () {
         //         }
         //     })
 }
+
 save();
