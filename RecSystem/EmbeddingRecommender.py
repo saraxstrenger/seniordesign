@@ -5,6 +5,7 @@ import pandas as pd
 import argparse
 import pandas as pd
 import boto3
+from sklearn.neighbors import NearestNeighbors
 """
 EmbeddingRecommender class can reccomend classes based on natural language interests and course names
 Constructor takes in some iterable of course names (strings) in natural langauge 
@@ -74,9 +75,16 @@ class EmbeddingRecommender():
     
     # need to change this since we're using a dataframe now
     def k_nearest_neighbors(self, target, k):
-        heap = []
         tgt_embedding = self.embed(target)
-        print(tgt_embedding.shape)
+        
+        X = np.array(self.courses.iloc[:, -1].tolist())
+        nbrs = NearestNeighbors(n_neighbors=k, algorithm='auto', metric='euclidean').fit(X)
+        distances, indices = nbrs.kneighbors([tgt_embedding])
+        top_k = [str(self.courses.iloc[i].drop('embedding').to_dict()) for i in indices[0]]
+        return top_k
+        
+        """
+        heap = []
         for (idx, row) in self.courses.iterrows():
             course_embedding = row[-1]
             diff = course_embedding - tgt_embedding
@@ -92,7 +100,8 @@ class EmbeddingRecommender():
         for (_, row) in heap:
             top_k.append(row)
         return top_k
-
+    
+        """
     # returns 3 reccomendations from class_titles which are semantically closest to job_title
     def emebedding_rec(self, interest):
         return self.k_nearest_neighbors(interest, 3)

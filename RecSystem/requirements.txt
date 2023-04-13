@@ -4,3 +4,4 @@ pandas
 surprise
 argparse
 boto3
+sklearn
