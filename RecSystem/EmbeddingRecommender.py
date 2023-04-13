@@ -3,11 +3,14 @@ import heapq
 from sentence_transformers import SentenceTransformer
 import pandas as pd
 import argparse
+import pandas as pd
+import boto3
 """
 EmbeddingRecommender class can reccomend classes based on natural language interests and course names
 Constructor takes in some iterable of course names (strings) in natural langauge 
 For best results, don't include course codes (e.g. do "intro to computer architexture" not "CIS 240: Intro to Architecture")
 """
+
 class EmbeddingRecommender():
     def __init__(self):
         # Load the embedding model
@@ -18,36 +21,32 @@ class EmbeddingRecommender():
     
     def upload_courses_from_csv(self, filepath):
         courses_df = pd.read_csv(filepath)
-        for row in courses_df.itertuples():
-            id = row[1]
-            course_title = row[2]
-            course_name = id[:-1] + ": " + course_title
-            course_description = row[3]
-            if id in self.seen:
-                continue
-            self.seen.add(id)
-            self.courses.append((course_name, self.embed_course(course_name, course_description)))
+        courses_df['embedding'] = courses_df.apply(self.emebd_row, axis=1)
+        self.courses = courses_df
     
     def upload_course_subset(self):
-        courses_df = pd.read_csv('../data/course_catalog.csv')
-        def get_course_number(id):
-            try:
-                return int(id[-5:-1])
-            except:
-                return 9999
-        courses_df['course_number'] = courses_df['code'].apply(get_course_number)
-        courses_df['dept'] = courses_df['code'].apply(lambda x: x[:3])
-        courses_df = courses_df[(courses_df['course_number'] < 2000) & (courses_df['dept'] != 'CIS')]
-        for row in courses_df.itertuples():
-            code = row[1]
-            course_title = row[2]
-            course_name = code + ": " + course_title
-            course_description = row[3]
-            if id in self.seen:
-                continue
-            self.seen.add(id)
-            self.courses.append((course_name, self.embed_course(course_name, course_description)))
-        
+        courses_df = pd.read_csv('../data/small_catalog.csv')
+        courses_df['embedding'] = courses_df.apply(self.emebd_row, axis=1)
+        courses_df.to_csv('../data/small_catalog.csv', index=False)
+        return
+    
+    # read from S3 bucket and store in self.courses
+    def download_course_subset(self):
+        self.courses = pd.DataFrame()
+        s3 = boto3.client('s3')
+        bucket_name = 'courseembeddings'
+        file_name = 'small_catalog.csv'
+        obj = s3.get_object(Bucket=bucket_name, Key=file_name)
+        df = pd.read_csv(obj['Body'])
+        self.courses = df
+        return
+    
+    def emebd_row(self, row):
+        course_name = row[1]
+        course_description = row[2]
+        course_embedding = self.embed_course(course_name, course_description)
+        return course_embedding
+    
     def embed_course(self, course_name, course_description):
         course_name_embedding = self.embed(course_name)
         course_description_embedding = self.embed(course_description)
@@ -96,6 +95,8 @@ class EmbeddingRecommender():
     
 def main():
     rec = EmbeddingRecommender()
+    rec.upload_course_subset()
+    return 
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--interest', type=str)
     parser.add_argument('-n', '--num_recs', type=int)
