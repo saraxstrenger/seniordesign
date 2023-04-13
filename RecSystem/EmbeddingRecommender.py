@@ -24,22 +24,28 @@ class EmbeddingRecommender():
         courses_df['embedding'] = courses_df.apply(self.emebd_row, axis=1)
         self.courses = courses_df
     
-    def upload_course_subset(self):
+    def upload_course_subset_emebddings(self):
         courses_df = pd.read_csv('../data/small_catalog.csv')
         courses_df['embedding'] = courses_df.apply(self.emebd_row, axis=1)
         courses_df.to_csv('../data/small_catalog.csv', index=False)
         return
     
+    def download_course_subset_from_local(self):
+        df = pd.read_csv('../data/small_catalog.csv')
+        df['embedding'] = df['embedding'].apply(lambda x: np.fromstring(x[1:-1], sep=' '))
+        self.courses = df
+    
     # read from S3 bucket and store in self.courses
-    def download_course_subset(self):
+    def download_course_subset_from_S3(self):
         self.courses = pd.DataFrame()
         s3 = boto3.client('s3')
         bucket_name = 'courseembeddings'
         file_name = 'small_catalog.csv'
         obj = s3.get_object(Bucket=bucket_name, Key=file_name)
         df = pd.read_csv(obj['Body'])
+        #convert str to np array
+        df['embedding'] = df['embedding'].apply(lambda x: np.fromstring(x[1:-1], sep=' '))
         self.courses = df
-        return
     
     def emebd_row(self, row):
         course_name = row[1]
@@ -65,14 +71,17 @@ class EmbeddingRecommender():
     # Aren't the top few principal components wayy more important than the rest?
     # or is natural language complex/dense enough as for all 300 principal components 
     # to be important (and roughly equally important)?
+    
+    # need to change this since we're using a dataframe now
     def k_nearest_neighbors(self, target, k):
         heap = []
         tgt_embedding = self.embed(target)
-        
-        for (course_name, course_embedding) in self.courses:
+        print(tgt_embedding.shape)
+        for (idx, row) in self.courses.iterrows():
+            course_embedding = row[-1]
             diff = course_embedding - tgt_embedding
             dist = np.sqrt(np.dot(diff.T, diff))
-            heapq.heappush(heap, (-dist, course_name))
+            heapq.heappush(heap, (-dist, str(row.drop('embedding').to_dict())))
             
             if len(heap) > k:
                 heapq.heappop(heap)
@@ -80,8 +89,8 @@ class EmbeddingRecommender():
         heap.sort(key= lambda x: -x[0])
         
         top_k = []
-        for (_, course_name) in heap:
-            top_k.append(course_name)
+        for (_, row) in heap:
+            top_k.append(row)
         return top_k
 
     # returns 3 reccomendations from class_titles which are semantically closest to job_title
@@ -95,8 +104,8 @@ class EmbeddingRecommender():
     
 def main():
     rec = EmbeddingRecommender()
-    rec.upload_course_subset()
-    return 
+    rec.download_course_subset_from_S3()
+    
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--interest', type=str)
     parser.add_argument('-n', '--num_recs', type=int)
