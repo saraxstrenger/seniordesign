@@ -2,6 +2,7 @@ import { ddbDocClient } from "./ddbDocClient.js";
 import stopword from 'stopword';
 import natural from 'natural';
 import {stemmer} from 'stemmer';
+import sqlite3 from 'sqlite3';
 
 const USER_TABLE = "users";
 const COURSE_TABLE = "courses";
@@ -174,6 +175,18 @@ export async function addEvaluation(
   ddbDocClient.transactWrite(transactionParams, (err, data) =>
     callback(err, courseCreationParams.Item)
   );
+  // IMPORTANT: The code below is to add an evaluation to the local SQLite Database
+  // const db = new sqlite3.Database('/Users/suvaskota/Downloads/seniordesign.sqlite'); //TODO: Change this path to whoever is running it
+  // db.run(`INSERT INTO evaluations (id, number, semester, year, user, difficulty, interest, department, workload1, workload2, workload3, workload4) 
+  //         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+  //         [evaluationId, number, semester, year, user, difficulty, interest, department, workload[0], workload[1], workload[2], workload[3]], function(err) {
+  //   if (err) {
+  //     return console.error(err.message);
+  //   }
+  //   console.log(`A row has been inserted with rowid ${this.lastID}`);
+  // });
+  // db.close();
+
 }
 
 /**
@@ -234,6 +247,16 @@ export async function updateEvaluation(
         },
       };
       ddbDocClient.update(params, callback);
+      //IMPORTANT: The code below is to update an evaluation to the local SQLite Database
+      // const db = new sqlite3.Database('/Users/suvaskota/Downloads/seniordesign.sqlite'); //TODO: Change this path to whoever is running it
+      // db.run(`UPDATE evaluations SET difficulty =?, interest = ?, workload1 = ?, workload2 = ?, workload3 = ?, workload4 = ? WHERE id = ?`, 
+      //     [difficulty, interest, workload[0], workload[1], workload[2], workload[3], evaluationId], function(err) {
+      //   if (err) {
+      //     return console.error(err.message);
+      //   }
+      //   console.log(`A row has been updated with rowid ${this.lastID}`);
+      // });
+      // db.close();
     }
   });
 }
@@ -282,6 +305,15 @@ export async function deleteEvaluation(
         ],
       };
       ddbDocClient.transactWrite(transactionParams, callback);
+      //IMPORTANT: The code below is to add an evaluation to the local SQLite Database
+      // const db = new sqlite3.Database('/Users/suvaskota/Downloads/seniordesign.sqlite'); //TODO: Change this path to whoever is running it
+      // db.run(`DELETE FROM evaluations WHERE id = ?`, [evaluationId], function(err) {
+      //   if (err) {
+      //     console.error(err.message);
+      //   } else {
+      //     console.log(`Row with id ${evaluationId} deleted successfully`);
+      //   }
+      // });
     }
   });
 }
