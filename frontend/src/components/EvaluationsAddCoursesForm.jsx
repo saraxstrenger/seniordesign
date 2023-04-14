@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState, useContext } from "react";
 import WorkloadChart from "./WorkloadChart";
 import "./css/Forms.css";
 import "./css/Buttons.css";
+import { EvaluationsContext } from "../context";
 const col = {
   display: "flex",
   justifyContent: "center",
@@ -10,10 +11,13 @@ const col = {
 const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
 export default function EvaluationsAddEvaluationForm(props) {
-  const { evaluations, setEvaluations, setShowForm} = props;
+  const evalsContext = useContext(EvaluationsContext);
+  const evaluations = evalsContext.evaluations;
+  const setEvaluations = evalsContext.setEvaluations;
+  const { setShowForm } = props;
   const [errorMsg, setErrorMsg] = useState("");
   const [workloadData, setWorkloadData] = useState([2, 2, 2, 2]);
-
+  const [workloadString, setWorkloadString] = useState(JSON.stringify(workloadData));
   const resetForm = function () {
     setWorkloadData([2, 2, 2, 2]);
     setErrorMsg("");
@@ -110,9 +114,7 @@ export default function EvaluationsAddEvaluationForm(props) {
 
         <div style={row}>
           <div style={{ width: "30%", ...row, alignItems: "center" }}>
-            <label for="interest" style={{ paddingRight: 8 }}>
-              Interest:
-            </label>
+            <label style={{ paddingRight: 8 }}>Interest:</label>
             <select
               name="interest"
               id="interest"
@@ -130,9 +132,7 @@ export default function EvaluationsAddEvaluationForm(props) {
           </div>
 
           <div style={{ width: "30%", ...row, alignItems: "center" }}>
-            <label style={{ paddingRight: 8 }} for="difficulty">
-              Difficulty:
-            </label>
+            <label style={{ paddingRight: 8 }}>Difficulty:</label>
             <select
               name="difficulty"
               type="number"
@@ -148,12 +148,13 @@ export default function EvaluationsAddEvaluationForm(props) {
             </select>
           </div>
         </div>
-
+        {workloadString}
         <div style={{ ...row }}>
           <WorkloadChart
             height={350}
             data={workloadData}
-            updateData={setWorkloadData}
+            editMode={true}
+            // updateData={setWorkloadData}
             onDrop={function (e) {
               // round to one decimal place
               const y = Math.round(e.target.options.y * 10) / 10;
@@ -165,6 +166,7 @@ export default function EvaluationsAddEvaluationForm(props) {
                 return oldData;
               });
               // return data so chart updates
+              setWorkloadString(JSON.stringify(workloadData));
               return workloadData;
             }}
           />

@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "./NavBar";
 import style from "./css/utils.module.css";
 import EvaluationsAddEvaluationForm from "./EvaluationsAddCoursesForm";
 import EvaluationsInfoCard from "./EvaluationsInfoCard";
-import { AuthAPI } from "../context";
+import {  EvaluationsContext } from "../context";
 import "./css/Card.css";
 import "./css/Buttons.css";
 import { AnimatePresence, motion } from "framer-motion";
@@ -26,7 +26,7 @@ const row = {
 // const row = { display: "flex", justifyContent: "center", flexDirection: "row" };
 
 function Courses(props) {
-  const setLoggedIn = useContext(AuthAPI).setAuth;
+  // const setLoggedIn = useContext(AuthAPI).setAuth;
   const [errorMsg, setErrorMsg] = useState("");
   const [evaluations, setEvaluations] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -67,17 +67,22 @@ function Courses(props) {
   return (
     <div className={style.page}>
       <NavBar />
+      <EvaluationsContext.Provider value = {{evaluations, setEvaluations}}>
       <div className={style.pageBody} style={{ ...col }}>
         {showForm ? (
           <EvaluationsAddEvaluationForm
-            evaluations={evaluations}
-            setEvaluations={setEvaluations}
             setShowForm={setShowForm}
           />
         ) : null}
 
         <div style={{ minWidth: "75%", padding: "8px" }}>
-          <div style={{ ...row, justifyContent: "space-between", alignItems:"center" }}>
+          <div
+            style={{
+              ...row,
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <h2>Your Evaluations:</h2>
             <br />
             {showForm === false ? (
@@ -121,6 +126,7 @@ function Courses(props) {
           )}
         </div>
       </div>
+      </EvaluationsContext.Provider>
     </div>
   );
 }
@@ -128,9 +134,6 @@ function Courses(props) {
 function CourseEvalCard({ department, number, semester, year, id }) {
   const [expand, setExpand] = useState(false);
 
-  const handleClick = () => {
-    setExpand(!expand);
-  };
 
   return (
     <div className={expand ? "card-no-hover" : "card"}>
@@ -165,8 +168,6 @@ function CourseEvalCard({ department, number, semester, year, id }) {
           >
             <EvaluationsInfoCard
               evaluationId={id}
-              isShown={expand}
-              setIsShown={setExpand}
             />
           </motion.div>
         </AnimatePresence>

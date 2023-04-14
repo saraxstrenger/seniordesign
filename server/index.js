@@ -70,6 +70,8 @@ app.post("/logout", isAuthenticated, routes.logout);
 app.post("/login", express.urlencoded({ extended: false }), routes.login);
 app.post("/signup", routes.signup);
 app.post("/addEvaluation", isAuthenticated, routes.addEvaluation);
+app.post("/updateEvaluation", isAuthenticated, routes.updateEvaluation);
+app.post("/deleteEvaluation", isAuthenticated, routes.deleteEvaluation);
 app.post("/search", isAuthenticated, routes.getSearchResults);
 app.post("/updateProfile", isAuthenticated, routes.updateProfile);
 app.post("/addInterest", isAuthenticated, routes.addInterest);

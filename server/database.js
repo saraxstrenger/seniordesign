@@ -8,6 +8,18 @@ const USER_TABLE = "users";
 const COURSE_TABLE = "courses";
 const EVAL_TABLE = "evaluations";
 const INDEX_TABLE = "index";
+
+/**
+ *
+ * @param {{username:string,
+ *          password:string,
+ *          first:string,
+ *          last:string,
+ *          email:string,
+ *          entranceYear:int,
+ *          major:string}} userParams
+ * @param {function(err, data)} callback
+ */
 export async function createUser(
   { username, password, first, last, email, entranceYear, major },
   callback
@@ -208,6 +220,15 @@ export async function getEvaluation(evaluationId, callback) {
  * already evaluated course
  * (can use getEvaluation for this and do update in callback, see endpoints.js
  * for how to use callbacks).
+ * @param {string} user
+ * @param {{department:string,
+ *          number:string,
+ *          year:int,
+ *          semester:string,
+ *          difficulty:int,
+ *          interest:int,
+ *          workload:[int,int,int,int]}} course
+ * @param {function(err, data)} callback
  */
 export async function updateEvaluation(
   user,
@@ -262,9 +283,7 @@ export async function updateEvaluation(
 }
 
 /**
- * Deletes course evaluation for a user. before executing, check if user has
- * already evaluated course. Must be deleted from evaluations table and user's
- * course list. Use transaction.
+ * Deletes course evaluation for a user.
  */
 export async function deleteEvaluation(
   user,
@@ -272,50 +291,39 @@ export async function deleteEvaluation(
   callback
 ) {
   const evaluationId = [user, department, number, year, semester].join("_");
-  //check if evaluation exists
-  getEvaluation(evaluationId, (err, data) => {
-    // means course evaluation doesn't exist
-    if (err) {
-      callback(err, data);
-      // course evaluation exists
-    } else {
-      const evalDeleteParams = {
-        TableName: EVAL_TABLE,
-        Key: {
-          id: evaluationId,
+  console.log("Deleting  " + evaluationId + " from " + user + "'s evaluations")
+  const transactionParams = {
+    TransactItems: [
+      {
+        Delete: {
+          TableName: EVAL_TABLE,
+          Key: {
+            id: evaluationId,
+          },
         },
-      };
-      const userUpdateParams = {
-        TableName: USER_TABLE,
-        Key: {
-          username: user,
+      },
+      {
+        Update: {
+          TableName: USER_TABLE,
+          Key: {
+            username: user,
+          },
+          UpdateExpression: "DELETE #courses :item",
+          ExpressionAttributeNames: {
+            "#courses": "courses",
+          },
+          ExpressionAttributeValues: {
+            ":item": ddbDocClient.createSet([evaluationId]),
+            ":itemString": evaluationId,
+          },
+          // only delete if evaluationId is in user's evaluation list
+          ConditionExpression: "contains(#courses, :itemString)",
         },
-        UpdateExpression: "DELETE #courses :item",
-        ExpressionAttributeNames: {
-          "#courses": "courses",
-        },
-        ExpressionAttributeValues: {
-          ":item": ddbDocClient.createSet([evaluationId]),
-        },
-      };
-      const transactionParams = {
-        TransactItems: [
-          { Delete: evalDeleteParams },
-          { Update: userUpdateParams },
-        ],
-      };
-      ddbDocClient.transactWrite(transactionParams, callback);
-      //IMPORTANT: The code below is to add an evaluation to the local SQLite Database
-      // const db = new sqlite3.Database('/Users/suvaskota/Downloads/seniordesign.sqlite'); //TODO: Change this path to whoever is running it
-      // db.run(`DELETE FROM evaluations WHERE id = ?`, [evaluationId], function(err) {
-      //   if (err) {
-      //     console.error(err.message);
-      //   } else {
-      //     console.log(`Row with id ${evaluationId} deleted successfully`);
-      //   }
-      // });
-    }
-  });
+      },
+    ],
+  };
+
+  ddbDocClient.transactWrite(transactionParams, callback);
 }
 
 /**
@@ -418,42 +426,42 @@ export async function getSearchResults(searchTerm, callback) {
   const tokenizer = new natural.WordTokenizer();
   const normalized = searchTerm.toLowerCase();
   var tokens = tokenizer.tokenize(normalized);
-  tokens=stopword.removeStopwords(tokens);
+  tokens = stopword.removeStopwords(tokens);
   tokens = tokens.map((token) => stemmer(token));
 
   var tokenSet = [...new Set(tokens)];
 
-  if(tokenSet.length>100){
-    tokenSet=tokenSet.slice(0,100);
+  if (tokenSet.length > 100) {
+    tokenSet = tokenSet.slice(0, 100);
   }
-  
-  const batchGetParams ={
+
+  const batchGetParams = {
     TableName: INDEX_TABLE,
     RequestItems: {
       [INDEX_TABLE]: {
         Keys: tokenSet.map((token) => ({ token })),
       },
     },
-  }
-  
+  };
+
   ddbDocClient.batchGet(batchGetParams, (err, data) => {
-    if(err){
+    if (err) {
       return callback(err, data);
     }
     const coursePrecedenceMap = {};
     const items = data.Responses[INDEX_TABLE];
     items.forEach((item) => {
       item.courses.forEach((courseId) => {
-        if(coursePrecedenceMap[courseId]){
-          coursePrecedenceMap[courseId]+=1;
-        }else{
-          coursePrecedenceMap[courseId]=1;
+        if (coursePrecedenceMap[courseId]) {
+          coursePrecedenceMap[courseId] += 1;
+        } else {
+          coursePrecedenceMap[courseId] = 1;
         }
       });
     });
-    const coursePrecedenceList = Object.entries(coursePrecedenceMap).sort((a,b)=>b[1]-a[1]);
+    const coursePrecedenceList = Object.entries(coursePrecedenceMap).sort(
+      (a, b) => b[1] - a[1]
+    );
     return callback(err, coursePrecedenceList);
   });
-
-
 }

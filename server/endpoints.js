@@ -1,9 +1,9 @@
 import * as db from "./database.js";
 import { spawn } from "child_process";
 import dgram from "dgram";
-
+import * as utils from "./utils.js";
 const COLLAB_SCRIPT = "./RecSystem/CollabFilterRecommender.py";
-const EMBEDDING_SCRIPT = "./RecSystem/EmbeddingRecommender.py";
+// const EMBEDDING_SCRIPT = "./RecSystem/EmbeddingRecommender.py";
 const REC_SERVER_PORT = 3030;
 
 export function auth(req, res) {
@@ -86,83 +86,56 @@ function isEmptyStr(str) {
   return !str || str.length == 0;
 }
 
-function isEmail(email) {
-  if (!email) return false;
-
-  const emailRegex = /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
-  return emailRegex.test(email);
-}
-
-function isValidYear(year) {
-  if (isNaN(year)) return false;
-
-  if (year < 2000) return false;
-
-  const currentYear = new Date().getFullYear();
-  if (year > currentYear) return false;
-
-  return true;
-}
 export function signup(req, res) {
   console.log("signup request received");
   const params = req?.body ?? null;
   if (params === null) {
-    res.json({ success: false, errorMsg: "Invalid input" });
+    res.sendStatus(400);
     return;
   }
   console.log(params);
-  params.year = parseInt(params.year, 10);
+  const first = utils.validateName(params.first);
+  const last = utils.validateName(params.last);
+  const username = utils.validateUsername(params.username);
+  const password = utils.validatePassword(params.password);
+  const email = utils.validateEmail(params.email);
+  const entranceYear = utils.validateYear(params.entranceYear);
+  const major = utils.validateMajor(params.major);
+
+  console.log({ username, password, first, last, email, entranceYear, major });
+
   if (
-    isEmptyStr(params.first) ||
-    isEmptyStr(params.last) ||
-    isEmptyStr(params.username) ||
-    isEmptyStr(params.password) || // todo: password validation? letters, numbers etc
-    !isEmail(params.email) ||
-    !isValidYear(params.entranceYear) ||
-    isEmptyStr(params.major)
+    first === undefined ||
+    last === undefined ||
+    username === undefined ||
+    password === undefined ||
+    email === undefined ||
+    entranceYear === undefined ||
+    major === undefined
   ) {
     res.json({ success: false, errorMsg: "Invalid input" });
     return;
   }
-
   console.log("params valid");
   // try to create db entry
-  db.createUser(params, (err, data) => {
-    if (err) {
-      console.log("Error", err.stack);
-      res.json({ success: false, errorMsg: "Username already exists" });
-    } else {
-      setCookie(req.session, params.username);
-      res.json({ success: true });
+  db.createUser(
+    { username, password, first, last, email, entranceYear, major },
+    (err, data) => {
+      if (err) {
+        console.log("Error", err.stack);
+        res.json({ success: false, errorMsg: "Username already exists" });
+      } else {
+        setCookie(req.session, params.username);
+        res.json({ success: true });
+      }
     }
-  });
-}
-
-function isValidRating(rating) {
-  return rating ==undefined || Number.isInteger(rating) && rating >= 1 && rating <= 5;
-}
-
-function isValidWorkload(workload) {
-  if (
-    workload === undefined ||
-    !Array.isArray(workload) ||
-    workload.length != 4
-  ) {
-    return false;
-  }
-
-  for (let i = 0; i < workload.length; i++) {
-    if (isNaN(workload[i]) || workload[i] < 0 || workload[i] > 5) {
-      return false;
-    }
-  }
-  return true;
+  );
 }
 
 export function addEvaluation(req, res) {
   console.log("add class request received");
   const params = req.body;
-  if(params === null) {
+  if (params === null) {
     res.sendStatus(400);
     return;
   }
@@ -173,40 +146,87 @@ export function addEvaluation(req, res) {
     return;
   }
 
-  const interest = req.body?.interest;
-  const difficulty = req.body?.difficulty;
-  const workload = req.body?.workload;
-  const year = parseInt(req.body?.year, 10);
-  const semester = req.body?.semester;
-  const department = req.body?.department;
-  const number = parseInt(req.body?.number, 10);
-  const validSemesters = ["Fall", "Spring", "Summer"];
+  const interest = utils.validateRating(req.body?.interest);
+  const difficulty = utils.validateRating(req.body?.difficulty);
+  const workload = utils.validateWorkload(req.body?.workload);
+  const year = utils.validateYear(req.body?.year);
+  const semester = utils.validateSemester(req.body?.semester);
+  const department = utils.validateDepartment(req.body?.department);
+  const number = utils.validateCourseNumber(req.body?.number);
   if (
-    !isValidRating(interest) ||
-    !isValidRating(difficulty) ||
-    !isValidWorkload(workload) ||
-    isNaN(year) ||
+    interest === undefined ||
+    difficulty === undefined ||
+    workload === undefined ||
+    year === undefined ||
     semester === undefined ||
-    !validSemesters.includes(semester) ||
-    !department ||
-    !department?.length ||
-    !department?.length > 0 ||
-    isNaN(number)
+    department === undefined ||
+    number === undefined
   ) {
     res.json({
       success: false,
       errorMsg: "Invalid parameters! Please ensure all form inputs are valid.",
     });
+    return;
   }
-  db.addEvaluation(session.userid, params, (err, data) => {
-    if (err) {
-      console.log("Error", err.stack);
-      res.json({ success: false, errorMsg: "Class already exists" });
-    } else {
-      console.log("Success adding eval", data);
-      res.json({ success: true, courseId: data.id });
+
+  db.addEvaluation(
+    session.userid,
+    { department, number, year, semester, difficulty, interest, workload },
+    (err, data) => {
+      if (err) {
+        console.log("Error", err.stack);
+        res.json({ success: false, errorMsg: "Class already exists" });
+      } else {
+        console.log("Success adding eval", data);
+        res.json({ success: true, courseId: data.id });
+      }
     }
-  });
+  );
+}
+
+export function updateEvaluation(req, res) {
+  console.log("update eval request received");
+  const params = req.body;
+  if (params === null) {
+    res.sendStatus(400);
+    return;
+  }
+
+  const user = req.session.userid;
+  // check if all parameters are valid
+  const department = utils.validateDepartment(req.body?.department);
+  const number = utils.validateCourseNumber(req.body?.number);
+  const year = utils.validateYear(req.body?.year);
+  const semester = utils.validateSemester(req.body?.semester);
+  const interest = utils.validateRating(req.body?.interest);
+  const difficulty = utils.validateRating(req.body?.difficulty);
+  const workload = utils.validateWorkload(req.body?.workload);
+  if (
+    department === undefined ||
+    number === undefined ||
+    year === undefined ||
+    semester === undefined ||
+    interest === undefined ||
+    difficulty === undefined ||
+    workload === undefined
+  ) {
+    res.sendStatus(400); // Bad request
+    return;
+  }
+
+  db.updateEvaluation(
+    session.userid,
+    { department, number, year, semester, difficulty, interest, workload },
+    (err, data) => {
+      if (err) {
+        console.log("Error", err.stack);
+        res.json({ success: false, errorMsg: "Unable to update evaluation" });
+      } else {
+        console.log("Success updating eval", data);
+        res.json({ success: true });
+      }
+    }
+  );
 }
 
 export function getEvaluations(req, res) {
@@ -253,51 +273,51 @@ export function getEvaluation(req, res) {
   res.sendStatus(401); // Unauthorized
 }
 
-export function getReccomendations(req, res) {
-  const session = req.session;
-  if (session?.userid) {
-    const searchTerm = req.body.searchTerm;
-    if (searchTerm == undefined) {
-      res.json({ success: false, errorMsg: "Invalid request body." });
-      return;
-    }
-    const pythonProcess = spawn("python3", [
-      "-u",
-      EMBEDDING_SCRIPT,
-      "-i",
-      searchTerm,
-      "-n",
-      "3",
-    ]);
+// export function getReccomendations(req, res) {
+//   const session = req.session;
+//   if (session?.userid) {
+//     const searchTerm = req.body.searchTerm;
+//     if (searchTerm == undefined) {
+//       res.json({ success: false, errorMsg: "Invalid request body." });
+//       return;
+//     }
+//     const pythonProcess = spawn("python3", [
+//       "-u",
+//       EMBEDDING_SCRIPT,
+//       "-i",
+//       searchTerm,
+//       "-n",
+//       "3",
+//     ]);
 
-    let response = "";
-    let err = "";
-    pythonProcess.on("connect", (code) => {
-      console.log(`child process connected `);
-    });
-    pythonProcess.stdout.setEncoding("utf8");
-    pythonProcess.stdout.on("data", (data) => {
-      // Do something with the data returned from python script
-      response += data.toString();
-      console.log(data.toString());
-    });
+//     let response = "";
+//     let err = "";
+//     pythonProcess.on("connect", (code) => {
+//       console.log(`child process connected `);
+//     });
+//     pythonProcess.stdout.setEncoding("utf8");
+//     pythonProcess.stdout.on("data", (data) => {
+//       // Do something with the data returned from python script
+//       response += data.toString();
+//       console.log(data.toString());
+//     });
 
-    pythonProcess.stderr.on("data", (data) => {
-      // Do something with the data returned from python script
-      err += data.toString();
-      console.log(data.toString());
-    });
+//     pythonProcess.stderr.on("data", (data) => {
+//       // Do something with the data returned from python script
+//       err += data.toString();
+//       console.log(data.toString());
+//     });
 
-    pythonProcess.on("exit", (code) => {
-      console.log(`child process finished with code ${code}`);
-      console.log("response: " + response);
-      const data = response.split("\n");
-      res.json({ success: true, searchTerm, data: data });
-    });
-  } else {
-    res.sendStatus(401); // Unauthorized
-  }
-}
+//     pythonProcess.on("exit", (code) => {
+//       console.log(`child process finished with code ${code}`);
+//       console.log("response: " + response);
+//       const data = response.split("\n");
+//       res.json({ success: true, searchTerm, data: data });
+//     });
+//   } else {
+//     res.sendStatus(401); // Unauthorized
+//   }
+// }
 
 export function getProfile(req, res) {
   console.log("get profile request received");
@@ -324,7 +344,7 @@ export function updateProfile(req, res) {
     return;
   }
   const params = req.body;
-  if(params.year===undefined){
+  if (params.year === undefined) {
     res.sendStatus(400); // Bad Request
     return;
   }
@@ -359,19 +379,19 @@ export function getCourseInfo(req, res) {
     res.sendStatus(400); // Bad Request
     return;
   }
-  console.log("["+courseId+"]")
+  console.log("[" + courseId + "]");
 
   db.getCourseInfo(courseId, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
       res.json({ success: false, errorMsg: "Unable to perform operation." });
     } else {
-      if (data===undefined || data.Item===undefined) {
-        console.log("Unable to find course with id: " + courseId + ".")
+      if (data === undefined || data.Item === undefined) {
+        console.log("Unable to find course with id: " + courseId + ".");
         res.sendStatus(404); // Not Found
         return;
       }
-      console.log("Course found: "+data.Item.Course_Code)
+      console.log("Course found: " + data.Item.Course_Code);
       delete data.Item?.courseEmbedding;
       res.json({ success: true, data: data.Item });
     }
@@ -482,12 +502,13 @@ function getPersonalizedPredictions(courseId) {
   const pythonProcess = spawn("python3", [EMBEDDING_SCRIPT_PATH, courseId]);
 }
 
-export function getSearchResults(req, res){
+export function getSearchResults(req, res) {
   const searchTerm = req.body?.searchTerm;
   if (searchTerm === undefined) {
     res.json({ success: false, errorMsg: "Invalid request body." });
     return;
   }
+
   db.getSearchResults(searchTerm, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
@@ -497,7 +518,73 @@ export function getSearchResults(req, res){
       trimmedData = trimmedData.map((item) => {
         return item[0];
       });
-      res.json({ success: true, data:  trimmedData});
+      res.json({ success: true, data: trimmedData });
     }
   });
+}
+
+export function deleteEvaluation(req, res) {
+  const user = req.session?.userid;
+  const department = utils.validateDepartment(req.body?.department);
+  const number = utils.validateCourseNumber(req.body?.number);
+  const year = utils.validateYear(req.body?.year);
+  const semester = utils.validateSemester(req.body?.semester);
+  console.log({ department, number, year, semester });
+  if (
+    department === undefined ||
+    number === undefined ||
+    year === undefined ||
+    semester === undefined
+  ) {
+    res.sendStatus(400); // Bad Request
+    return;
+  }
+
+  db.deleteEvaluation(
+    user,
+    { department, number, year, semester },
+    (err, data) => {
+      if (err) {
+        console.log("Error", err.stack);
+        res.json({ success: false, errorMsg: "Unable to perform operation." });
+      } else {
+        res.json({ success: true });
+      }
+    }
+  );
+}
+
+export function editEvaluation(req, res) {
+  const user = req.session.userid;
+  const department = utils.validateDepartment(req.body?.department);
+  const number = utils.validateCourseNumber(req.body?.number);
+  const year = utils.validateYear(req.body?.year);
+  const semester = utils.validateSemester(req.body?.semester);
+  const interest = utils.validateRating(req.body?.interest);
+  const difficulty = utils.validateRating(req.body?.difficulty);
+  const workload = utils.validateWorkload(req.body?.workload);
+
+  if (
+    department === undefined ||
+    number === undefined ||
+    year === undefined ||
+    semester === undefined ||
+    interest === undefined ||
+    difficulty === undefined ||
+    workload === undefined
+  ) {
+    res.sendStatus(400); // Bad Request
+    return;
+  }
+
+  res.sendStatus(501); // Not Implemented
+
+  // db.editEvaluation(user, {, (err, data) => {
+  //   if (err) {
+  //     console.log("Error", err.stack);
+  //     rsp.json({ success: false, errorMsg: "Unable to perform operation." });
+  //   } else {
+  //     rsp.json({ success: true });
+  //   }
+  // });
 }

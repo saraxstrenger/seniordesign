@@ -1,9 +1,11 @@
-import { AnimatePresence, motion } from "framer-motion";
-import React from "react";
+import { motion } from "framer-motion";
+import React, { useContext } from "react";
 import { useState, useEffect } from "react";
 import LoadingDots from "./LoadingDots";
 import WorkloadChart from "./WorkloadChart";
 import Modal from "./Modal";
+import { EvaluationsContext } from "../context";
+import "./css/Forms.css";
 const row = {
   display: "flex",
   flexDirection: "row",
@@ -12,16 +14,12 @@ const col = {
   display: "flex",
   flexDirection: "column",
 };
-export default function EvaluationsInfoCard({
-  evaluationId,
-  isShown,
-  setIsShown,
-}) {
+export default function EvaluationsInfoCard({ evaluationId, setEvaluations }) {
   const [evaluationInfo, setEvaluationInfo] = useState({});
   const [errorMsg, setErrorMsg] = useState("");
   const [workloadData, setWorkloadData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  // eslint-disable-next-line
+
   const [editMode, setEditMode] = useState(false);
   useEffect(() => {
     // Fetch evaluations using the course
@@ -38,6 +36,7 @@ export default function EvaluationsInfoCard({
         } else return res.json();
       })
       .then((resJson) => {
+        console.log(resJson);
         if (resJson.success) {
           setWorkloadData(resJson.data.workload);
           setEvaluationInfo(resJson.data);
@@ -63,13 +62,33 @@ export default function EvaluationsInfoCard({
               padding: "24px 0px",
             }}
           >
-            <div>
+            <div style={{...row, justifyContent:"center", alignItems:"center"}}>
               <b>Difficulty:&#160;</b>
-              {evaluationInfo.difficulty}
+              {editMode ? (
+                <input
+                  type="text"
+                  className="form-input"
+                  name="difficulty"
+                  id="difficulty"
+                  defaultValue={evaluationInfo.difficulty}
+                />
+              ) : (
+                evaluationInfo.difficulty
+              )}
             </div>
-            <div>
+            <div style={{...row, justifyContent:"center", alignItems:"center"}}>
               <b>Interest:&#160;</b>
-              {evaluationInfo.interest}{" "}
+              {editMode ? (
+                <input
+                  type="text"
+                  className="form-input"
+                  name="difficulty"
+                  id="difficulty"
+                  defaultValue={evaluationInfo.interest}
+                />
+              ) : (
+                evaluationInfo.interest
+              )}
             </div>
           </div>
           <div
@@ -87,8 +106,8 @@ export default function EvaluationsInfoCard({
                 height={350}
                 width={450}
                 data={workloadData}
-                updateData={editMode ? setWorkloadData : null}
-                editEnabled={editMode}
+                updateData={ setWorkloadData }
+                editMode={editMode}
                 onDrop={function (e) {
                   const y = Math.round(e.target.options.y * 10) / 10;
                   e.target.options.y = y;
@@ -109,7 +128,7 @@ export default function EvaluationsInfoCard({
       <div style={{ ...row, width: "100%" }}>
         {!editMode ? (
           <button
-            className="btn btn-primary btn-small"
+            className="btn btn-secondary btn-small"
             style={{ width: "100%" }}
             onClick={() => setEditMode(true)}
           >
@@ -139,32 +158,87 @@ export default function EvaluationsInfoCard({
               Delete
             </button>
 
-            <Modal isOpen={showDeleteModal}>
-              <div style={{ ...col, alignItems:"center"}}>
-               <div style={{marginBottom: 12}}>
-                  Are you sure you want to delete this evaluation?
-               </div>
-                <div>
-                  <button
-                    className="btn btn-secondary btn-small"
-                    style={{ width: "inherit", boxSizing: "border-box" }}
-                    onClick={() => setShowDeleteModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="btn btn-tertiary btn-small"
-                    style={{ width: "inherit", boxSizing: "border-box" }}
-                    onClick={() => alert("implement")}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </Modal>
+            <DeleteEvaluationModal
+              isShown={showDeleteModal}
+              setIsShown={setShowDeleteModal}
+              evaluationInfo={evaluationInfo}
+            />
           </>
         )}
       </div>
     </motion.div>
+  );
+}
+
+function DeleteEvaluationModal({ isShown, setIsShown, evaluationInfo }) {
+  const setEvaluations = useContext(EvaluationsContext).setEvaluations;
+  const [errorMsg, setErrorMsg] = useState("");
+  const tryDeleteEvaluation = function () {
+    alert("hello");
+    const evaluationParams = {
+      department: evaluationInfo.department,
+      number: evaluationInfo.number,
+      year: evaluationInfo.year,
+      semester: evaluationInfo.semester,
+    };
+    fetch("/deleteEvaluation/", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(evaluationParams),
+    })
+      .then((res) => {
+        if (res.status !== 200) {
+          if (res.status === 400) {
+            return { success: false, error: "Invalid parameters." };
+          } else if (res.status === 401) {
+            return { success: false, error: "Unauthorized." };
+          } else if (res.status === 404) {
+            return { success: false, error: "Evaluation not found." };
+          } else {
+            return { success: false, error: "Unknown error." };
+          }
+        } else return res.json();
+      })
+      .then((resJson) => {
+        console.log(resJson);
+        if (resJson.success) {
+          setEvaluations((oldEvaluations) => {
+            return oldEvaluations.filter(
+              (evaluation) => evaluation.id !== evaluationInfo.id
+            );
+          });
+          setIsShown(false);
+        } else {
+          setErrorMsg(resJson.error ?? "Unable to complete delete operation.");
+        }
+      });
+  };
+  return (
+    <Modal isOpen={isShown}>
+      <div style={{ ...col, alignItems: "center" }}>
+        <div style={{ marginBottom: 12 }}>
+          Are you sure you want to delete this evaluation?
+        </div>
+        <div>
+          <button
+            className="btn btn-secondary btn-small"
+            style={{ width: "inherit", boxSizing: "border-box" }}
+            onClick={() => setIsShown(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className="btn btn-tertiary btn-small"
+            style={{ width: "inherit", boxSizing: "border-box" }}
+            onClick={tryDeleteEvaluation}
+          >
+            Delete
+          </button>
+          {errorMsg && <div style={{ color: "red" }}>{errorMsg}</div>}
+        </div>
+      </div>
+    </Modal>
   );
 }

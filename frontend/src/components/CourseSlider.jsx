@@ -81,7 +81,7 @@ export default function CourseSlider(props) {
       responsive={responsive}
       itemWidth={300}
       arrows={false}
-      customButtonGroup={<ButtonGroup />}
+      // customButtonGroup={<ButtonGroup />}
     >
       {courses.map((course, index) => (
           <CoursePreviewCard courseId={course} {...cardProps} key={index} />

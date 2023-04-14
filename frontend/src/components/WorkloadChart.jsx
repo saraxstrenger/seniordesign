@@ -1,50 +1,40 @@
-import React from "react";
-// Import Highcharts
-import Highcharts from "highcharts";
-import drilldown from "highcharts/modules/drilldown.js";
+import React, { useEffect, useState } from "react";
 import HighchartsReact from "highcharts-react-official";
-import HC_more from "highcharts/highcharts-more"; //module
-//import HighchartsReact from "./HighchartsReact.min.js";
-drilldown(Highcharts);
+import Highcharts from "highcharts";
 require("highcharts/modules/draggable-points")(Highcharts);
-require("highcharts/modules/accessibility")(Highcharts);
-HC_more(Highcharts); //init module
 
-export default class WorkloadChart extends React.Component {
-  constructor(props) {
-    super(props);
-    this.allowChartUpdate = props?.editEabled ?? true;
-    this.state = {
-      updateData: props.updateData,
-      data: props.data,
-      onDrop: props.onDrop,
-      editEnabled: props?.editEnabled ?? true,
-      height: props?.height,
-      width: props?.width,
-    };
-  }
+const WorkloadChart = (props) => {
+  // console.log(props)
+  const { data, onDrop, editMode, height, width } = props;
+  // const [editMode, setEditMode] = useState(false);
+  const [chartOptions, setChartOptions] = useState({});
+  const [chartData, setChartData] = useState(data);
 
-  componentDidMount() {
-    // const chart = this.refs.chartComponent.chart;
-  }
-
-  render() {
-    const config = {
-      chart: {
-        animation: false,
-        height: this.state?.height,
-        width: this.state?.width,
-      },
-      caption: this.state.editEabled
-        ? {
-            text: "Adjust this chart to match the intensity of this course's workload from the beginning to the end of semester",
-          }
-        : null,
+  useEffect(() => {
+    const canEdit = {
       title: {
         text: "Workload",
       },
+      tooltip: {
+        valueDecimals: 1,
+      },
+      chart: {
+        animation: false,
+        width: width,
+        height: height,
+      },
       legend: {
         enabled: false,
+      },
+      series: [
+        {
+          data: chartData.map((v) => {
+            return { y: v };
+          }),
+        },
+      ],
+      caption: {
+        text: "Adjust this chart to match the intensity of this course's workload from the beginning to the end of semester",
       },
       yAxis: {
         title: { text: "Work required" },
@@ -59,47 +49,89 @@ export default class WorkloadChart extends React.Component {
         categories: [1, 2, 3, 4],
       },
       plotOptions: {
-        series: {
-          dragDrop: this.state.editEnabled
-            ? {
-                draggableY: true,
-                dragMaxY: 5,
-                dragMinY: 0,
-              }
-            : null,
-          point: {
-            events: {
-              drop: this.state.editEnabled
-                ? (e) => {
-                    const newData = this.state.onDrop(e);
-                    this.setState({ data: newData });
-                  }
-                : null,
-            },
-          },
-        },
         line: {
           cursor: "ns-resize",
         },
+        series: {
+          dragDrop: {
+            draggableY: true,
+            dragMaxY: 5,
+            dragMinY: 0,
+          },
+          point: {
+            events: {
+              drop: (e) => {
+                const newData = onDrop(e);
+                console.log(newData);
+                setChartData(newData);
+              },
+            },
+          },
+        },
+      },
+    };
+    const cannotEdit = {
+      chart: {
+        animation: false,
+        width: width,
+        height: height,
       },
       tooltip: {
         valueDecimals: 1,
       },
+      xAxis: {
+        title: { text: "Quarters of course" },
+        accessibility: {
+          description: "Quarter of course from beginning to end.",
+        },
+        categories: [1, 2, 3, 4],
+      },
+      yAxis: {
+        title: { text: "Work required" },
+        min: 0,
+        max: 5,
+      },
+      caption: {
+        text: "",
+      },
+
+      title: {
+        text: "Workload",
+      },
+      legend: {
+        enabled: false,
+      },
       series: [
         {
-          data: this.state.data.map((v) => {
+          data: chartData.map((v) => {
             return { y: v };
           }),
         },
       ],
+      plotOptions: {
+        line: {
+          cursor: "default",
+        },
+        series: {
+          dragDrop: {
+            draggableY: false,
+          },
+        },
+      },
     };
-    return (
-      <HighchartsReact
-        allowChartUpdate={this.allowChartUpdate}
-        // ref={"chartComponent"}
-        highcharts={Highcharts}
-        options={config}
-      />
-    );
-  }
-}
+    if (editMode) {
+      setChartOptions(canEdit);
+    } else {
+      setChartOptions(cannotEdit);
+    }
+  }, [editMode, width, height, onDrop, chartData]);
+
+  return (
+    <div style={{ width: 700, height: "fit-content" }}>
+      {editMode ? "Edit mode" : "View mode"}
+      <HighchartsReact highcharts={Highcharts} options={chartOptions} />
+    </div>
+  );
+};
+
+export default WorkloadChart;
