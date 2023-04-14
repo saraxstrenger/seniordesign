@@ -161,7 +161,7 @@ function AddInterestForm(props) {
   return (
     <form onSubmit={addInterest}>
       <input type="text" name="newInterest" id="newInterest" className="form-input"  style={{minWidth: "50%"}}/>
-      <input type="submit" id="submit" className={"btn"} value="add" />
+      <button type="submit" id="submit" className={"btn"} value="add">add</button>
     </form>
   );
 }

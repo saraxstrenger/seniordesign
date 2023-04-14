@@ -8,7 +8,6 @@
   background-color: #f6f6f6;
   color: #333333;
 }
-
 .form-button {
   height: fit-content;
   border-radius: 8px;
@@ -20,4 +19,16 @@
   background-color: #cc8328;
   color: white;
   cursor: pointer;
+}
+
+.select-input {
+  height: 36px;
+  width: 52px;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 8px 8px;
+  margin-right: 10px;
+  font-size: 16px;
+  background-color: #f6f6f6;
+  color: #333333;
 }

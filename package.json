@@ -39,6 +39,7 @@
     "react-icons": "^4.8.0",
     "react-slick": "^0.29.0",
     "slick-carousel": "^1.8.1",
+    "sqlite3": "^5.1.6",
     "stemmer": "^2.0.1",
     "stopword": "^2.0.8",
     "stopwords": "^0.0.9"

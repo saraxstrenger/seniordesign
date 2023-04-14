@@ -71,13 +71,13 @@ export default function Profile(props) {
               >
                 <ProfileInterestsForm interests={interests} />
               </div>
-              <div className={true ? "card-no-hover" : "card"}>
+             
               <ProfileUpdateForm
                 profileData={profileData}
                 setProfileData={setProfileData}
               />
               
-            </div>
+
             </div>
           )}
         </div>

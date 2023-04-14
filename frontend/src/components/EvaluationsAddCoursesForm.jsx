@@ -149,7 +149,7 @@ export default function EvaluationsAddEvaluationForm(props) {
           </div>
         </div>
         {workloadString}
-        <div style={{ ...row }}>
+        <div style={{ ...row}}>
           <WorkloadChart
             height={350}
             data={workloadData}
@@ -178,7 +178,7 @@ export default function EvaluationsAddEvaluationForm(props) {
           </center>
         ) : null}
         <div style={{ ...row, justifyContent: "center" }}>
-          <input className={"form-button"} type="submit" value="Submit" />
+          <button className={"btn btn-primary"} type="submit" value="Submit" >Submit</button>
           <button
             className={"btn btn-tertiary"}
             onClick={() => {

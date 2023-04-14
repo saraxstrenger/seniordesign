@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts";
 require("highcharts/modules/draggable-points")(Highcharts);
+require("highcharts/modules/accessibility")(Highcharts);
+
 
 const WorkloadChart = (props) => {
-  // console.log(props)
   const { data, onDrop, editMode, height, width } = props;
-  // const [editMode, setEditMode] = useState(false);
   const [chartOptions, setChartOptions] = useState({});
-  const [chartData, setChartData] = useState(data);
 
   useEffect(() => {
     const canEdit = {
@@ -19,7 +18,7 @@ const WorkloadChart = (props) => {
         valueDecimals: 1,
       },
       chart: {
-        animation: false,
+        // animation: false,
         width: width,
         height: height,
       },
@@ -28,8 +27,8 @@ const WorkloadChart = (props) => {
       },
       series: [
         {
-          data: chartData.map((v) => {
-            return { y: v };
+          data: data.map((v) => {
+            return v;
           }),
         },
       ],
@@ -63,7 +62,6 @@ const WorkloadChart = (props) => {
               drop: (e) => {
                 const newData = onDrop(e);
                 console.log(newData);
-                setChartData(newData);
               },
             },
           },
@@ -103,8 +101,8 @@ const WorkloadChart = (props) => {
       },
       series: [
         {
-          data: chartData.map((v) => {
-            return { y: v };
+          data: data.map((v) => {
+            return v;
           }),
         },
       ],
@@ -124,13 +122,14 @@ const WorkloadChart = (props) => {
     } else {
       setChartOptions(cannotEdit);
     }
-  }, [editMode, width, height, onDrop, chartData]);
+    console.log("chart data", data)
+  }, [props]);
 
   return (
-    <div style={{ width: 700, height: "fit-content" }}>
-      {editMode ? "Edit mode" : "View mode"}
-      <HighchartsReact highcharts={Highcharts} options={chartOptions} />
-    </div>
+    // <div style={{ height: "fit-content" }}>
+      // {editMode ? "Edit mode" : "View mode"}
+      <HighchartsReact highcharts={Highcharts} options={{...chartOptions, tooltip:{valueDecimals:1}}} />
+    // {/* </div> */}
   );
 };
 
