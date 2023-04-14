@@ -80,7 +80,7 @@ class EmbeddingRecommender():
         X = np.array(self.courses.iloc[:, -1].tolist())
         nbrs = NearestNeighbors(n_neighbors=k, algorithm='auto', metric='euclidean').fit(X)
         distances, indices = nbrs.kneighbors([tgt_embedding])
-        top_k = [str(self.courses.iloc[i].drop('embedding').to_dict()) for i in indices[0]]
+        top_k = [str(self.courses.iloc[i]['code']) for i in indices[0]]
         return top_k
         
         """
