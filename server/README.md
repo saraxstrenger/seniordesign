@@ -4,7 +4,7 @@ Setting up SQLite Database locally
 
 2. Navigate in your terminal to the directory where you want this local database to be and enter the following command: 
    ```
-   $ sqlite3 seniordesign.sqlite". 
+   $ sqlite3 seniordesign.sqlite. 
    ```
    This creates a database called seniordesign in your chosen directory. Once you enter this command, you should enter the sqlite shell, i.e, each line on    the terminal should start with:
    ```
@@ -29,7 +29,7 @@ Setting up SQLite Database locally
       ```
 4. To check if a table has been created, you can enter 
  ```
-   ".tables" 
+   .tables 
   ```
    and it should return with "evaluations"
 
