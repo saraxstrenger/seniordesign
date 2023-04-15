@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./css/Buttons.css";
 import "./css/Forms.css";
+import "./css/Card.css";
 import LoadingDots from "./LoadingDots";
-
-// const row = {
-//   display: "flex",
-//   justifyContent: "center",
-//   flexDirection: "row",
-// };
 
 export default function ProfileInterestsForm(props) {
   const { interests } = props;
@@ -19,7 +14,7 @@ export default function ProfileInterestsForm(props) {
   }, [interests]);
 
   const removeInterest = (removedInterest) => {
-    if(!interestsSet.has(removedInterest)) {
+    if (!interestsSet.has(removedInterest)) {
       setErrorMsg("Interest not found.");
       return;
     }
@@ -85,7 +80,7 @@ export default function ProfileInterestsForm(props) {
           );
         } else if (resJson.success === true) {
           setErrorMsg("");
-          const updatedInterests =new Set(interestsSet);
+          const updatedInterests = new Set(interestsSet);
           updatedInterests.add(newInterest);
           setInterestsSet(updatedInterests);
           e.target.newInterest.value = "";
@@ -94,42 +89,59 @@ export default function ProfileInterestsForm(props) {
   };
 
   return (
-    <>
+    <div className="card-no-hover" style={{ padding: "0px 24px" }}>
+      <h2>Your Interests:</h2>
       <div
         style={{
+          paddingBottom: 24,
           display: "flex",
-          justifyContent: "center",
-          flexWrap: "wrap",
-          padding: 12,
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        {interests === null ? (
-          <LoadingDots/>
-        ) : interestsSet.size > 0 ? (
-          Array.from(interestsSet).map((interest, index) => {
-            return (
-              <div key={index}>
-                <InterestBubble
-                  interest={interest}
-                  removeInterest={() => {
-                    removeInterest(interest);
-                  }}
-                />
-              </div>
-            );
-          })
-        ) : (
-          <>
-            <h4 style={{ margin: 8 }}>No interests added yet!</h4>
-          </>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            padding: 12,
+          }}
+        >
+          {interests === null ? (
+            <LoadingDots />
+          ) : interestsSet.size > 0 ? (
+            Array.from(interestsSet).map((interest, index) => {
+              return (
+                <div key={index}>
+                  <InterestBubble
+                    interest={interest}
+                    removeInterest={() => {
+                      removeInterest(interest);
+                    }}
+                  />
+                </div>
+              );
+            })
+          ) : (
+            <>
+              <h4 style={{ margin: 8 }}>No interests added yet!</h4>
+            </>
+          )}
+        </div>
+        <AddInterestForm addInterest={addInterest} />
+        {errorMsg && (
+          <div
+            style={{
+              color: "red",
+              fontSize: "small",
+              paddingTop: 8,
+            }}
+          >
+            {errorMsg}
+          </div>
         )}
       </div>
-      <div style={{ dropShadow: "1px 1px 2px rgba(0, 0, 0, 0.25)" }}>
-        <AddInterestForm addInterest={addInterest} />
-
-        {errorMsg && <div>{errorMsg}</div>}
-      </div>
-    </>
+    </div>
   );
 }
 
@@ -160,8 +172,16 @@ function AddInterestForm(props) {
   const { addInterest } = props;
   return (
     <form onSubmit={addInterest}>
-      <input type="text" name="newInterest" id="newInterest" className="form-input"  style={{minWidth: "50%"}}/>
-      <button type="submit" id="submit" className={"btn"} value="add">add</button>
+      <input
+        type="text"
+        name="newInterest"
+        id="newInterest"
+        className="form-input"
+        style={{ minWidth: "50%" }}
+      />
+      <button type="submit" id="submit" className={"btn"} value="add">
+        add
+      </button>
     </form>
   );
 }

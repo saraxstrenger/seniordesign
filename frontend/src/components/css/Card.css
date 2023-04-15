@@ -21,6 +21,12 @@
   border: 1px solid var(--card-border-color, #2b4162);
   box-shadow: 1px 1px 1px var(--card-shadow-color, #2b4162);
 }
+
+.card-centered{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .cardImage {
   border-radius: "5px";
 }

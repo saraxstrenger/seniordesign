@@ -42,10 +42,7 @@ export default function Profile(props) {
   return (
     <div>
       <NavBar />
-      <div
-        className={styles.page}
-        style={{ alignItems: "center" }}
-      >
+      <div className={styles.page} style={{ alignItems: "center" }}>
         <div
           style={{
             ...col,
@@ -54,29 +51,18 @@ export default function Profile(props) {
             width: "75%",
           }}
         >
-          {/* <h1>Profile</h1> */}
+          <h2>Profile:</h2>
 
           {errorMsg ? (
             errorMsg
           ) : (
             <div style={col}>
-              <h2>Your Interests:</h2>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <ProfileInterestsForm interests={interests} />
-              </div>
-             
+              <ProfileInterestsForm interests={interests} />
+
               <ProfileUpdateForm
                 profileData={profileData}
                 setProfileData={setProfileData}
               />
-              
-
             </div>
           )}
         </div>
