@@ -51,7 +51,11 @@ const LOCAL_DB_PATH = "/Users/suvaskota/Downloads/seniordesign.sqlite";
 
 5. The data to upload to this table is in seniordesign/data/new_course_evals.csv
 
-6. To upload this csv to the table, we first enter ".mode csv" in the terminal. Then we execute the following command: 
+6. To upload this csv to the table, we first enter 
+    ```
+   .mode csv
+    ```
+   Then we execute the following command: 
     ```
     .import filepathtocsv evaluations
    ```
