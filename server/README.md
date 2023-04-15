@@ -5,7 +5,7 @@ If you haven't yet set up your local SQLite database, skip to Part 2 first and t
 sqlite> .databases
 main: /Users/suvaskota/Downloads/seniordesign.sqlite r/w
 ```
-So now, I update LOCAL_DB_PATH in the following manner:
+So now, I update the LOCAL_DB_PATH variable in database.js in the following manner:
 ```
 const LOCAL_DB_PATH = "/Users/suvaskota/Downloads/seniordesign.sqlite"
 ```
