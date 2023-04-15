@@ -215,7 +215,7 @@ export function updateEvaluation(req, res) {
   }
 
   db.updateEvaluation(
-    session.userid,
+    user,
     { department, number, year, semester, difficulty, interest, workload },
     (err, data) => {
       if (err) {

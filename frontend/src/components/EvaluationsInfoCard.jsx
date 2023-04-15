@@ -18,9 +18,9 @@ const col = {
 export default function EvaluationsInfoCard({ evaluationId, setEvaluations }) {
   const [evaluationInfo, setEvaluationInfo] = useState({});
   const [errorMsg, setErrorMsg] = useState("");
-  const [workloadData, setWorkloadData] = useState([]);
-  const [oldData, setOldData] = useState([]);
-  // const [workloadString, setWorkloadString] = useState(JSON.stringify(workloadData));
+  const [editErrorMsg, setEditErrorMsg] = useState("");
+  const [editedWorkloadData, setEditedWorkloadData] = useState([]);
+  const [savedWorkloadData, setSavedWorkloadData] = useState([]);
   const [editMode, setEditMode] = useState(false);
   useEffect(() => {
     // Fetch evaluations using the course
@@ -39,33 +39,60 @@ export default function EvaluationsInfoCard({ evaluationId, setEvaluations }) {
       .then((resJson) => {
         if (resJson.success) {
           console.log("updating workload");
-          setWorkloadData([...resJson.data.workload]);
-          setOldData([...resJson.data.workload]);
-          // setWorkloadString(JSON.stringify(workloadData));
+          setEditedWorkloadData([...resJson.data.workload]);
+          setSavedWorkloadData([...resJson.data.workload]);
           setEvaluationInfo(resJson.data);
         } else {
           setErrorMsg(resJson.error);
         }
       });
   }, [evaluationId]);
-console.log("oldData", oldData)
+
+  console.log("savedWorkloadData", savedWorkloadData);
   const tryUpdateEvaluation = (e) => {
-    console.log('TRYOING PDATE');
+    console.log("TRYOING PDATE");
     e.preventDefault();
     const interest = parseInt(e.target.interest.value);
     const difficulty = parseInt(e.target.difficulty.value);
-    const workload = workloadData;
-    const evaluationData = {
+    const updatedEvaluation = {
+      department: evaluationInfo.department,
+      number: evaluationInfo.number,
+      year: evaluationInfo.year,
+      semester: evaluationInfo.semester,
       interest,
       difficulty,
-      workload,
+      workload: [...editedWorkloadData],
     };
-    setEvaluationInfo((evaluationInfo) => {
-      return { ...evaluationInfo, workload };
-    });
-    setEditMode(false);
-    setOldData([...workload]);
-    alert("update not implemented yet");
+    fetch("/updateEvaluation/", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(updatedEvaluation),
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          return { success: false, error: "Unauthorized" };
+        } else if (res.status === 400) {
+          return { success: false, error: "Invalid parameters" };
+        } else return res.json();
+      })
+      .then((resJson) => {
+        if (resJson.success === true) {
+          setEvaluationInfo((prevInfo) => {
+            return {
+              ...prevInfo,
+              interest,
+              difficulty,
+              workload: [...editedWorkloadData],
+            };
+          });
+          setSavedWorkloadData([...editedWorkloadData]);
+          setEditMode(false);
+        } else {
+          setEditErrorMsg(resJson.error ?? "An unknown error occurred");
+        }
+      });
   };
 
   return (
@@ -75,7 +102,6 @@ console.log("oldData", oldData)
       id="evaluationsInfoCard"
     >
       <hr style={{ margin: 0 }} />
-      {JSON.stringify(evaluationInfo.workload)}
       <form onSubmit={tryUpdateEvaluation} id={evaluationId}>
         <div style={{ ...col, justifyContent: "center", alignItems: "center" }}>
           <div
@@ -145,12 +171,12 @@ console.log("oldData", oldData)
           >
             {errorMsg ? (
               { errorMsg }
-            ) : workloadData.length === 4 ? (
+            ) : editedWorkloadData.length === 4 ? (
               editMode ? (
                 <WorkloadChart
                   height={400}
                   width={450}
-                  data={workloadData}
+                  data={editedWorkloadData}
                   editMode={true}
                   onDrop={function (e) {
                     // round to one decimal place
@@ -159,25 +185,23 @@ console.log("oldData", oldData)
                     e.target.options.y = y;
                     const x = e.target.index;
                     console.log("setting workload data:");
-                    setWorkloadData((oldData) => {
-                      oldData[x] = y;
-                      return oldData;
+                    setEditedWorkloadData((prevData) => {
+                      prevData[x] = y;
+                      return prevData;
                     });
-                    console.log(workloadData);
+                    console.log(editedWorkloadData);
                     // return data so chart updates
-                    // setWorkloadString(JSON.stringify(workloadData));
-                    return workloadData;
+                    // setWorkloadString(JSON.stringify(editedWorkloadData));
+                    return editedWorkloadData;
                   }}
                 />
               ) : (
-
-                  <WorkloadChart
-                    height={400}
-                    width={450}
-                    data={[...oldData]}
-                    editMode={false}
-                  />
-
+                <WorkloadChart
+                  height={400}
+                  width={450}
+                  data={[...savedWorkloadData]}
+                  editMode={false}
+                />
               )
             ) : (
               <LoadingDots />
@@ -187,15 +211,26 @@ console.log("oldData", oldData)
         <EvaluationCardButtons
           editMode={editMode}
           cancelEdit={() => {
-            console.log("cancelled:", oldData);
-            setWorkloadData([...oldData]);
-
+            console.log("cancelled:", savedWorkloadData);
+            setEditedWorkloadData([...savedWorkloadData]);
+            setEditErrorMsg("");
             setEditMode(false);
-            console.log("reset:", workloadData);
+            console.log("reset:", editedWorkloadData);
           }}
           evaluationInfo={evaluationInfo}
         />
       </form>
+      {editErrorMsg && (
+        <div
+          style={{
+            color: "red",
+            textAlign: "center",
+            fontSize: "small",
+          }}
+        >
+          {"Error: "+editErrorMsg}
+        </div>
+      )}
       {!editMode && (
         <div style={{ ...row, width: "100%", justifyContent: "space-around" }}>
           <button
@@ -204,8 +239,8 @@ console.log("oldData", oldData)
             className="btn btn-secondary btn-small"
             style={{ width: "inherit" }}
             onClick={() => {
-              console.log("SEETTING OLD DATA")
-              setOldData([...workloadData]);
+              console.log("SEETTING OLD DATA");
+              setSavedWorkloadData([...editedWorkloadData]);
               setEditMode(true);
             }}
           >
