@@ -21,6 +21,10 @@
   cursor: pointer;
 }
 
+.search-button:hover {
+  background-color: #bb7825;
+}
+
 .select-input {
   height: 36px;
   width: 52px;

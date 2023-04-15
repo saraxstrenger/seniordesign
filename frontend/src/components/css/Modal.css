@@ -62,8 +62,4 @@
     cursor: pointer;
   }
   
-  input[type="submit"]:hover {
-    background-color: #BB7825;
-  }
-  
   

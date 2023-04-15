@@ -20,9 +20,5 @@ export default function Logout() {
       }
     });
   };
-  return (
-    <div style={{ padding: 12 }}>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
-  );
+  return <button onClick={handleLogout}>Logout</button>;
 }

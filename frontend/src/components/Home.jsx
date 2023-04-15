@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import Logout from "./Logout";
 import NavBar from "./NavBar";
 import styles from "./css/utils.module.css";
 import { useNavigate } from "react-router-dom";
@@ -97,20 +96,22 @@ function Home(props) {
         <RecommendationsContext.Provider
           value={{ focusedCourse, setFocusedCourse }}
         >
-          <Logout {...props} />
           <form
+            id="searchBar"
             style={{ ...row, width: "100%", alignItems: "center" }}
             onSubmit={trySearch}
             ref={formRef}
           >
             <input
               type="text"
-              placeholder="Search"
+              placeholder="Search for courses..."
               name="searchTerm"
               style={{ minWidth: "50%" }}
               className="form-input"
             />
-            <input type="submit" value="Search" className="form-button" />
+            <button type="submit" value="Search" className="form-button search-button">
+              Search
+            </button>
           </form>
 
           {searchMode ? (
