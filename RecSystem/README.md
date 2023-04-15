@@ -3,6 +3,8 @@ Before using this, make sure you run
 ```
 pip3 install -r requirements.txt
 ```
+you may want to install requirements in a virtual environment. 
+
 This is the "brain" of the reccomendations. Here you'll find three scipts for creating recommendations:
 1. EmbeddingRecommender.py
 2. CollabFilterRecommender.py
