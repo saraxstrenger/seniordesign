@@ -10,7 +10,7 @@ main: /Users/suvaskota/Downloads/seniordesign.sqlite r/w
 ```
 So now, I update the LOCAL_DB_PATH variable in database.js in the following manner:
 ```
-const LOCAL_DB_PATH = "/Users/suvaskota/Downloads/seniordesign.sqlite"
+const LOCAL_DB_PATH = "/Users/suvaskota/Downloads/seniordesign.sqlite";
 ```
 
 
