@@ -1,10 +1,14 @@
 # Part 1: Necessary File Modification
 
-If you haven't yet set up your local SQLite database, skip to Part 2 first and then come back to Part 1. Once you have set up your local SQLite database, make sure to modify the value of LOCAL_DB_PATH variable in server/database.js to the file path of your local SQLite database (should be right below all the import statements). For example:
+If you haven't yet set up your local SQLite database, skip to Part 2 first and then come back to Part 1. Once you have set up your local SQLite database, make sure to modify the value of LOCAL_DB_PATH variable in server/database.js to the file path of your local SQLite database (should be right below all the import statements). To find the path to your local database, run .databases in the sqlite3 shell to find the path to your. As an example:
+```
+sqlite> .databases
+main: /Users/suvaskota/Downloads/seniordesign.sqlite r/w
+```
+So now, I update LOCAL_DB_PATH in the following manner:
 ```
 const LOCAL_DB_PATH = "/Users/suvaskota/Downloads/seniordesign.sqlite"
 ```
-To find the path to your local database, navigate to the directory where you created the SQLite database in Part 2 below
 
 
 # Part 2: Setting up SQLite Database locally
