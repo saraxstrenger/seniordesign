@@ -46,9 +46,9 @@ To find the path to your local database, navigate to the directory where you cre
 
 6. To upload this csv to the table, we first enter ".mode csv" in the terminal. Then we execute the following command: 
     ```
-    .import [INSERT PATH TO CSV] evaluations
+    .import filepathtocsv evaluations
    ```
-   where evaluations is the name of the table we want to upload it to
+   where evaluations is the name of the table we want to upload it to. Make sure to change "filepathtocsv" to the actual filepath of the csv file.
 
 7. To confirm if this worked, run the following query:
    ``` 
