@@ -61,7 +61,6 @@ const WorkloadChart = (props) => {
             events: {
               drop: (e) => {
                 const newData = onDrop(e);
-                console.log(newData);
               },
             },
           },
@@ -122,14 +121,10 @@ const WorkloadChart = (props) => {
     } else {
       setChartOptions(cannotEdit);
     }
-    console.log("chart data", data)
   }, [props]);
 
   return (
-    // <div style={{ height: "fit-content" }}>
-      // {editMode ? "Edit mode" : "View mode"}
       <HighchartsReact highcharts={Highcharts} options={{...chartOptions, tooltip:{valueDecimals:1}}} />
-    // {/* </div> */}
   );
 };
 

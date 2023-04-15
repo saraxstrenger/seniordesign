@@ -11,7 +11,6 @@ export default function Logout() {
         "Content-type": "application/json",
       },
     }).then((res) => {
-      console.log(res);
       if (res.status === 200) {
         setLoggedIn(false);
         navigate("/");

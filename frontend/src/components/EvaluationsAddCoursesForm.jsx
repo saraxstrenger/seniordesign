@@ -17,7 +17,6 @@ export default function EvaluationsAddEvaluationForm(props) {
   const { setShowForm } = props;
   const [errorMsg, setErrorMsg] = useState("");
   const [workloadData, setWorkloadData] = useState([2, 2, 2, 2]);
-  const [workloadString, setWorkloadString] = useState(JSON.stringify(workloadData));
   const resetForm = function () {
     setWorkloadData([2, 2, 2, 2]);
     setErrorMsg("");
@@ -148,7 +147,6 @@ export default function EvaluationsAddEvaluationForm(props) {
             </select>
           </div>
         </div>
-        {workloadString}
         <div style={{ ...row}}>
           <WorkloadChart
             height={350}
@@ -166,7 +164,6 @@ export default function EvaluationsAddEvaluationForm(props) {
                 return oldData;
               });
               // return data so chart updates
-              setWorkloadString(JSON.stringify(workloadData));
               return workloadData;
             }}
           />

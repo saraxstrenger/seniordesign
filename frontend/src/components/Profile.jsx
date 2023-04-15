@@ -30,7 +30,6 @@ export default function Profile(props) {
         return res.json();
       })
       .then((resJson) => {
-        console.log(resJson);
         if (resJson.success) {
           setProfileData(resJson.user);
           setInterests(Object.keys(resJson.user.interests));
