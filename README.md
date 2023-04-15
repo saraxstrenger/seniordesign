@@ -46,6 +46,6 @@ In a seperate terminal navigate to frontend folder and run the following two lin
 1 ) npm install
 2 ) npm start 
 
-In another terminal navigate to RecSystem file and run:
+In another terminal navigate to RecServer file and run:
 1 ) make
 2 ) ./rec_server
