@@ -3,6 +3,7 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { RecommendationsContext } from "../context";
 import CoursePreviewCard from "./CoursePreviewCard";
+import Chevron from "react-chevron";
 import "./css/Buttons.css";
 // import { motion, AnimatePresence } from "framer-motion";
 import "./css/Card.css";
@@ -32,7 +33,7 @@ export default function CourseSlider(props) {
 
   const ButtonGroup = ({ next, previous, goToSlide, ...rest }) => {
     const {
-      carouselState: { currentSlide },
+      carouselState: { currentSlide, totalItems, slidesToShow }
     } = rest;
     return (
       <div
@@ -46,10 +47,7 @@ export default function CourseSlider(props) {
           alignItems: "center",
           justifyContent: "space-between",
           right: 0,
-          // zIndex: -1,
           pointerEvents: "none",
-
-          // background:"yellow"
         }}
       >
         <div
@@ -59,18 +57,23 @@ export default function CourseSlider(props) {
             flexDirection: "row",
             justifyContent: "space-between",
             height: "fit-content",
-            // zIndex: 10,
           }}
         >
-          <div
-            className={
-              currentSlide !== 0 ? "btn-carousel" : "btn-carousel invisible"
-            }
-          >
-            <button onClick={() => previous()} />
+          <div>
+            {currentSlide > 0 && (
+              <button className="btn-slider" onClick={() => previous()}>
+                <Chevron direction="left" color="gray" />
+              </button>
+            )}
           </div>
-          <div className={"btn-carousel"} >
-            <button onClick={() => next()} />
+          <div>
+            {currentSlide < totalItems - slidesToShow && (
+            <button className="btn-slider" onClick={() => next()}>
+              <div style={{ marginLeft: 5 }}>
+                <Chevron direction="right" color="gray" />
+              </div>
+            </button>
+            )}
           </div>
         </div>
       </div>
@@ -81,10 +84,10 @@ export default function CourseSlider(props) {
       responsive={responsive}
       itemWidth={300}
       arrows={false}
-      // customButtonGroup={<ButtonGroup />}
+      customButtonGroup={<ButtonGroup />}
     >
       {courses.map((course, index) => (
-          <CoursePreviewCard courseId={course} {...cardProps} key={index} />
+        <CoursePreviewCard courseId={course} {...cardProps} key={index} />
       ))}
     </Carousel>
   );
