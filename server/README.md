@@ -1,4 +1,20 @@
-Setting up SQLite Database locally
+# Part 1: Necessary File Modification
+
+If you haven't yet set up your local SQLite database, skip to Part 2 first and then come back to Part 1. Once you have set up your local SQLite database, make sure to modify the value of LOCAL_DB_PATH variable in server/database.js to the file path of your local SQLite database (should be right below all the import statements). To find the path to your local database, run .databases in the sqlite3 shell (if you don't know what this is, look at Part 2). As an example you enter:
+```
+sqlite> .databases
+```
+And then the terminal should return:
+```
+main: /Users/suvaskota/Downloads/seniordesign.sqlite r/w
+```
+So now, I update the LOCAL_DB_PATH variable in database.js in the following manner:
+```
+const LOCAL_DB_PATH = "/Users/suvaskota/Downloads/seniordesign.sqlite";
+```
+
+
+# Part 2: Setting up SQLite Database locally
 
 1. Go to the following link (https://www.sqlite.org/download.html) and download the appropriate SQLite package based on Mac or Windows
 
@@ -28,18 +44,18 @@ Setting up SQLite Database locally
         workload4 INTEGER);
       ```
 4. To check if a table has been created, you can enter 
- ```
+   ```
    .tables 
-  ```
-   and it should return with "evaluations"
+   ```
+    and it should return with "evaluations"
 
 5. The data to upload to this table is in seniordesign/data/new_course_evals.csv
 
 6. To upload this csv to the table, we first enter ".mode csv" in the terminal. Then we execute the following command: 
     ```
-    .import [INSERT PATH TO CSV] evaluations
+    .import filepathtocsv evaluations
    ```
-   where evaluations is the name of the table we want to upload it to
+   where evaluations is the name of the table we want to upload it to. Make sure to change "filepathtocsv" to the actual filepath of the csv file.
 
 7. To confirm if this worked, run the following query:
    ``` 
