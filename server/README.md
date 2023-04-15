@@ -37,10 +37,10 @@ To find the path to your local database, navigate to the directory where you cre
         workload4 INTEGER);
       ```
 4. To check if a table has been created, you can enter 
- ```
+   ```
    .tables 
-  ```
-   and it should return with "evaluations"
+   ```
+    and it should return with "evaluations"
 
 5. The data to upload to this table is in seniordesign/data/new_course_evals.csv
 
