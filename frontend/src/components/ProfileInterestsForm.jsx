@@ -3,6 +3,10 @@ import "./css/Buttons.css";
 import "./css/Forms.css";
 import "./css/Card.css";
 import LoadingDots from "./LoadingDots";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+
+
 
 export default function ProfileInterestsForm(props) {
   const { interests } = props;
@@ -151,19 +155,20 @@ function InterestBubble(props) {
     <div className="bubble">
       {interest}
       <button
-        style={{
-          background: "inherit",
-          border: "none",
-          color: "inherit",
-          padding: "0px 0px 0px 8px",
-          cursor: "pointer",
-        }}
-        onClick={() => {
-          removeInterest(interest);
-        }}
-      >
-        X
-      </button>
+  style={{
+    background: "inherit",
+    border: "none",
+    color: "inherit",
+    padding: "0px 0px 0px 8px",
+    cursor: "pointer",
+  }}
+  onClick={() => {
+    removeInterest(interest);
+  }}
+>
+  <FontAwesomeIcon icon={faTimes} />
+</button>
+
     </div>
   );
 }

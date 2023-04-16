@@ -202,53 +202,35 @@ export default function LandingSignupForm(props) {
             </div>
 
             <div style={{ width: "30%" }}>
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      height: 52,
-      justifyContent: "space-between",
-    }}
-  >
-    <label
-      htmlFor="Entrance-year"
-      style={{
-        marginBottom: 4,
-        fontSize: 14,
-        height: 16,
-        alignItems: "flex-start",
-      }}
-    ></label>
-    {FormElement({
-      label: "Entrance Year:",
-      name: "entranceYear",
-      id: "entranceYear",
-      required: true,
-      type: "select",
-      options: range(25, currentYear - 25),
-      onChange: (e) => setEntranceYear(e.target.value),
-      value: entranceYear,
-      style: {
-        backgroundColor: '#f0f0f0',
-        color: '#333',
-        border: '1px solid #ccc',
-        borderRadius: 4,
-        padding: '8px 12px',
-        backgroundImage: `url('https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-arrow-down-512.png')`,
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'right center',
-        backgroundSize: 'auto 70%',
-      },
-      optionStyle: {
-        backgroundColor: '#fff',
-        color: '#333',
-        padding: '8px 12px',
-        borderBottom: '1px solid #ccc',
-      },
-    })}
-  </div>
-</div>
-
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  height: 52,
+                  justifyContent: "space-between",
+                }}
+              >
+                <label
+                  htmlFor="Entrance-year"
+                  style={{
+                    marginBottom: 4,
+                    fontSize: 14,
+                    height: 16,
+                    alignItems: "flex-start",
+                  }}
+                ></label>
+                {FormElement({
+                  label: "Entrance Year:",
+                  name: "entranceYear",
+                  id: "entranceYear",
+                  required: true,
+                  type: "select",
+                  options: range(25, currentYear - 25),
+                  onChange: (e) => setEntranceYear(e.target.value),
+                  value: entranceYear,
+                })}
+              </div>
+            </div>
           </div>
 
           <div

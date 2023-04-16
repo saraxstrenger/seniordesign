@@ -72,7 +72,7 @@ export default function LandingLoginForm() {
     <input
       type="text"
       name="username"
-      placeholder="Email or phone"
+      placeholder="unsername"
       style={{
         padding: "0.5rem",
         margin: "0.5rem",

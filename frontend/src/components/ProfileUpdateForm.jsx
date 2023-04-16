@@ -65,37 +65,6 @@ export default function ProfileUpdateForm(props) {
           }}
         >
           <h2>Account Settings:</h2>
-          {!editProfileMode ? (
-            <button className={`btn`} onClick={() => setEditProfileMode(true)}>
-              Update Profile
-            </button>
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-              }}
-            >
-              <label htmlFor="submitProfileUpdate">
-                <button
-                  className="btn btn-primary"
-                  label={"submit"}
-                  id={"submitProfileUpdate"}
-                  type={"submit"}
-                >
-                  submit
-                </button>
-              </label>
-              <button
-                type="button"
-                className={`btn btn-tertiary`}
-                onClick={() => setEditProfileMode(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          )}
         </div>
 
         <div className="row">
@@ -106,6 +75,20 @@ export default function ProfileUpdateForm(props) {
               isEdit={false}
             />
           </div>
+          <div className="halfCol rightCol">
+            <ProfileFormElement
+              label={
+                <span style={{ whiteSpace: "nowrap" }}>Password : *******</span>
+              }
+              value={null}
+              isEdit={false}
+            />
+          </div>
+          {!editProfileMode ? null : (
+            <div className="halfCol rightCol">
+              <ProfileUpdatePasswordForm />
+            </div>
+          )}
         </div>
         <hr />
         <div className="row">
@@ -161,7 +144,40 @@ export default function ProfileUpdateForm(props) {
             />
           </div>
         </div>
-        <hr />
+
+        <div className="row" style={{ justifyContent: "flex-end" }}>
+  {!editProfileMode ? (
+    <button className={`btn`} onClick={() => setEditProfileMode(true)}>
+      Update Profile
+    </button>
+  ) : (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <label htmlFor="submitProfileUpdate">
+        <button
+          className="btn btn-primary"
+          label={"submit"}
+          id={"submitProfileUpdate"}
+          type={"submit"}
+        >
+          submit
+        </button>
+      </label>
+      <button
+        type="button"
+        className={`btn btn-tertiary`}
+        onClick={() => setEditProfileMode(false)}
+      >
+        Cancel
+      </button>
+    </div>
+  )}
+</div>
+
 
         {errorMsg && (
           <div
@@ -175,22 +191,7 @@ export default function ProfileUpdateForm(props) {
           </div>
         )}
       </form>
-      <div className="row">
-        <div className="halfCol leftCol">
-          <ProfileFormElement
-            label={
-              <span style={{ whiteSpace: "nowrap" }}>Password : *******</span>
-            }
-            value={null}
-            isEdit={false}
-          />
-        </div>
-        {!editProfileMode ? null : (
-          <div className="halfCol rightCol">
-            <ProfileUpdatePasswordForm />
-          </div>
-        )}
-      </div>
+
       {profileUpdateInProgress ? <LoadingDots /> : null}
     </div>
   );

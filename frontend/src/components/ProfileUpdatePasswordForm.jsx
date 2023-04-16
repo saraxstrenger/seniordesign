@@ -73,10 +73,19 @@ export default function ProfileUpdatePasswordForm(props) {
 
   return (
     <>
-      <button className={`btn`} onClick={() => setUpdateMode(true)}>
-        Update Password
-      </button>
-      <Modal isOpen={updateMode} modalStyle={{width: "70%", justifyContent:"center"}}>
+      <button
+  className={`btn btn-tertiary`}
+  onClick={() => setUpdateMode(true)}
+  style={{ width: "60%", fontSize: "14px"  }}
+>
+  Update Password
+</button>
+
+
+      <Modal
+        isOpen={updateMode}
+        modalStyle={{ width: "70%", justifyContent: "center" }}
+      >
         <h2>Update Password</h2>
         <form style={col} onSubmit={tryUpdatePassword} id="updatePassword">
           <div style={row}>
@@ -122,7 +131,11 @@ export default function ProfileUpdatePasswordForm(props) {
           </button>
           <center>
             {errorMsg && (
-              <div style={{ color: "red", fontSize: "small", maxWidth:"inherit"}}>{errorMsg}</div>
+              <div
+                style={{ color: "red", fontSize: "small", maxWidth: "inherit" }}
+              >
+                {errorMsg}
+              </div>
             )}
           </center>
         </form>

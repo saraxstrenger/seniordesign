@@ -9,6 +9,8 @@ import Modal from "./Modal";
 import CourseInfoPage from "./CourseInfoPage";
 import CoursePreviewCard from "./CoursePreviewCard";
 import "./css/Forms.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 const row = {
   display: "flex",
@@ -109,7 +111,10 @@ function Home(props) {
               style={{ minWidth: "160px" }}
               className="form-input"
             />
-            <button type="submit" value="Search" className="form-button search-button">
+            <button className={`btn btn-secondary`}
+              type="submit"
+              value="Search"
+            >
               Search
             </button>
           </form>
@@ -131,18 +136,27 @@ function Home(props) {
             />
           )}
           <Modal isOpen={focusedCourse} modalStyle={{ width: "70%" }}>
+            <button
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                fontSize: "1.5rem",
+                backgroundColor: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setFocusedCourse(null);
+              }}
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
             {focusedCourse !== null ? (
               <CourseInfoPage course={focusedCourse} />
             ) : (
               <LoadingDots />
             )}
-            <button
-              onClick={() => {
-                setFocusedCourse(null);
-              }}
-            >
-              Close
-            </button>
           </Modal>
         </RecommendationsContext.Provider>
       </div>
@@ -209,7 +223,7 @@ function Recommendations(props) {
     return acc;
   }, {});
 
-  console.log(interestsWithRecs)
+  console.log(interestsWithRecs);
 
   return (
     <>
@@ -228,7 +242,10 @@ function Recommendations(props) {
         <div style={{ width: "100%" }}>
           {Object.keys(interestsWithRecs).map((interest) => {
             return (
-              <div style={{ overflowX: "visible", padding: "12px 0px" }} key={interest}>
+              <div
+                style={{ overflowX: "visible", padding: "12px 0px" }}
+                key={interest}
+              >
                 <h2 style={{ margin: 0 }}>{interest}</h2>
                 <CourseSlider courses={interestsWithRecs[interest]} />
               </div>

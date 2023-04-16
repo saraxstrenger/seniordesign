@@ -37,12 +37,13 @@ function Landing(props) {
       <div style={col}>
         <div className={true ? "card-no-hover" : "card"} style={cardStyle}>
           <center>
+          <h1 style={{ margin: 0, marginTop: "0.25rem" }}> Compass </h1>
             <img
               src={process.env.PUBLIC_URL + "/compass-symbol.png"}
               alt="Compass Logo"
               style={{ width: "80px", height: "auto", marginRight: "0.5rem" }}
             />
-            <h1 style={{ margin: 0, marginTop: "0.25rem" }}> Compass </h1>
+            
           </center>
 
           <div style={{ width: "100%" }}>
