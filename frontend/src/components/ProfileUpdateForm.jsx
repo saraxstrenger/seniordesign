@@ -3,8 +3,8 @@ import LoadingDots from "./LoadingDots";
 import { useNavigate } from "react-router-dom";
 import "./css/Buttons.css";
 import "./css/Profile.css";
+import "./css/Forms.css";
 import ProfileUpdatePasswordForm from "./ProfileUpdatePasswordForm";
-
 
 const col = {
   display: "flex",
@@ -48,16 +48,15 @@ export default function ProfileUpdateForm(props) {
           updatedProfile.username = profileData.username;
           setProfileData(updatedProfile);
           setEditProfileMode(false);
+          setErrorMsg("");
         }
         setProfileUpdateInProgress(false);
       });
   };
-  const currentYear = new Date().getFullYear();
 
   return (
-    <div style={col} className={ "card-no-hover"}>
-
-      <form onSubmit={tryUpdateProfile} style={{ margin: "0px 24px" }}>
+    <div style={{ ...col, padding: "0px 24px" }} className={"card-no-hover"}>
+      <form onSubmit={tryUpdateProfile}>
         <div
           style={{
             display: "flex",
@@ -65,7 +64,7 @@ export default function ProfileUpdateForm(props) {
             alignItems: "center",
           }}
         >
-                <h2>Account Settings:</h2>
+          <h2>Account Settings:</h2>
           {!editProfileMode ? (
             <button className={`btn`} onClick={() => setEditProfileMode(true)}>
               Update Profile
@@ -84,10 +83,12 @@ export default function ProfileUpdateForm(props) {
                   label={"submit"}
                   id={"submitProfileUpdate"}
                   type={"submit"}
-                  isEdit={editProfileMode}
-                >submit</button>
+                >
+                  submit
+                </button>
               </label>
               <button
+                type="button"
                 className={`btn btn-tertiary`}
                 onClick={() => setEditProfileMode(false)}
               >
@@ -97,66 +98,99 @@ export default function ProfileUpdateForm(props) {
           )}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "auto 1fr" }}>
-          <ProfileFormElement
-            label={"Username :"}
-            value={profileData?.username}
-            isEdit={false}
-          />
-        </div>
-        <hr />
-        <div style={{ display: "grid", gridTemplateColumns: "350px 1fr" }}>
-          <ProfileFormElement
-            label={<span style={{ whiteSpace: "nowrap" }}>First Name :</span>}
-            id={"first"}
-            value={profileData?.first ?? ""}
-            type={"text"}
-            isEdit={editProfileMode}
-          />
-          <ProfileFormElement
-            label={"Last Name :"}
-            id={"last"}
-            value={profileData?.last ?? ""}
-            type={"text"}
-            isEdit={editProfileMode}
-          />
-        </div>
-        <hr />
-        <div style={{ display: "grid", gridTemplateColumns: "200px 1fr" }}>
-          <ProfileFormElement
-            label={<span style={{ whiteSpace: "nowrap" }}>Email :</span>}
-            id={"email"}
-            value={profileData?.email ?? ""}
-            type={"text"}
-            isEdit={editProfileMode}
-          />
-        </div>
-        <hr />
-        <div style={{ display: "grid", gridTemplateColumns: "auto 1fr" }}>
-          <div style={{ display: "flex", alignItems: "center" }}>
+        <div className="row">
+          <div className="halfCol leftCol">
             <ProfileFormElement
-              label={
-                <span style={{ whiteSpace: "nowrap" }}>Password : *******</span>
-              }
-              value={null}
+              label={"Username:"}
+              value={profileData?.username}
               isEdit={false}
             />
           </div>
-          {!editProfileMode ? null : (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginLeft: "80px",
-              }}
-            >
-              <ProfileUpdatePasswordForm />
-            </div>
-          )}
         </div>
+        <hr />
+        <div className="row">
+          <div className="halfCol leftCol">
+            <ProfileFormElement
+              label={"First Name:"}
+              id={"first"}
+              value={profileData?.first ?? ""}
+              type={"text"}
+              isEdit={editProfileMode}
+            />
+          </div>
+          <div className="halfCol rightCol">
+            <ProfileFormElement
+              label={"Last Name:"}
+              id={"last"}
+              value={profileData?.last ?? ""}
+              type={"text"}
+              isEdit={editProfileMode}
+            />
+          </div>
+        </div>
+        <hr />
+        <div className="row">
+          <div className="halfCol leftCol">
+            <ProfileFormElement
+              label={"Major:"}
+              id={"major"}
+              value={profileData?.major ?? ""}
+              type={"text"}
+              isEdit={editProfileMode}
+            />
+          </div>
+          <div className="halfCol rightCol">
+            <ProfileFormElement
+              label={"Enterance year:"}
+              id={"entranceYear"}
+              value={profileData?.entranceYear}
+              type={"number"}
+              isEdit={editProfileMode}
+            />
+          </div>
+        </div>
+        <hr />
+        <div className="row">
+          <div className="halfCol leftCol">
+            <ProfileFormElement
+              label={"Email:"}
+              id={"email"}
+              value={profileData?.email ?? ""}
+              type={"text"}
+              isEdit={editProfileMode}
+            />
+          </div>
+        </div>
+        <hr />
 
-        {errorMsg && <div className="error-msg">{errorMsg}</div>}
+        {errorMsg && (
+          <div
+            style={{
+              color: "red",
+              textAlign: "center",
+              fontSize: "small",
+            }}
+          >
+            {errorMsg}
+          </div>
+        )}
       </form>
+      <div className="row">
+        <div className="halfCol leftCol">
+          <ProfileFormElement
+            label={
+              <span style={{ whiteSpace: "nowrap" }}>Password : *******</span>
+            }
+            value={null}
+            isEdit={false}
+          />
+        </div>
+        {!editProfileMode ? null : (
+          <div className="halfCol rightCol">
+            <ProfileUpdatePasswordForm />
+          </div>
+        )}
+      </div>
       {profileUpdateInProgress ? <LoadingDots /> : null}
     </div>
   );
@@ -169,7 +203,10 @@ function ProfileFormElement({ label, id, value, isEdit, ...formProps }) {
         padding: "16px 0",
         display: "flex",
         flexDirection: "row",
+        justifyContent: "flex-start",
         alignItems: "center",
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
       {isEdit ? (
@@ -177,35 +214,32 @@ function ProfileFormElement({ label, id, value, isEdit, ...formProps }) {
           <label
             style={{
               padding: "0px 8px",
-              width: "120px",
-              textAlign: "right",
+              // width: "120px",
+              textAlign: "left",
               fontSize: "18px",
             }}
             htmlFor={id}
           >
             <b>{label}</b>
           </label>
-          <input
-            id={id}
-            type="text"
-            value={value}
-            style={{
-              border: "2px solid #999",
-              borderRadius: "6px",
-              padding: "10px",
-              backgroundColor: "#f6f6f6",
-              fontSize: "16px",
-            }}
-            {...formProps}
-          />
+          <div>
+            <input
+              id={id}
+              type="text"
+              defaultValue={value}
+              className="form-input"
+              style={{ boxSizing: "border-box" }}
+              {...formProps}
+            />
+          </div>
         </>
       ) : (
         <>
           <label
             style={{
               padding: "0px 8px",
-              width: "120px",
-              textAlign: "right",
+              // width: "120px",
+              textAlign: "left",
               fontSize: "18px",
             }}
           >

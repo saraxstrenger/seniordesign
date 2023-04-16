@@ -18,7 +18,8 @@ const LOCAL_DB_PATH = "/Users/suvaskota/Downloads/seniordesign.sqlite";
 
 1. Go to the following link (https://www.sqlite.org/download.html) and download the appropriate SQLite package based on Mac or Windows
 
-2. Navigate in your terminal to the directory where you want this local database to be and enter the following command: 
+2. Navigate in your terminal to the directory containing this repo. This is where the database will be located. 
+   Create the database with the following command:
    ```
    $ sqlite3 seniordesign.sqlite 
    ```
@@ -30,7 +31,7 @@ const LOCAL_DB_PATH = "/Users/suvaskota/Downloads/seniordesign.sqlite";
 3. Now we can create an evaluations table within the local database with the following code:
      ```
      CREATE TABLE evaluations (
-        id TEXT, 
+        id  TEXT PRIMARY KEY, 
         number TEXT, 
         semester TEXT, 
         year TEXT, 
@@ -52,9 +53,7 @@ const LOCAL_DB_PATH = "/Users/suvaskota/Downloads/seniordesign.sqlite";
 5. The data to upload to this table is in seniordesign/data/new_course_evals.csv
 
 6. To upload this csv to the table, we first enter 
-    ```
-   .mode csv
-    ```
+   ```.mode csv```
    Then we execute the following command: 
     ```
     .import filepathtocsv evaluations

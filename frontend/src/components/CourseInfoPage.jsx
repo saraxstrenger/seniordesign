@@ -15,6 +15,7 @@ const col = {
 export default function CourseInfoPage(props) {
   const { course } = props;
   const [predictions, setPredictions] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
   const setLoggedIn = useContext(AuthAPI);
   useEffect(() => {
     fetch("/predictions/" + course.code, {
@@ -30,17 +31,18 @@ export default function CourseInfoPage(props) {
         } else return res.json();
       })
       .then((resJson) => {
+        console.log(resJson);
         if (resJson.success) {
           setPredictions(resJson.data);
         } else {
-          setPredictions(null);
+          setErrorMsg(resJson.errorMsg);
         }
       });
-  }, [course]);
+  }, [course, setLoggedIn]);
 
   console.log(course);
   return (
-    <div style={{padding: 8}}>
+    <div style={{ padding: 8 }}>
       <h2 style={{ margin: 0, color: "#2C5530" }}>{course?.code}</h2>
 
       <div style={{ ...row, overflow: "hidden", height: 360 }}>
@@ -59,47 +61,57 @@ export default function CourseInfoPage(props) {
             {course?.description}
           </div>
         </div>
-        <div style={{borderLeft: "thin solid gray", margin:"0px 4px"}}/>
+        <div style={{ borderLeft: "thin solid gray", margin: "0px 4px" }} />
         <div style={{ ...col, padding: "0px 8px" }}>
           <h3 style={{ marginTop: 0 }}>Personalized Predictions:</h3>
           {predictions !== null ? (
             <>
-              <div>
-                {/* <hr /> */}
-              </div>
-              <div style={{ ...row, justifyContent: "space-evenly", padding: 8 }}>
+              <div
+                style={{ ...row, justifyContent: "space-evenly", padding: 8 }}
+              >
                 <div style={row}>
-                  Interest:&#160; <b>{predictions?.interest}</b>/5
+                  Interest:&#160; <b>{predictions?.interest.toFixed(1)}</b>/5
                 </div>
                 <div style={row}>
-                  Difficulty:&#160; <b>{predictions?.difficulty}</b>/5
+                  Difficulty:&#160; <b>{predictions?.difficulty.toFixed(1)}</b>
+                  /5
                 </div>
               </div>
-              <div>
-                {/* <hr /> */}
+              <div>{/* <hr /> */}</div>
+              <div style={{ padding: "8px 0px" }}>
+                <WorkloadChart
+                  height={250}
+                  // width={200}
+                  data={predictions?.workload}
+                  editEnabled={false}
+                />
               </div>
-             <div style={{padding: "8px 0px"}}>
-             <WorkloadChart
-                height={250}
-                // width={200}
-                data={predictions?.workload}
-                editEnabled={false}
-              />
-             </div>
-              <div>
-                {/* <hr /> */}
-              </div>
+              <div>{/* <hr /> */}</div>
             </>
           ) : (
             <div
               style={{
                 display: "flex",
                 flexGrow: 1,
+                flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
+                color: "#CC8328",
+                padding: 12,
+
               }}
             >
-              <LoadingDots />
+              <center>
+                {errorMsg !== "" ? (
+                  <h4>{errorMsg}</h4>
+                ) : (
+                  <>
+                    <h4>Generating your predictions...</h4>
+                    <br />
+                    <LoadingDots />
+                  </>
+                )}
+              </center>
             </div>
           )}
         </div>

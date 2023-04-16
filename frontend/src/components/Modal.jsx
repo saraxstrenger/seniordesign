@@ -1,8 +1,7 @@
 import "./css/Modal.css";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function Modal(props) {
-  const { isOpen, modalStyle, children } = props;
+export default function Modal({ isOpen, modalStyle, children }) {
   return (
     <AnimatePresence>
       {isOpen && (

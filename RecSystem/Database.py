@@ -52,8 +52,7 @@ def update_rec(username, num_recs, embed_rec, user_table):
   # compute new recommendations
   new_recs = {}
   for interest in uncomputed_interests:
-    recs = embed_rec.k_nearest_neighbors(interest, num_recs)
-    course_codes = [name[:8] for name in recs]
+    course_codes = embed_rec.k_nearest_neighbors(interest, num_recs)
     new_recs[interest] = course_codes
   
   # build update expression such that we only add new interests
@@ -93,6 +92,7 @@ def main_embed_upload():
 def main():
   embed_rec = EmbeddingRecommender()
   dynamodb = boto3.resource('dynamodb')
+  embed_rec.download_course_subset_from_S3()
   
   user_table_name = 'users'
   user_table = dynamodb.Table(user_table_name)

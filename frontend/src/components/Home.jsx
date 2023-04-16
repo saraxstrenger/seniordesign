@@ -19,7 +19,7 @@ const row = {
 function Home(props) {
   const setLoggedIn = useContext(AuthAPI).setAuth;
   const [searchResult, setSearchResult] = useState([]);
-  const [interests, setInterests] = useState([]);
+  const [interests, setInterests] = useState({});
   const [errorMsg, setErrorMsg] = useState("");
   const [inFlight, setInFlight] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -50,7 +50,7 @@ function Home(props) {
               "Unable to load course recommendations at this time."
           );
         } else {
-          setInterests(resJson.interests);
+          setInterests(resJson.interests ?? {});
         }
         setLoading(false);
       });
@@ -98,7 +98,7 @@ function Home(props) {
         >
           <form
             id="searchBar"
-            style={{ ...row, width: "100%", alignItems: "center" }}
+            style={{ ...row, width: "70%", alignItems: "center" }}
             onSubmit={trySearch}
             ref={formRef}
           >
@@ -106,7 +106,7 @@ function Home(props) {
               type="text"
               placeholder="Search for courses..."
               name="searchTerm"
-              style={{ minWidth: "50%" }}
+              style={{ minWidth: "160px" }}
               className="form-input"
             />
             <button type="submit" value="Search" className="form-button search-button">
@@ -181,7 +181,7 @@ function SearchResults(props) {
       >
         {inFlight ? (
           <LoadingDots />
-        ) : searchResult.length == 0 ? (
+        ) : searchResult.length === 0 ? (
           <center>
             <h3>No results</h3>
           </center>
@@ -209,6 +209,8 @@ function Recommendations(props) {
     return acc;
   }, {});
 
+  console.log(interestsWithRecs)
+
   return (
     <>
       {loading ? (
@@ -226,7 +228,7 @@ function Recommendations(props) {
         <div style={{ width: "100%" }}>
           {Object.keys(interestsWithRecs).map((interest) => {
             return (
-              <div style={{ overflowX: "visible", padding: "12px 0px" }}>
+              <div style={{ overflowX: "visible", padding: "12px 0px" }} key={interest}>
                 <h2 style={{ margin: 0 }}>{interest}</h2>
                 <CourseSlider courses={interestsWithRecs[interest]} />
               </div>

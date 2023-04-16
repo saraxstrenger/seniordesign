@@ -3,7 +3,7 @@ import { spawn } from "child_process";
 import dgram from "dgram";
 import * as utils from "./utils.js";
 const COLLAB_SCRIPT = "./RecSystem/CollabFilterRecommender.py";
-// const EMBEDDING_SCRIPT = "./RecSystem/EmbeddingRecommender.py";
+const DATABASE_PATH = "../seniordesign.sqlite";
 const REC_SERVER_PORT = 3030;
 
 export function auth(req, res) {
@@ -273,52 +273,6 @@ export function getEvaluation(req, res) {
   res.sendStatus(401); // Unauthorized
 }
 
-// export function getReccomendations(req, res) {
-//   const session = req.session;
-//   if (session?.userid) {
-//     const searchTerm = req.body.searchTerm;
-//     if (searchTerm == undefined) {
-//       res.json({ success: false, errorMsg: "Invalid request body." });
-//       return;
-//     }
-//     const pythonProcess = spawn("python3", [
-//       "-u",
-//       EMBEDDING_SCRIPT,
-//       "-i",
-//       searchTerm,
-//       "-n",
-//       "3",
-//     ]);
-
-//     let response = "";
-//     let err = "";
-//     pythonProcess.on("connect", (code) => {
-//       console.log(`child process connected `);
-//     });
-//     pythonProcess.stdout.setEncoding("utf8");
-//     pythonProcess.stdout.on("data", (data) => {
-//       // Do something with the data returned from python script
-//       response += data.toString();
-//       console.log(data.toString());
-//     });
-
-//     pythonProcess.stderr.on("data", (data) => {
-//       // Do something with the data returned from python script
-//       err += data.toString();
-//       console.log(data.toString());
-//     });
-
-//     pythonProcess.on("exit", (code) => {
-//       console.log(`child process finished with code ${code}`);
-//       console.log("response: " + response);
-//       const data = response.split("\n");
-//       res.json({ success: true, searchTerm, data: data });
-//     });
-//   } else {
-//     res.sendStatus(401); // Unauthorized
-//   }
-// }
-
 export function getProfile(req, res) {
   console.log("get profile request received");
   const session = req.session;
@@ -343,18 +297,19 @@ export function updateProfile(req, res) {
     res.sendStatus(401); // Unauthorized
     return;
   }
+  const user = req.session?.userid;
   const params = req.body;
-  if (params.year === undefined) {
-    res.sendStatus(400); // Bad Request
-    return;
-  }
-  params.year = parseInt(params.year, 10);
+  const first = utils.validateName(params?.first);
+  const last = utils.validateName(params?.last);
+  const email = utils.validateEmail(params?.email);
+  const entranceYear = utils.validateYear(params?.entranceYear);
+  const major = utils.validateMajor(params?.major);
   if (
-    isEmptyStr(params.first) ||
-    isEmptyStr(params.last) ||
-    !isEmail(params.email) ||
-    isNaN(params.entranceYear) ||
-    isEmptyStr(params.major)
+    first === undefined ||
+    last === undefined ||
+    email === undefined ||
+    entranceYear === undefined ||
+    major === undefined
   ) {
     res.json({
       success: false,
@@ -362,11 +317,51 @@ export function updateProfile(req, res) {
     });
     return;
   }
-  db.updateUser(req.session.userid, params, (err, data) => {
+  db.updateUser(user, params, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
       res.json({ success: false, errorMsg: "Unable to perform operation." });
     } else {
+      res.json({ success: true });
+    }
+  });
+}
+
+export function updatePassword(req, res) {
+  const user = req.session.userid;
+  const oldPassword = req.body?.oldPassword;
+  let newPassword = req.body?.newPassword;
+  if (oldPassword == undefined || newPassword == undefined) {
+    res.sendStatus(400); // Bad Request
+    return;
+  }
+  // validate password
+  newPassword = utils.validatePassword(newPassword);
+  if (newPassword === undefined) {
+    res.json({
+      success: false,
+      errorMsg:
+        "Password must be at least 8 characters and contain at least one number, one uppercase letter, and one lowercase letter.",
+    });
+    return;
+  }
+
+  // update password
+  db.updatePassword(user, oldPassword, newPassword, (err, data) => {
+    if (err) {
+      if (err.code == "ConditionalCheckFailedException") {
+        res.json({
+          success: false,
+          errorMsg: "Incorrect password.",
+        });
+        return;
+      }
+      res.json({
+        success: false,
+        errorMsg: "Unable to perform operation.",
+      });
+    } else {
+      console.log("Success updating password", data);
       res.json({ success: true });
     }
   });
@@ -380,6 +375,7 @@ export function getCourseInfo(req, res) {
     return;
   }
   console.log("[" + courseId + "]");
+  console.log(courseId.split(" "));
 
   db.getCourseInfo(courseId, (err, data) => {
     if (err) {
@@ -391,8 +387,8 @@ export function getCourseInfo(req, res) {
         res.sendStatus(404); // Not Found
         return;
       }
-      console.log("Course found: " + data.Item.Course_Code);
-      delete data.Item?.courseEmbedding;
+      delete data.Item?.embedding;
+      console.log("Course found: " + data.Item.code);
       res.json({ success: true, data: data.Item });
     }
   });
@@ -478,28 +474,76 @@ export function getHome(req, res) {
   });
 }
 
-export function getFullCourseInfo(req, res) {
+export function getPredictions(req, res) {
   const courseId = req.params.id;
-  const normalizedId = courseId.replace(/\u00A0/g, " ");
+  const user = req.session?.userid;
 
-  db.getCourseInfo(normalizedId, (err, data) => {
-    if (err) {
-      console.log("Error", err.stack);
-      res.json({ success: false, errorMsg: "Unable to perform operation." });
-    } else {
-      // run python script to get personalized predictions
-      // predictions = getPersonalizedPredictions(courseId);
-      res.json({
-        success: true,
-        data: { difficulty: 3, interest: 2, workload: [1, 2, 3, 4] },
-      });
-    }
+  getPersonalizedPredictions(user, courseId, (predictions) => {
+    res.json(predictions);
   });
 }
 
-function getPersonalizedPredictions(courseId) {
-  // TODO
-  const pythonProcess = spawn("python3", [EMBEDDING_SCRIPT_PATH, courseId]);
+function getPersonalizedPredictions(user, course, callback) {
+  const pythonProcess = spawn("python3", [
+    COLLAB_SCRIPT,
+    "-p", // database path argument
+    DATABASE_PATH,
+    "-s", // student argument
+    user,
+    "-c", // course argument
+    course,
+  ]);
+
+  let response = "";
+  let err = "";
+  pythonProcess.on("connect", (code) => {
+    console.log(`child process connected `);
+  });
+  pythonProcess.stdout.setEncoding("utf8");
+  pythonProcess.stdout.on("data", (data) => {
+    // Do something with the data returned from python script
+    response += data.toString();
+  });
+
+  pythonProcess.stderr.on("data", (data) => {
+    // Do something with the data returned from python script
+    err += data.toString();
+  });
+
+  pythonProcess.on("exit", (code) => {
+    console.log(`child process finished with code ${code}`);
+    if (err) {
+      console.log("ERROR: ", err);
+    }
+    const predictions = JSON.parse(response);
+    const difficulty = predictions?.difficulty;
+    const interest = predictions?.interest;
+    const workload1 = predictions?.workload1;
+    const workload2 = predictions?.workload2;
+    const workload3 = predictions?.workload3;
+    const workload4 = predictions?.workload4;
+
+    if (
+      difficulty == undefined ||
+      interest == undefined ||
+      workload1 == undefined ||
+      workload2 == undefined ||
+      workload3 == undefined ||
+      workload4 == undefined
+    ) {
+      callback({
+        error: true,
+        errorMsg: `Unable to generate predictions for ${course} at this time.`,
+      });
+    } else {
+      const formattedPredictions = {
+        difficulty,
+        interest,
+        workload: [workload1, workload2, workload3, workload4],
+      };
+      callback({ success: true, data: formattedPredictions });
+    }
+  });
 }
 
 export function getSearchResults(req, res) {
