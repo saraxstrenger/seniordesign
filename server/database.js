@@ -6,7 +6,7 @@ import sqlite3 from "sqlite3";
 
 //TODO: See readme for updated local db path. DB should be located in same folder
 // as senior deign repo
-const LOCAL_DB_PATH = "../seniordesign.sqlite"; 
+const LOCAL_DB_PATH = "../seniordesign.sqlite";
 
 const USER_TABLE = "users";
 const COURSE_TABLE = "courses";
@@ -138,7 +138,25 @@ export function removeInterest(user, interest, callback) {
  * @param {*} newPassword
  * @param {*} callback see other examples, callback from endpoints.js
  */
-export function updatePassword(user, { oldPassword, newPassword }, callback) {}
+export function updatePassword(user, oldPassword, newPassword, callback) {
+  console.log("updating password");
+  const params = {
+    TableName: USER_TABLE,
+    Key: {
+      username: user,
+    },
+    UpdateExpression: "SET #password = :newPassword",
+    ExpressionAttributeNames: {
+      "#password": "password",
+    },
+    ExpressionAttributeValues: {
+      ":newPassword": newPassword,
+      ":oldPassword": oldPassword,
+    },
+    ConditionExpression: "#password = :oldPassword",
+  };
+  ddbDocClient.update(params, callback);
+}
 
 export async function addEvaluation(
   user,

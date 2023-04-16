@@ -297,18 +297,19 @@ export function updateProfile(req, res) {
     res.sendStatus(401); // Unauthorized
     return;
   }
+  const user = req.session?.userid;
   const params = req.body;
-  if (params.year === undefined) {
-    res.sendStatus(400); // Bad Request
-    return;
-  }
-  params.year = parseInt(params.year, 10);
+  const first = utils.validateName(params?.first);
+  const last = utils.validateName(params?.last);
+  const email = utils.validateEmail(params?.email);
+  const entranceYear = utils.validateYear(params?.entranceYear);
+  const major = utils.validateMajor(params?.major);
   if (
-    isEmptyStr(params.first) ||
-    isEmptyStr(params.last) ||
-    !isEmail(params.email) ||
-    isNaN(params.entranceYear) ||
-    isEmptyStr(params.major)
+    first === undefined ||
+    last === undefined ||
+    email === undefined ||
+    entranceYear === undefined ||
+    major === undefined
   ) {
     res.json({
       success: false,
@@ -316,11 +317,51 @@ export function updateProfile(req, res) {
     });
     return;
   }
-  db.updateUser(req.session.userid, params, (err, data) => {
+  db.updateUser(user, params, (err, data) => {
     if (err) {
       console.log("Error", err.stack);
       res.json({ success: false, errorMsg: "Unable to perform operation." });
     } else {
+      res.json({ success: true });
+    }
+  });
+}
+
+export function updatePassword(req, res) {
+  const user = req.session.userid;
+  const oldPassword = req.body?.oldPassword;
+  let newPassword = req.body?.newPassword;
+  if (oldPassword == undefined || newPassword == undefined) {
+    res.sendStatus(400); // Bad Request
+    return;
+  }
+  // validate password
+  newPassword = utils.validatePassword(newPassword);
+  if (newPassword === undefined) {
+    res.json({
+      success: false,
+      errorMsg:
+        "Password must be at least 8 characters and contain at least one number, one uppercase letter, and one lowercase letter.",
+    });
+    return;
+  }
+
+  // update password
+  db.updatePassword(user, oldPassword, newPassword, (err, data) => {
+    if (err) {
+      if (err.code == "ConditionalCheckFailedException") {
+        res.json({
+          success: false,
+          errorMsg: "Incorrect password.",
+        });
+        return;
+      }
+      res.json({
+        success: false,
+        errorMsg: "Unable to perform operation.",
+      });
+    } else {
+      console.log("Success updating password", data);
       res.json({ success: true });
     }
   });
@@ -492,8 +533,7 @@ function getPersonalizedPredictions(user, course, callback) {
     ) {
       callback({
         error: true,
-        errorMsg:
-          `Unable to generate predictions for ${course} at this time.`,
+        errorMsg: `Unable to generate predictions for ${course} at this time.`,
       });
     } else {
       const formattedPredictions = {

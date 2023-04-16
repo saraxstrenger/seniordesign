@@ -3,7 +3,7 @@ import * as db from "./database.js";
 import stopword from "stopword";
 import natural from "natural";
 import { stemmer } from "stemmer";
-import { getReccomendations } from "./endpoints.js";
+// import { getReccomendations } from "./endpoints.js";
 // db.getCourseInfo("CIS 1600", (err, data) => {
 //     if (err) {
 //         console.log("Error", err);
@@ -21,4 +21,13 @@ import { getReccomendations } from "./endpoints.js";
 //     }
 // });
 
-getReccomendations("sara", "CIS 5210");
+// getReccomendations("sara", "CIS 5210");
+
+db.removeInterest("larry", "0", (err, data) => {
+    if (err) {
+        console.log("Error", err);
+    }
+    else {
+        console.log("Success", data);
+    }
+});

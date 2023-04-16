@@ -30,15 +30,55 @@ const inputStyle = {
 };
 export default function ProfileUpdatePasswordForm(props) {
   const [updateMode, setUpdateMode] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const tryUpdatePassword = async (e) => {
+    console.log(e);
+    e.preventDefault();
+    const oldPassword = e.target.oldPassword.value;
+    const newPassword = e.target.newPassword.value;
+    const confirmNewPassword = e.target.confirmNewPassword.value;
+    console.log(oldPassword, newPassword);
+    if (newPassword !== confirmNewPassword) {
+      setErrorMsg("New passwords do not match");
+      return;
+    }
+    fetch("/updatePassword", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        oldPassword,
+        newPassword,
+      }),
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          //unauthorized
+          return { success: false, errorMsg: "Unauthorized" };
+        } else if (res.status === 400) {
+          return { success: false, errorMsg: "Bad Request" };
+        }
+        return res.json();
+      })
+      .then((resJson) => {
+        alert(JSON.stringify(resJson));
+        if (resJson.success) {
+          setUpdateMode(false);
+        } else {
+          setErrorMsg(resJson.errorMsg);
+        }
+      });
+  };
 
   return (
     <>
       <button className={`btn`} onClick={() => setUpdateMode(true)}>
         Update Password
       </button>
-      <Modal isOpen={updateMode} setIsOpen={setUpdateMode}>
+      <Modal isOpen={updateMode} modalStyle={{width: "70%", justifyContent:"center"}}>
         <h2>Update Password</h2>
-        <form style={col}>
+        <form style={col} onSubmit={tryUpdatePassword} id="updatePassword">
           <div style={row}>
             <label htmlFor="oldPassword" style={labelStyle}>
               Old Password:
@@ -46,6 +86,7 @@ export default function ProfileUpdatePasswordForm(props) {
             <input
               type="password"
               name="oldPassword"
+              id="oldPassword"
               style={inputStyle}
             />
           </div>
@@ -56,6 +97,7 @@ export default function ProfileUpdatePasswordForm(props) {
             <input
               type="password"
               name="newPassword"
+              id="newPassword"
               style={inputStyle}
             />
           </div>
@@ -66,16 +108,23 @@ export default function ProfileUpdatePasswordForm(props) {
             <input
               type="password"
               name="confirmNewPassword"
+              id="confirmNewPassword"
               style={inputStyle}
             />
           </div>
-
-          <input
+          <button
             type="submit"
-            value="Submit"
+            form="updatePassword"
             className="btn"
             style={{ marginTop: "20px" }}
-          />
+          >
+            Submit
+          </button>
+          <center>
+            {errorMsg && (
+              <div style={{ color: "red", fontSize: "small", maxWidth:"inherit"}}>{errorMsg}</div>
+            )}
+          </center>
         </form>
 
         <button

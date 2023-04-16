@@ -72,7 +72,7 @@ export function validateUsername(username) {
 
 export function validatePassword(password) {
   const passwordRegex =
-    /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).+$/;
+    /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).+$/;
   if (password === undefined || !password.length) {
     return undefined;
   }

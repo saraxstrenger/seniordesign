@@ -181,7 +181,7 @@ function SearchResults(props) {
       >
         {inFlight ? (
           <LoadingDots />
-        ) : searchResult.length == 0 ? (
+        ) : searchResult.length === 0 ? (
           <center>
             <h3>No results</h3>
           </center>

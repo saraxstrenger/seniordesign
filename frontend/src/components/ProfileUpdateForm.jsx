@@ -48,35 +48,14 @@ export default function ProfileUpdateForm(props) {
           updatedProfile.username = profileData.username;
           setProfileData(updatedProfile);
           setEditProfileMode(false);
+          setErrorMsg("");
         }
         setProfileUpdateInProgress(false);
       });
   };
-  const currentYear = new Date().getFullYear();
 
-  const halfCol = {
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-    alignItems: "left",
-    width: "50%",
-  };
-  const leftCol = {
-    ...halfCol,
-    paddingRight: "10px",
-  };
-  const rightCol = {
-    ...halfCol,
-    paddingLeft: "10px",
-  };
-  const row = {
-    display: "flex",
-    justifyContent: "left",
-    alignItems: "center",
-    flexDirection: "row",
-  };
   return (
-    <div style={{...col,  padding: "0px 24px"}} className={"card-no-hover"} >
+    <div style={{ ...col, padding: "0px 24px" }} className={"card-no-hover"}>
       <form onSubmit={tryUpdateProfile}>
         <div
           style={{
@@ -104,7 +83,6 @@ export default function ProfileUpdateForm(props) {
                   label={"submit"}
                   id={"submitProfileUpdate"}
                   type={"submit"}
-                  isEdit={editProfileMode}
                 >
                   submit
                 </button>
@@ -120,8 +98,8 @@ export default function ProfileUpdateForm(props) {
           )}
         </div>
 
-        <div style={row}>
-          <div style={leftCol}>
+        <div className="row">
+          <div className="halfCol leftCol">
             <ProfileFormElement
               label={"Username:"}
               value={profileData?.username}
@@ -130,8 +108,8 @@ export default function ProfileUpdateForm(props) {
           </div>
         </div>
         <hr />
-        <div style={row}>
-          <div style={leftCol}>
+        <div className="row">
+          <div className="halfCol leftCol">
             <ProfileFormElement
               label={"First Name:"}
               id={"first"}
@@ -140,7 +118,7 @@ export default function ProfileUpdateForm(props) {
               isEdit={editProfileMode}
             />
           </div>
-          <div style={rightCol}>
+          <div className="halfCol rightCol">
             <ProfileFormElement
               label={"Last Name:"}
               id={"last"}
@@ -151,8 +129,29 @@ export default function ProfileUpdateForm(props) {
           </div>
         </div>
         <hr />
-        <div style={row}>
-          <div style={leftCol}>
+        <div className="row">
+          <div className="halfCol leftCol">
+            <ProfileFormElement
+              label={"Major:"}
+              id={"major"}
+              value={profileData?.major ?? ""}
+              type={"text"}
+              isEdit={editProfileMode}
+            />
+          </div>
+          <div className="halfCol rightCol">
+            <ProfileFormElement
+              label={"Enterance year:"}
+              id={"entranceYear"}
+              value={profileData?.entranceYear}
+              type={"number"}
+              isEdit={editProfileMode}
+            />
+          </div>
+        </div>
+        <hr />
+        <div className="row">
+          <div className="halfCol leftCol">
             <ProfileFormElement
               label={"Email:"}
               id={"email"}
@@ -164,10 +163,20 @@ export default function ProfileUpdateForm(props) {
         </div>
         <hr />
 
-        {errorMsg && <div className="error-msg">{errorMsg}</div>}
+        {errorMsg && (
+          <div
+            style={{
+              color: "red",
+              textAlign: "center",
+              fontSize: "small",
+            }}
+          >
+            {errorMsg}
+          </div>
+        )}
       </form>
-      <div style={row}>
-        <div style={leftCol}>
+      <div className="row">
+        <div className="halfCol leftCol">
           <ProfileFormElement
             label={
               <span style={{ whiteSpace: "nowrap" }}>Password : *******</span>
@@ -177,9 +186,7 @@ export default function ProfileUpdateForm(props) {
           />
         </div>
         {!editProfileMode ? null : (
-          <div
-            style={rightCol}
-          >
+          <div className="halfCol rightCol">
             <ProfileUpdatePasswordForm />
           </div>
         )}
@@ -210,7 +217,6 @@ function ProfileFormElement({ label, id, value, isEdit, ...formProps }) {
               // width: "120px",
               textAlign: "left",
               fontSize: "18px",
-
             }}
             htmlFor={id}
           >
@@ -220,7 +226,7 @@ function ProfileFormElement({ label, id, value, isEdit, ...formProps }) {
             <input
               id={id}
               type="text"
-              value={value}
+              defaultValue={value}
               className="form-input"
               style={{ boxSizing: "border-box" }}
               {...formProps}

@@ -74,6 +74,7 @@ app.post("/updateEvaluation", isAuthenticated, routes.updateEvaluation);
 app.post("/deleteEvaluation", isAuthenticated, routes.deleteEvaluation);
 app.post("/search", isAuthenticated, routes.getSearchResults);
 app.post("/updateProfile", isAuthenticated, routes.updateProfile);
+app.post("/updatePassword", isAuthenticated, routes.updatePassword);
 app.post("/addInterest", isAuthenticated, routes.addInterest);
 app.post("/removeInterest", isAuthenticated, routes.removeInterest);
 app.listen(PORT, () => {

@@ -38,7 +38,7 @@ export default function CourseInfoPage(props) {
           setErrorMsg(resJson.errorMsg);
         }
       });
-  }, [course]);
+  }, [course, setLoggedIn]);
 
   console.log(course);
   return (
