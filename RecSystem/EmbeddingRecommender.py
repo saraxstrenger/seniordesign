@@ -16,7 +16,6 @@ class EmbeddingRecommender():
     def __init__(self):
         # Load the embedding model
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
-        # stored as (course_name, course_embedding) pairs
         self.courses = pd.DataFrame()
         self.seen = set()
     
@@ -59,21 +58,12 @@ class EmbeddingRecommender():
         course_description_embedding = self.embed(course_description)
         course_embedding = (0.3*course_name_embedding)  + (0.7*course_description_embedding)
         return course_embedding
-    # returns the BERT emebdding of text
-    # Q for future Surb: is it easy to run BERT on the cloud from say, a lambda call? 
-    # is the spinup gonna be atrocious for that or is huggingface the goat?
-    # in the case of the former, let's switch to word2Vec. But that might blow up the whole thing....
+   
     def embed(self, text):
         embedding = self.model.encode(text)
         return embedding
         
     # returns the k nearest neighbors to target from candidates, using euclidian distance 
-    # Q for future Saurabh: Is Euclidian distance a wise distance measure here? 
-    # Aren't the top few principal components wayy more important than the rest?
-    # or is natural language complex/dense enough as for all 300 principal components 
-    # to be important (and roughly equally important)?
-    
-    # need to change this since we're using a dataframe now
     def k_nearest_neighbors(self, target, k):
         tgt_embedding = self.embed(target)
         
