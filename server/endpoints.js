@@ -380,6 +380,8 @@ export function getCourseInfo(req, res) {
     return;
   }
   console.log("[" + courseId + "]");
+  console.log(courseId.split(" "))
+
 
   db.getCourseInfo(courseId, (err, data) => {
     if (err) {
@@ -391,8 +393,8 @@ export function getCourseInfo(req, res) {
         res.sendStatus(404); // Not Found
         return;
       }
-      console.log("Course found: " + data.Item.Course_Code);
-      delete data.Item?.courseEmbedding;
+      delete data.Item?.embedding;
+      console.log("Course found: " + data.Item.code);
       res.json({ success: true, data: data.Item });
     }
   });

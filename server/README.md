@@ -30,7 +30,7 @@ const LOCAL_DB_PATH = "/Users/suvaskota/Downloads/seniordesign.sqlite";
 3. Now we can create an evaluations table within the local database with the following code:
      ```
      CREATE TABLE evaluations (
-        id TEXT, 
+        id  TEXT PRIMARY KEY, 
         number TEXT, 
         semester TEXT, 
         year TEXT, 

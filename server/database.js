@@ -4,7 +4,9 @@ import natural from "natural";
 import { stemmer } from "stemmer";
 import sqlite3 from "sqlite3";
 
-const LOCAL_DB_PATH = '/Users/suvaskota/Downloads/seniordesign.sqlite'; //TODO: Change this to the path to your local SQLite database
+//TODO: See readme for updated local db path. DB should be located in same folder
+// as senior deign repo
+const LOCAL_DB_PATH = "../seniordesign.sqlite"; 
 
 const USER_TABLE = "users";
 const COURSE_TABLE = "courses";
@@ -191,14 +193,30 @@ export async function addEvaluation(
   );
   //The code below is to add an evaluation to the local SQLite Database
   const db = new sqlite3.Database(LOCAL_DB_PATH);
-  db.run(`INSERT INTO evaluations (id, number, semester, year, user, difficulty, interest, department, workload1, workload2, workload3, workload4)
+  db.run(
+    `INSERT INTO evaluations (id, number, semester, year, user, difficulty, interest, department, workload1, workload2, workload3, workload4)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [evaluationId, number, semester, year, user, difficulty, interest, department, workload[0], workload[1], workload[2], workload[3]], function(err) {
-    if (err) {
-      return console.error(err.message);
+    [
+      evaluationId,
+      number,
+      semester,
+      year,
+      user,
+      difficulty,
+      interest,
+      department,
+      workload[0],
+      workload[1],
+      workload[2],
+      workload[3],
+    ],
+    function (err) {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log(`A row has been inserted with rowid ${this.lastID}`);
     }
-    console.log(`A row has been inserted with rowid ${this.lastID}`);
-  });
+  );
   db.close();
 }
 
@@ -271,13 +289,58 @@ export async function updateEvaluation(
       ddbDocClient.update(params, callback);
       //The code below is to update an evaluation to the local SQLite Database
       const db = new sqlite3.Database(LOCAL_DB_PATH);
-      db.run(`UPDATE evaluations SET difficulty =?, interest = ?, workload1 = ?, workload2 = ?, workload3 = ?, workload4 = ? WHERE id = ?`,
-          [difficulty, interest, workload[0], workload[1], workload[2], workload[3], evaluationId], function(err) {
-        if (err) {
-          return console.error(err.message);
+
+      // update or insert?
+      const db_transaction = `
+      insert into evaluations (id, number, semester , year, user, difficulty, interest, department, workload1, workload2, workload3, workload4)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        difficulty = ?,
+        interest = ?,
+        workload1 = ?,
+        workload2 = ?,
+        workload3 = ?,
+        workload4 = ?
+        WHERE id = ?;
+      `;
+
+      db.run(
+        db_transaction,
+        [
+          evaluationId,
+          number,
+          semester,
+          year,
+          user,
+          difficulty,
+          interest,
+          workload[0],
+          workload[1],
+          workload[2],
+          workload[3],
+          difficulty,
+          interest,
+          department,
+          workload[0],
+          workload[1],
+          workload[2],
+          workload[3],
+          evaluationId,
+        ],
+        function (err) {
+          if (err) {
+            return console.error(
+              "An error occurred updating " +
+                evaluationId +
+                " in sqlite table: ",
+              err.message
+            );
+          } else {
+            console.log(`A row has been updated with rowid ${this.lastID}`);
+          }
         }
-        console.log(`A row has been updated with rowid ${this.lastID}`);
-      });
+      );
+
       db.close();
     }
   });
@@ -326,13 +389,17 @@ export async function deleteEvaluation(
 
   //The code below is to delete an evaluation to the local SQLite Database
   const db = new sqlite3.Database(LOCAL_DB_PATH);
-  db.run(`DELETE FROM evaluations WHERE id = ?`, [evaluationId], function(err) {
-    if (err) {
-      console.error(err.message);
-    } else {
-      console.log(`Row with id ${evaluationId} deleted successfully`);
+  db.run(
+    `DELETE FROM evaluations WHERE id = ?`,
+    [evaluationId],
+    function (err) {
+      if (err) {
+        console.error(err.message);
+      } else {
+        console.log(`Row with id ${evaluationId} deleted successfully`);
+      }
     }
-  });
+  );
   ddbDocClient.transactWrite(transactionParams, callback);
 }
 
