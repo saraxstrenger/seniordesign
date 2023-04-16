@@ -1,6 +1,16 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthAPI } from "../context";
+import "./css/Card.css";
+import "./css/Buttons.css";
+import LandingSignupForm from "./LandingSignupForm";
+
+const inputStyle = {
+  borderRadius: "6px",
+  padding: "10px",
+  backgroundColor: "#f6f6f6",
+  fontSize: "16px",
+};
 
 export default function LandingLoginForm() {
   const setLoggedIn = useContext(AuthAPI).setAuth;
@@ -38,27 +48,88 @@ export default function LandingLoginForm() {
 
   return (
     <div>
+      <h1
+        style={{
+          fontSize: "2rem",
+          fontWeight: "bold",
+          marginBottom: "1rem",
+          textAlign: "center",
+        }}
+      >
+        Sign in
+      </h1>
       <form
         onSubmit={(e) => tryLogin(e, setLoggedIn)}
-        style={{ display: "flex", flexDirection: "column" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+        }}
       >
-        <input
-          type="text"
-          name="username"
-          placeholder="username"
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <div style={{ color: "red", fontSize: "small" }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+  <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+    <input
+      type="text"
+      name="username"
+      placeholder="Email or phone"
+      style={{
+        padding: "0.5rem",
+        margin: "0.5rem",
+        borderRadius: "5px",
+        border: "1px solid gray",
+        flex: 1,
+        fontSize: "1rem",
+        width: "30%",
+      }}
+      onChange={(e) => setUsername(e.target.value)}
+    />
+  </div>
+  <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+    <input
+      type="password"
+      name="password"
+      placeholder="Password"
+      style={{
+        padding: "0.5rem",
+        margin: "0.5rem",
+        borderRadius: "5px",
+        border: "1px solid gray",
+        flex: 1,
+        fontSize: "1rem",
+      }}
+      onChange={(e) => setPassword(e.target.value)}
+    />
+  </div>
+</div>
+        <div
+          style={{ color: "red", fontSize: "small", marginBottom: "0.5rem" }}
+        >
           {showError ? errorMsg : null}
         </div>
-        <input type="submit" value="Submit" />
+        <button
+          className={`btn btn-primary`}
+          style={{
+            color: "white",
+            padding: "0.5rem",
+            margin: "0.5rem",
+            borderRadius: "5px",
+            border: "none",
+            width: "30%",
+            fontSize: "1rem",
+          }}
+        >
+          Log In
+        </button>
       </form>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginTop: "1rem",
+        }}
+      ></div>
     </div>
   );
 }
