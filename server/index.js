@@ -57,7 +57,7 @@ app.get("/evaluations/:id", isAuthenticated, routes.getEvaluation);
 app.get("/evaluations", isAuthenticated, routes.getEvaluations);
 app.get("/profile", isAuthenticated, routes.getProfile);
 app.get("/course/:id", isAuthenticated, routes.getCourseInfo);
-app.get("/predictions/:id", isAuthenticated, routes.getFullCourseInfo);
+app.get("/predictions/:id", isAuthenticated, routes.getPredictions);
 app.get("/home", isAuthenticated, routes.getHome);
 // All other GET requests not handled before will return our React app
 app.get("*", (req, res) => {

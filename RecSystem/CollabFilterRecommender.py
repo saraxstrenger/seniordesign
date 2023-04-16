@@ -2,11 +2,13 @@ import pandas as pd
 from surprise import Reader, Dataset, KNNWithMeans
 import argparse
 import sqlite3
+import json
+import time
 class CollabFilterRecommender():
   # fit the models. Consider functionizing if we add more columns
-  def __init__(self):
+  def __init__(self, database_path):
     #NEED TO REPLACE THIS WITH THE PATH TO THE DATABASE, run .databases in sqlite3 to find the path on whichever computer is the 'server'
-    conn = sqlite3.connect('../../seniordesign.sqlite')
+    conn = sqlite3.connect(database_path)
     eval_df = pd.read_sql_query('SELECT * FROM evaluations', conn)
     conn.close()
     diff_dict = {'user': [], 'item': [], 'rating': []}
@@ -114,27 +116,51 @@ class CollabFilterRecommender():
 
 
 def main():
-  rec = CollabFilterRecommender()
   parser = argparse.ArgumentParser()
+  parser.add_argument('-p', '--path', type=str, required=True)
   parser.add_argument('-s', '--student', type=str)
   parser.add_argument('-c', '--course', type=str)
-  parser.add_argument('-p', '--prediction_type', type=str)
-
+  parser.add_argument('-t', '--type', type=str, required=False)
+  parser.add_argument('-a', '--all_predictions', required=False, action='store_true')
   args = parser.parse_args()
+
+  if args.path is None:
+    raise ValueError('You must specify the path to database file using -p (ex: -p database.db)')
+  
+  rec = CollabFilterRecommender(args.path)
+
   student = args.student
   course = args.course
-  predict = args.prediction_type
+  predict = args.type
+  all_predictions = args.all_predictions
+
   prediction_types = ['difficulty', 'interest', 'workload1', 'workload2', 'workload3', 'workload4']
-  if predict not in prediction_types:
-    raise ValueError('prediction arg needs to be "difficulty", "interest" or "workload1", "workload2", "workload3", "workload4"')
-  
-  res = rec.predict(student, course, predict)
+
+  if all_predictions is None:
+    # give single prediction
+    if predict is None:
+      raise ValueError('You must either specify prediction type using -t (ex: -t difficulty) or use -a to get all predictions (ex: -a)')
+    if predict not in prediction_types:
+      raise ValueError('prediction arg needs to be "difficulty", "interest" or "workload1", "workload2", "workload3", "workload4"')
+    res = rec.predict(student, course, predict)
+      
+    if res is None:
+      raise ValueError('Error in getting prediction')
     
-  if res is None:
-    raise ValueError('Error in getting prediction')
-  
-  print(res)
-  return res
+    print(res)
+  else:
+    # give all predictions
+    results ={}
+    for  prediction_type in prediction_types:
+      rating = rec.predict(student, course, prediction_type)
+      results[prediction_type] = rating
+    
+    json_results = json.dumps(results, separators=(',', ':'))
+    print(json_results)
+    time.sleep(1)
+
+
+  return 0
 
 if __name__ == '__main__':
   main()
