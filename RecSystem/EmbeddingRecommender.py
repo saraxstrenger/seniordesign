@@ -17,7 +17,7 @@ class EmbeddingRecommender():
         # Load the embedding model
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
         # stored as (course_name, course_embedding) pairs
-        self.courses = []
+        self.courses = pd.DataFrame()
         self.seen = set()
     
     def upload_courses_from_csv(self, filepath):
@@ -83,25 +83,6 @@ class EmbeddingRecommender():
         top_k = [str(self.courses.iloc[i]['code']) for i in indices[0]]
         return top_k
         
-        """
-        heap = []
-        for (idx, row) in self.courses.iterrows():
-            course_embedding = row[-1]
-            diff = course_embedding - tgt_embedding
-            dist = np.sqrt(np.dot(diff.T, diff))
-            heapq.heappush(heap, (-dist, str(row.drop('embedding').to_dict())))
-            
-            if len(heap) > k:
-                heapq.heappop(heap)
-        
-        heap.sort(key= lambda x: -x[0])
-        
-        top_k = []
-        for (_, row) in heap:
-            top_k.append(row)
-        return top_k
-    
-        """
     # returns 3 reccomendations from class_titles which are semantically closest to job_title
     def emebedding_rec(self, interest):
         return self.k_nearest_neighbors(interest, 3)
@@ -121,9 +102,6 @@ def main():
     args = parser.parse_args()
     interest = args.interest
     num_recs = args.num_recs
-
-    rec = EmbeddingRecommender()
-    rec.upload_courses_from_csv('../data/cis_catalog.csv')
     
     res = rec.k_nearest_neighbors(interest, num_recs)
     resStr = "\n".join(res)
