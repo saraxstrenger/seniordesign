@@ -66,6 +66,7 @@ export default function ProfileUpdateForm(props) {
         >
           <h2>Account Settings:</h2>
         </div>
+        {profileUpdateInProgress ? <LoadingDots /> : null}
 
         <div className="row">
           <div className="halfCol leftCol">
@@ -191,8 +192,22 @@ export default function ProfileUpdateForm(props) {
           </div>
         )}
       </form>
-
-      {profileUpdateInProgress ? <LoadingDots /> : null}
+      <div className="row">
+        <div className="halfCol leftCol">
+          <ProfileFormElement
+            label={
+              <span style={{ whiteSpace: "nowrap" }}>Password : *******</span>
+            }
+            value={null}
+            isEdit={false}
+          />
+        </div>
+        {!editProfileMode ? null : (
+          <div className="halfCol rightCol">
+            <ProfileUpdatePasswordForm />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
