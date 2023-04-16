@@ -171,7 +171,7 @@ function InterestBubble(props) {
 function AddInterestForm(props) {
   const { addInterest } = props;
   return (
-    <form onSubmit={addInterest}>
+    <form onSubmit={addInterest} style={{display: "flex", flexDirection:"row"}}>
       <input
         type="text"
         name="newInterest"

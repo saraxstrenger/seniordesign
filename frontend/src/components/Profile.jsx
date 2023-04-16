@@ -49,6 +49,7 @@ export default function Profile(props) {
             // background: "green",
             margin: "0px 20px",
             width: "75%",
+            minWidth: "400",
           }}
         >
           <h2>Profile:</h2>
