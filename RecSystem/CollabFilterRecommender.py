@@ -6,7 +6,7 @@ class CollabFilterRecommender():
   # fit the models. Consider functionizing if we add more columns
   def __init__(self):
     #NEED TO REPLACE THIS WITH THE PATH TO THE DATABASE, run .databases in sqlite3 to find the path on whichever computer is the 'server'
-    conn = sqlite3.connect('/Users/saurabhshah/seniordesign.sqlite')
+    conn = sqlite3.connect('../../seniordesign.sqlite')
     eval_df = pd.read_sql_query('SELECT * FROM evaluations', conn)
     conn.close()
     diff_dict = {'user': [], 'item': [], 'rating': []}
@@ -16,12 +16,12 @@ class CollabFilterRecommender():
     workload3_dict = {'user': [], 'item': [], 'rating': []}
     workload4_dict = {'user': [], 'item': [], 'rating': []}
     users = []
-    items = []
+    courses = []
     for row in eval_df.itertuples(index=False):
       user = row[4]
       if user == 'user':
         continue
-      item = row[7] + ' ' + str(row[1])
+      course = row[7] + ' ' + str(row[1])
       diff = row[5]
       interest = row[6]
       workload1 = row[8]
@@ -29,29 +29,32 @@ class CollabFilterRecommender():
       workload3 = row[10]
       workload4 = row[11]
       
-      
       users.append(user)
-      items.append(item)
+      courses.append(course)
       diff_dict['rating'].append(diff)
       interest_dict['rating'].append(interest)
       workload1_dict['rating'].append(workload1)
       workload2_dict['rating'].append(workload2)
       workload3_dict['rating'].append(workload3)
       workload4_dict['rating'].append(workload4)
-      
     
     diff_dict['user'] = users
+    diff_dict['item'] = courses
+
     interest_dict['user'] = users
-    diff_dict['item'] = items
-    interest_dict['item'] = items
+    interest_dict['item'] = courses
+
     workload1_dict['user'] = users
-    workload1_dict['item'] = items
+    workload1_dict['item'] = courses
+
     workload2_dict['user'] = users
-    workload2_dict['item'] = items
+    workload2_dict['item'] = courses
+
     workload3_dict['user'] = users
-    workload3_dict['item'] = items
+    workload3_dict['item'] = courses
+
     workload4_dict['user'] = users
-    workload4_dict['item'] = items
+    workload4_dict['item'] = courses
     
     
     diff_df = pd.DataFrame(diff_dict)
@@ -67,7 +70,7 @@ class CollabFilterRecommender():
     workload2_reader = Reader(rating_scale=(1, 5))
     workload3_reader = Reader(rating_scale=(1, 5))
     workload4_reader = Reader(rating_scale=(1, 5))
-    
+
     diff_data = Dataset.load_from_df(diff_df, diff_reader)
     interest_data = Dataset.load_from_df(interest_df, interest_reader)
     workload1_data = Dataset.load_from_df(workload1_dict, workload1_reader)
