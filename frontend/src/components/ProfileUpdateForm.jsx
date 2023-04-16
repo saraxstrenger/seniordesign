@@ -125,7 +125,7 @@ export default function ProfileUpdateForm(props) {
           </div>
           <div className="halfCol rightCol">
             <ProfileFormElement
-              label={"Enterance year:"}
+              label={"Entrance year:"}
               id={"entranceYear"}
               value={profileData?.entranceYear}
               type={"number"}
