@@ -97,6 +97,7 @@ export default function ProfileUpdateForm(props) {
             </div>
           )}
         </div>
+        {profileUpdateInProgress ? <LoadingDots /> : null}
 
         <div className="row">
           <div className="halfCol leftCol">
@@ -191,7 +192,6 @@ export default function ProfileUpdateForm(props) {
           </div>
         )}
       </div>
-      {profileUpdateInProgress ? <LoadingDots /> : null}
     </div>
   );
 }
