@@ -20,10 +20,17 @@ export default function LandingSignupForm(props) {
 
   const FormElement = function (props) {
     return (
-      <div style={{ padding: 8 }}>
+      <div
+        style={{
+          padding: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+        }}
+      >
         <label
-          for={props.id}
-          style={{ paddingRight: 8 }}
+          htmlFor={props.id}
+          style={{ marginBottom: 4, fontSize: 14 }}
           hidden={props.labelHidden === true}
         >
           {props.label}
@@ -39,7 +46,15 @@ export default function LandingSignupForm(props) {
             })}
           </select>
         ) : (
-          <input {...props} />
+          <input
+            {...props}
+            style={{
+              fontSize: 14,
+              padding: 8,
+              border: "1px solid #ccc",
+              borderRadius: 4,
+            }}
+          />
         )}
       </div>
     );
@@ -79,6 +94,7 @@ export default function LandingSignupForm(props) {
     }
   };
   const currentYear = new Date().getFullYear();
+
   return (
     <div>
       <form onSubmit={trySignup}>
@@ -87,91 +103,197 @@ export default function LandingSignupForm(props) {
             style={{
               display: "flex",
               flexDirection: "row",
-              width: "110%",
+              width: "100%",
               justifyContent: "space-between",
+              marginBottom: 16,
             }}
           >
-            <div>
+            <div style={{ width: "40%" }}>
               {FormElement({
-                label: "first:",
+                label: "First Name:",
                 type: "text",
                 name: "first",
                 id: "first",
-                placeholder: "first name",
+                placeholder: "First Name",
                 required: true,
                 onChange: (e) => setFirst(e.target.value),
                 value: first,
               })}
             </div>
 
-            <div>
-              {FormElement({
-                label: "last:",
-                type: "text",
-                name: "last",
-                id: "last",
-                required: true,
-                placeholder: "last name",
-                onChange: (e) => setLast(e.target.value),
-                value: last,
-              })}
+            <div style={{ width: "70%" }}>
+              <div>
+                <label
+                  htmlFor="last"
+                  style={{
+                    marginBottom: 4,
+                    fontSize: 14,
+                    height: 16,
+                    alignItems: "flex-start",
+                  }}
+                >
+                  Last Name:
+                </label>
+                {FormElement({
+                  type: "text",
+                  name: "last",
+                  id: "last",
+                  required: true,
+                  placeholder: "Last Name",
+                  onChange: (e) => setLast(e.target.value),
+                  value: last,
+                  style: { height: 32 },
+                })}
+              </div>
             </div>
           </div>
 
-          {FormElement({
-            label: "email:",
-            type: "text",
-            name: "email",
-            id: "email",
-            required: true,
-            placeholder: "email",
-            onChange: (e) => setEmail(e.target.value),
-            value: email,
-          })}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginBottom: 16,
+            }}
+          >
+            {FormElement({
+              label: "Email:",
+              type: "text",
+              name: "email",
+              id: "email",
+              required: true,
+              placeholder: "Email",
+              onChange: (e) => setEmail(e.target.value),
+              value: email,
+            })}
 
-          {FormElement({
-            label: "username:",
-            type: "text",
-            name: "username",
-            id: "username",
-            required: true,
-            placeholder: "username",
-            onChange: (e) => setUsername(e.target.value),
-            value: username,
-          })}
+            <div style={{ width: "24%" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  height: 52,
+                  justifyContent: "space-between",
+                }}
+              >
+                <label
+                  htmlFor="major"
+                  style={{
+                    marginBottom: 4,
+                    fontSize: 14,
+                    height: 16,
+                    alignItems: "flex-start",
+                  }}
+                >
+                  Major:
+                </label>
+                {FormElement({
+                  type: "text",
+                  name: "major",
+                  id: "major",
+                  required: true,
+                  placeholder: "Major",
+                  onChange: (e) => setMajor(e.target.value),
+                  value: major,
+                  style: { height: 50 },
+                })}
+              </div>
+            </div>
 
-          {FormElement({
-            label: "password:",
-            type: "password",
-            name: "password",
-            id: "password",
-            required: true,
-            placeholder: "password",
-            onChange: (e) => setPassword(e.target.value),
-            value: password,
-          })}
+            <div style={{ width: "30%" }}>
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      height: 52,
+      justifyContent: "space-between",
+    }}
+  >
+    <label
+      htmlFor="Entrance-year"
+      style={{
+        marginBottom: 4,
+        fontSize: 14,
+        height: 16,
+        alignItems: "flex-start",
+      }}
+    ></label>
+    {FormElement({
+      label: "Entrance Year:",
+      name: "entranceYear",
+      id: "entranceYear",
+      required: true,
+      type: "select",
+      options: range(25, currentYear - 25),
+      onChange: (e) => setEntranceYear(e.target.value),
+      value: entranceYear,
+      style: {
+        backgroundColor: '#f0f0f0',
+        color: '#333',
+        border: '1px solid #ccc',
+        borderRadius: 4,
+        padding: '8px 12px',
+        backgroundImage: `url('https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-ios7-arrow-down-512.png')`,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'right center',
+        backgroundSize: 'auto 70%',
+      },
+      optionStyle: {
+        backgroundColor: '#fff',
+        color: '#333',
+        padding: '8px 12px',
+        borderBottom: '1px solid #ccc',
+      },
+    })}
+  </div>
+</div>
 
-          {FormElement({
-            label: "major:",
-            type: "text",
-            name: "major",
-            id: "major",
-            required: true,
-            placeholder: "major",
-            onChange: (e) => setMajor(e.target.value),
-            value: major,
-          })}
+          </div>
 
-          {FormElement({
-            label: "entrance year:",
-            name: "entranceYear",
-            id: "entranceYear",
-            required: true,
-            type: "select",
-            options: range(25, currentYear - 25),
-            onChange: (e) => setEntranceYear(e.target.value),
-            value: entranceYear,
-          })}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginBottom: 16,
+            }}
+          >
+            <div style={{ width: "45%" }}>
+              {FormElement({
+                label: "username:",
+                type: "text",
+                name: "username",
+                id: "username",
+                required: true,
+                placeholder: "username",
+                onChange: (e) => setUsername(e.target.value),
+                value: username,
+              })}
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                width: "80%",
+                alignItems: "flex-start",
+                margin: "auto 0",
+              }}
+            >
+              {FormElement({
+                label: "password:",
+                type: "password",
+                name: "password",
+                id: "password",
+                required: true,
+                placeholder: "password",
+                onChange: (e) => setPassword(e.target.value),
+                value: password,
+              })}
+            </div>
+          </div>
 
           {errorMsg !== "" ? (
             <div
@@ -190,6 +312,7 @@ export default function LandingSignupForm(props) {
             labelHidden: true,
             type: "submit",
             value: "Sign up!",
+            className: "btn btn-secondary",
           })}
         </div>
       </form>
