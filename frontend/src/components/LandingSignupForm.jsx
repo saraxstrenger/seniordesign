@@ -15,7 +15,6 @@ export default function LandingSignupForm(props) {
   const navigate = useNavigate();
   const trySignup = async function (e) {
     e.preventDefault();
-    console.log(e);
     const first = e.target?.first?.value;
     const last = e.target?.last?.value;
     const email = e.target?.email?.value;
@@ -25,16 +24,6 @@ export default function LandingSignupForm(props) {
     const major = e.target?.major?.value;
     const entranceYear = parseInt(e.target?.entranceYear?.value ?? 0);
    
-    console.log({
-      first,
-      last,
-      email,
-      username,
-      password,
-      confirmPassword,
-      major,
-      entranceYear,
-    });
     if (password !== confirmPassword) {
       setErrorMsg("Passwords do not match.");
       return;

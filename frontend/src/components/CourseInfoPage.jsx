@@ -31,7 +31,6 @@ export default function CourseInfoPage(props) {
         } else return res.json();
       })
       .then((resJson) => {
-        console.log(resJson);
         if (resJson.success) {
           setPredictions(resJson.data);
         } else {
@@ -40,7 +39,6 @@ export default function CourseInfoPage(props) {
       });
   }, [course, setLoggedIn]);
 
-  console.log(course);
   return (
     <div style={{ padding: 8 }}>
       <h2 style={{ margin: 0, color: "#2C5530" }}>{course?.code}</h2>

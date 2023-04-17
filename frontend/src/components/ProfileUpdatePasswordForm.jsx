@@ -32,12 +32,10 @@ export default function ProfileUpdatePasswordForm(props) {
   const [updateMode, setUpdateMode] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const tryUpdatePassword = async (e) => {
-    console.log(e);
     e.preventDefault();
     const oldPassword = e.target.oldPassword.value;
     const newPassword = e.target.newPassword.value;
     const confirmNewPassword = e.target.confirmNewPassword.value;
-    console.log(oldPassword, newPassword);
     if (newPassword !== confirmNewPassword) {
       setErrorMsg("New passwords do not match");
       return;

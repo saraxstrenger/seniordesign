@@ -223,7 +223,6 @@ function Recommendations(props) {
     return acc;
   }, {});
 
-  console.log(interestsWithRecs);
 
   return (
     <>
