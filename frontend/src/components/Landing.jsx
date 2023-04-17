@@ -37,13 +37,14 @@ function Landing(props) {
       <div style={col}>
         <div className={true ? "card-no-hover" : "card"} style={cardStyle}>
           <center>
-          <h1 style={{ margin: 0, marginTop: "0.25rem" }}> Compass </h1>
-            <img
-              src={process.env.PUBLIC_URL + "/compass-symbol.png"}
-              alt="Compass Logo"
-              style={{ width: "80px", height: "auto", marginRight: "0.5rem" }}
-            />
-            
+            <h1 style={{ margin: 0, marginTop: "0.25rem" }}> Compass </h1>
+            <div style={{ padding: 12 }}>
+              <img
+                src={process.env.PUBLIC_URL + "/compass-symbol.png"}
+                alt="Compass Logo"
+                style={{ width: "80px", height: "auto", marginRight: "0.5rem" }}
+              />
+            </div>
           </center>
 
           <div style={{ width: "100%" }}>
@@ -69,16 +70,16 @@ function Landing(props) {
                   Already have an account?
                 </h5>
                 <span
-                className={"clickable-text"}
-                onClick={() => setIsLogin(!isLogin)}
-                style={{
-                  textDecoration: "underline",
-                  color: "blue",
-                  cursor: "pointer",
-                }}
-              >
-                Log In
-              </span>
+                  className={"clickable-text"}
+                  onClick={() => setIsLogin(!isLogin)}
+                  style={{
+                    textDecoration: "underline",
+                    color: "blue",
+                    cursor: "pointer",
+                  }}
+                >
+                  Log In
+                </span>
               </div>
             )}
           </div>

@@ -74,13 +74,12 @@ export default function ProfileUpdatePasswordForm(props) {
   return (
     <>
       <button
-  className={`btn btn-tertiary`}
-  onClick={() => setUpdateMode(true)}
-  style={{ width: "60%", fontSize: "14px"  }}
->
-  Update Password
-</button>
-
+        className={`btn btn-underline btn-small`}
+        onClick={() => setUpdateMode(true)}
+        style={{ fontSize: "14px" }}
+      >
+        Update
+      </button>
 
       <Modal
         isOpen={updateMode}

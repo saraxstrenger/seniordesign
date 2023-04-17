@@ -48,16 +48,9 @@ export default function LandingLoginForm() {
 
   return (
     <div>
-      <h1
-        style={{
-          fontSize: "2rem",
-          fontWeight: "bold",
-          marginBottom: "1rem",
-          textAlign: "center",
-        }}
-      >
-        Sign in
-      </h1>
+      <center>
+        <h2>Sign in</h2>
+      </center>
       <form
         onSubmit={(e) => tryLogin(e, setLoggedIn)}
         style={{
@@ -68,40 +61,52 @@ export default function LandingLoginForm() {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
-  <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-    <input
-      type="text"
-      name="username"
-      placeholder="unsername"
-      style={{
-        padding: "0.5rem",
-        margin: "0.5rem",
-        borderRadius: "5px",
-        border: "1px solid gray",
-        flex: 1,
-        fontSize: "1rem",
-        width: "30%",
-      }}
-      onChange={(e) => setUsername(e.target.value)}
-    />
-  </div>
-  <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-    <input
-      type="password"
-      name="password"
-      placeholder="Password"
-      style={{
-        padding: "0.5rem",
-        margin: "0.5rem",
-        borderRadius: "5px",
-        border: "1px solid gray",
-        flex: 1,
-        fontSize: "1rem",
-      }}
-      onChange={(e) => setPassword(e.target.value)}
-    />
-  </div>
-</div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <input
+              type="text"
+              name="username"
+              placeholder="unsername"
+              style={{
+                padding: "0.5rem",
+                margin: "0.5rem",
+                borderRadius: "5px",
+                border: "1px solid gray",
+                flex: 1,
+                fontSize: "1rem",
+                width: "30%",
+              }}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              style={{
+                padding: "0.5rem",
+                margin: "0.5rem",
+                borderRadius: "5px",
+                border: "1px solid gray",
+                flex: 1,
+                fontSize: "1rem",
+              }}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+        </div>
         <div
           style={{ color: "red", fontSize: "small", marginBottom: "0.5rem" }}
         >

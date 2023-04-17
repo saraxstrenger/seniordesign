@@ -1,0 +1,6 @@
+.input-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin: 8px 0px;
+}

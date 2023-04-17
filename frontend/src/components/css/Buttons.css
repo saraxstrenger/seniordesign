@@ -25,13 +25,20 @@
   cursor: pointer;
 }
 
+.btn-underline {
+  color: #739e82;
+  background-color: transparent;
+  text-decoration: underline;
+  border: 2px solid transparent;
+}
+
 .btn-outline {
   color: #739e82;
   background-color: #ffffff;
-  text-decoration: underline;
-  border: 2px solid #ffffff;
+  border: 2px solid #739e82;
 }
-.btn-outline:hover {
+
+.btn-underline:hover {
   border: 2px solid #739e82;
 }
 

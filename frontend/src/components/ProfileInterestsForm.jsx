@@ -93,7 +93,7 @@ export default function ProfileInterestsForm(props) {
   };
 
   return (
-    <div className="card-no-hover" style={{ padding: "0px 24px" }}>
+    <div className="card-no-hover" style={{ padding: "0px 24px", minWidth:400 }}>
       <h2>Your Interests:</h2>
       <div
         style={{

@@ -1,70 +1,45 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./css/utils.module.css";
 import { useState, useContext } from "react";
 import { AuthAPI } from "../context";
-
+import "./css/Landing.css";
+import { useNavigate } from "react-router-dom";
 function range(size, startAt = 0) {
   return [...Array(size).keys()].map((i) => i + startAt);
 }
 
 export default function LandingSignupForm(props) {
   const setLoggedIn = useContext(AuthAPI).setAuth;
-  const [first, setFirst] = useState("");
-  const [last, setLast] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [major, setMajor] = useState("");
-  const [entranceYear, setEntranceYear] = useState(-1);
-  const [errorMsg, setErrorMsg] = useState("");
-
-  const FormElement = function (props) {
-    return (
-      <div
-        style={{
-          padding: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-        }}
-      >
-        <label
-          htmlFor={props.id}
-          style={{ marginBottom: 4, fontSize: 14 }}
-          hidden={props.labelHidden === true}
-        >
-          {props.label}
-        </label>
-        {props.type === "select" ? (
-          <select {...props}>
-            {props.options.reverse().map((element) => {
-              return (
-                <option value={element} key={element}>
-                  {element}
-                </option>
-              );
-            })}
-          </select>
-        ) : (
-          <input
-            {...props}
-            style={{
-              fontSize: 14,
-              padding: 8,
-              border: "1px solid #ccc",
-              borderRadius: 4,
-            }}
-          />
-        )}
-      </div>
-    );
-  };
-
+  const loggedIn = useContext(AuthAPI).auth;
+  const [errorMsg, setErrorMsg] = useState("aa");
+  const navigate = useNavigate();
   const trySignup = async function (e) {
     e.preventDefault();
+    console.log(e);
+    const first = e.target?.first?.value;
+    const last = e.target?.last?.value;
+    const email = e.target?.email?.value;
+    const username = e.target?.username?.value;
+    const password = e.target?.password?.value;
+    const confirmPassword = e.target?.confirmPassword?.value;
+    const major = e.target?.major?.value;
+    const entranceYear = parseInt(e.target?.entranceYear?.value ?? 0);
+   
+    console.log({
+      first,
+      last,
+      email,
+      username,
+      password,
+      confirmPassword,
+      major,
+      entranceYear,
+    });
+    if (password !== confirmPassword) {
+      setErrorMsg("Passwords do not match.");
+      return;
+    }
 
-    // todo: some inflight display/loading
-    // todo: FORM VALIDATION!!!
     let res = await fetch("/signup", {
       method: "POST",
       headers: {
@@ -83,9 +58,10 @@ export default function LandingSignupForm(props) {
 
     let resJson = await res.json();
     if (resJson.success === true) {
-      alert("true");
       setErrorMsg("");
       setLoggedIn(true);
+      let path = `/home/`;
+      navigate(path);
     } else {
       // todo: display meaningful error message (probably from backend)
       setErrorMsg(
@@ -99,205 +75,177 @@ export default function LandingSignupForm(props) {
     <div>
       <form onSubmit={trySignup}>
         <div className={styles.column}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-between",
-              marginBottom: 16,
-            }}
-          >
-            <div style={{ width: "40%" }}>
-              {FormElement({
-                label: "First Name:",
-                type: "text",
-                name: "first",
-                id: "first",
-                placeholder: "First Name",
-                required: true,
-                onChange: (e) => setFirst(e.target.value),
-                value: first,
-              })}
-            </div>
+          <div className="input-row">
+            <FormElement
+              label="First Name:"
+              type="text"
+              name="first"
+              placeholder="First Name"
+              required={true}
+              width="33%"
+            />
+            <FormElement
+              label="Last Name:"
+              type="text"
+              name="last"
+              required={true}
+              placeholder="Last Name"
+              width="33%"
+            />
+          </div>
 
-            <div style={{ width: "70%" }}>
-              <div>
-                <label
-                  htmlFor="last"
-                  style={{
-                    marginBottom: 4,
-                    fontSize: 14,
-                    height: 16,
-                    alignItems: "flex-start",
-                  }}
-                >
-                  Last Name:
-                </label>
-                {FormElement({
-                  type: "text",
-                  name: "last",
-                  id: "last",
-                  required: true,
-                  placeholder: "Last Name",
-                  onChange: (e) => setLast(e.target.value),
-                  value: last,
-                  style: { height: 32 },
-                })}
+          <div className="input-row">
+            <FormElement
+              label="Email:"
+              type="text"
+              name="email"
+              required={true}
+              placeholder="Email"
+              width="33%"
+            />
+
+            <FormElement
+              type="text"
+              name="major"
+              label="Major:"
+              required={true}
+              placeholder="Major"
+              width="33%"
+            />
+
+            <FormElement
+              label="Entrance Year:"
+              name="entranceYear"
+              required={true}
+              type="select"
+              options={range(25, currentYear - 25).reverse()}
+              width="20%"
+            />
+          </div>
+
+          <div className="input-row">
+            <FormElement
+              label="Username:"
+              type="text"
+              name="username"
+              required={true}
+              placeholder="username"
+              width="33%"
+            />
+
+            <div style={{ width: "66%" }}>
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                <FormElement
+                  width="50%"
+                  label="Password:"
+                  type="password"
+                  name="password"
+                  required={true}
+                  style={{ width: "inherit" }}
+                  placeholder="password"
+                  pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$"
+                  title="Please ensure that your password meets the requirements listed below."
+                />
+                <FormElement
+                  width="50%"
+                  label="Confirm Password:"
+                  type="password"
+                  name="confirmPassword"
+                  required={true}
+                  style={{ width: "inherit" }}
+                  placeholder="password"
+                  pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$"
+                  title="Please ensure that your password meets the requirements listed below."
+                />
+              </div>
+              <div style={{ fontSize: "x-small" }}>
+                Password must be at least 8 characters, contain at least one
+                number, one uppercase letter, and one lowercase letter.
               </div>
             </div>
           </div>
-
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-between",
-              marginBottom: 16,
-            }}
-          >
-            {FormElement({
-              label: "Email:",
-              type: "text",
-              name: "email",
-              id: "email",
-              required: true,
-              placeholder: "Email",
-              onChange: (e) => setEmail(e.target.value),
-              value: email,
-            })}
-
-            <div style={{ width: "24%" }}>
+          <div className="input-row">
+            {errorMsg ? (
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: 52,
-                  justifyContent: "space-between",
+                  padding: "0px 0px 0px 8px",
+                  color: "red",
+                  fontSize: "small",
                 }}
               >
-                <label
-                  htmlFor="major"
-                  style={{
-                    marginBottom: 4,
-                    fontSize: 14,
-                    height: 16,
-                    alignItems: "flex-start",
-                  }}
-                >
-                  Major:
-                </label>
-                {FormElement({
-                  type: "text",
-                  name: "major",
-                  id: "major",
-                  required: true,
-                  placeholder: "Major",
-                  onChange: (e) => setMajor(e.target.value),
-                  value: major,
-                  style: { height: 50 },
-                })}
+                {errorMsg}
               </div>
-            </div>
-
-            <div style={{ width: "30%" }}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: 52,
-                  justifyContent: "space-between",
-                }}
-              >
-                <label
-                  htmlFor="Entrance-year"
-                  style={{
-                    marginBottom: 4,
-                    fontSize: 14,
-                    height: 16,
-                    alignItems: "flex-start",
-                  }}
-                ></label>
-                {FormElement({
-                  label: "Entrance Year:",
-                  name: "entranceYear",
-                  id: "entranceYear",
-                  required: true,
-                  type: "select",
-                  options: range(25, currentYear - 25),
-                  onChange: (e) => setEntranceYear(e.target.value),
-                  value: entranceYear,
-                })}
-              </div>
-            </div>
+            ) : null}
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-between",
-              marginBottom: 16,
-            }}
-          >
-            <div style={{ width: "45%" }}>
-              {FormElement({
-                label: "username:",
-                type: "text",
-                name: "username",
-                id: "username",
-                required: true,
-                placeholder: "username",
-                onChange: (e) => setUsername(e.target.value),
-                value: username,
-              })}
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                width: "80%",
-                alignItems: "flex-start",
-                margin: "auto 0",
-              }}
-            >
-              {FormElement({
-                label: "password:",
-                type: "password",
-                name: "password",
-                id: "password",
-                required: true,
-                placeholder: "password",
-                onChange: (e) => setPassword(e.target.value),
-                value: password,
-              })}
-            </div>
-          </div>
-
-          {errorMsg !== "" ? (
-            <div
-              style={{
-                padding: "0px 0px 0px 8px",
-                color: "red",
-                fontSize: "small",
-              }}
-            >
-              {errorMsg}
-            </div>
-          ) : null}
-          {FormElement({
-            label: "submit",
-            id: "submit",
-            labelHidden: true,
-            type: "submit",
-            value: "Sign up!",
-            className: "btn btn-secondary",
-          })}
+          <FormElement
+            label="submit"
+            labelHidden={true}
+            type="submit"
+            value="Sign up!"
+            className="btn btn-secondary"
+          />
         </div>
       </form>
+    </div>
+  );
+}
+
+function FormElement({
+  label,
+  name,
+  type,
+  value,
+  required,
+  options,
+  className,
+  width,
+  labelHidden,
+}) {
+  return (
+    <div
+      style={{
+        width: width ?? "auto",
+        margin: 4,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    >
+      <label
+        htmlFor={name}
+        style={{ marginBottom: 4, fontSize: 14 }}
+        hidden={labelHidden === true}
+      >
+        {label}
+      </label>
+      {type === "select" ? (
+        <select name={name} required={required}>
+          {options.map((element) => {
+            return (
+              <option value={element} key={element}>
+                {element}
+              </option>
+            );
+          })}
+        </select>
+      ) : (
+        <input
+          type={type}
+          value={value}
+          className={className ?? ""}
+          name={name}
+          id={name}
+          style={{
+            fontSize: 14,
+            padding: 8,
+            border: "1px solid #ccc",
+            borderRadius: 4,
+            marginTop: 0,
+            width: "fit-content",
+          }}
+        />
+      )}
     </div>
   );
 }
