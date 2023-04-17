@@ -17,17 +17,17 @@ export default function NavBar() {
             <ul className="navbar-links">
               <li className="nav-item">
                 <NavLink className="nav-link" to="/home">
-                  <FaHome /> Home
+                  <FaHome />&nbsp;Home
                 </NavLink>
               </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/evaluations">
-                  <FaList /> My Evaluations
+                  <FaList />&nbsp;My Evaluations
                 </NavLink>
               </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/profile">
-                  <FaUser /> Profile
+                  <FaUser />&nbsp;Profile
                 </NavLink>
               </li>
             </ul>
