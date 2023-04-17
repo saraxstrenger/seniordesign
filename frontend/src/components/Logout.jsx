@@ -20,5 +20,5 @@ export default function Logout() {
       }
     });
   };
-  return <button onClick={handleLogout}>Logout</button>;
+  return <button className={"btn"} onClick={handleLogout}>Logout</button>;
 }

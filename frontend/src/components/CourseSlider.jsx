@@ -31,9 +31,9 @@ export default function CourseSlider(props) {
   const { courses, ...cardProps } = props;
   const setFocusedCourse = useContext(RecommendationsContext).setFocusedCourse;
 
-  const ButtonGroup = ({ next, previous, goToSlide, ...rest }) => {
+  const ButtonGroup = ({ next, previous, ...rest }) => {
     const {
-      carouselState: { currentSlide, totalItems, slidesToShow }
+      carouselState: { currentSlide, totalItems, slidesToShow },
     } = rest;
     return (
       <div
@@ -47,38 +47,29 @@ export default function CourseSlider(props) {
           alignItems: "center",
           justifyContent: "space-between",
           right: 0,
-          pointerEvents: "none",
         }}
       >
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            height: "fit-content",
-          }}
-        >
-          <div>
-            {currentSlide > 0 && (
-              <button className="btn-slider" onClick={() => previous()}>
-                <Chevron direction="left" color="gray" />
-              </button>
-            )}
-          </div>
-          <div>
-            {currentSlide < totalItems - slidesToShow && (
+        <div style={{ zIndex: 2 }}>
+          {currentSlide > 0 && (
+            <button className="btn-slider" onClick={() => previous()}>
+              <Chevron direction="left" color="gray" />
+            </button>
+          )}
+        </div>
+        <div style={{ zIndex: 2 }}>
+          {currentSlide < totalItems - slidesToShow && (
             <button className="btn-slider" onClick={() => next()}>
               <div style={{ marginLeft: 5 }}>
                 <Chevron direction="right" color="gray" />
               </div>
             </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
     );
   };
+  
+
   return (
     <Carousel
       responsive={responsive}
