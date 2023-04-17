@@ -47,28 +47,38 @@ export default function CourseSlider(props) {
           alignItems: "center",
           justifyContent: "space-between",
           right: 0,
+          pointerEvents: "none",
         }}
       >
-        <div style={{ zIndex: 2 }}>
-          {currentSlide > 0 && (
-            <button className="btn-slider" onClick={() => previous()}>
-              <Chevron direction="left" color="gray" />
-            </button>
-          )}
-        </div>
-        <div style={{ zIndex: 2 }}>
-          {currentSlide < totalItems - slidesToShow && (
-            <button className="btn-slider" onClick={() => next()}>
-              <div style={{ marginLeft: 5 }}>
-                <Chevron direction="right" color="gray" />
-              </div>
-            </button>
-          )}
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            height: "fit-content",
+          }}
+        >
+          <div style={{ zIndex: 2 }}>
+            {currentSlide > 0 && (
+              <button className="btn-slider" onClick={() => previous()}>
+                <Chevron direction="left" color="gray" />
+              </button>
+            )}
+          </div>
+          <div style={{ zIndex: 2 }}>
+            {currentSlide < totalItems - slidesToShow && (
+              <button className="btn-slider" onClick={() => next()}>
+                <div style={{ marginLeft: 5 }}>
+                  <Chevron direction="right" color="gray" />
+                </div>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
   };
-  
 
   return (
     <Carousel
