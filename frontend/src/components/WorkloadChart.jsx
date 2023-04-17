@@ -4,7 +4,6 @@ import Highcharts from "highcharts";
 require("highcharts/modules/draggable-points")(Highcharts);
 require("highcharts/modules/accessibility")(Highcharts);
 
-
 const WorkloadChart = (props) => {
   const { data, onDrop, editMode, height, width } = props;
   const [chartOptions, setChartOptions] = useState({});
@@ -37,6 +36,7 @@ const WorkloadChart = (props) => {
       },
       yAxis: {
         title: { text: "Work required" },
+        tickInterval: 1,
         min: 0,
         max: 5,
       },
@@ -85,6 +85,7 @@ const WorkloadChart = (props) => {
       },
       yAxis: {
         title: { text: "Work required" },
+        tickInterval: 1,
         min: 0,
         max: 5,
       },
@@ -124,7 +125,10 @@ const WorkloadChart = (props) => {
   }, [props]);
 
   return (
-      <HighchartsReact highcharts={Highcharts} options={{...chartOptions, tooltip:{valueDecimals:1}}} />
+    <HighchartsReact
+      highcharts={Highcharts}
+      options={{ ...chartOptions, tooltip: { valueDecimals: 1 } }}
+    />
   );
 };
 

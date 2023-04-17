@@ -80,7 +80,7 @@ export default function CourseInfoPage(props) {
               <div>{/* <hr /> */}</div>
               <div style={{ padding: "8px 0px" }}>
                 <WorkloadChart
-                  height={250}
+                  height={270}
                   // width={200}
                   data={predictions?.workload}
                   editEnabled={false}
